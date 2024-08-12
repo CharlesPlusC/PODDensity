@@ -26,3 +26,14 @@
 python -m source.DensityInversion.GFOAccelerometryBenchmark
 python -m source.DensityInversion.Plotting.PODDensityPlotting
 ```
+
+## Outputs:
+The following repo will enable you to replicate all figures in the paper (and a number of others that were not included for brevity). As a quick illustration of the capabilities contained some example are included below.
+
+__Comparison of POD-Derived Densities to Model Densities__
+
+<img src="output/DensityInversion/PODDensityInversion/Plots/CHAMP_allstorm_density_scatter_plots.png" width="50%" height="50%">
+
+__Relative POD Density for Each Storm__
+
+<img src="output/DensityInversion/PODDensityInversion/Plots/CHAMP_computed_density_plots.png" width="50%" height="50%">

@@ -19,6 +19,7 @@ from ..tools.SWIndices import get_kp_ap_dst_f107
 from .Plotting.PODDensityPlotting import plot_all_storms_scatter ,plot_densities_and_indices, reldens_sat_megaplot, get_arglat_from_df, density_compare_scatter
 
 def density_inversion(sat_name, ephemeris_df, x_acc_col, y_acc_col, z_acc_col, force_model_config, nc_accs=False, models_to_query=['JB08'], density_freq='15S'):
+    #nc_accs refers to whether the accelereation time series is only non conservative or not (set to true for accelerometer data and false for POD data)
     sat_info = get_satellite_info(sat_name)
     settings = {
         'cr': sat_info['cr'], 'cd': sat_info['cd'], 'cross_section': sat_info['cross_section'], 'mass': sat_info['mass'],
@@ -112,4 +113,21 @@ def density_inversion(sat_name, ephemeris_df, x_acc_col, y_acc_col, z_acc_col, f
 
 if __name__ == "__main__":
     pass
-#TODO: Add example usage for a single storm
+    ## Example of how to run density inversion for a single storm
+    ## Beware that this will take a long time to run if you process the entire storm on your laptop
+    ## I recommend slicing the storm data to a smaller time frame for testing purposes
+    #Load ephemeris data
+    sp3_ephem_champ = sp3_ephem_to_df("CHAMP","2005-05-07")
+    #slice to keep only first 1000 rows
+    sp3_ephem_champ = sp3_ephem_champ.iloc[:1000]
+    #specify the force model configuration
+    force_model_config = {
+    '90x90gravity': True, '3BP': True, 'solid_tides': True,
+    'ocean_tides': True, 'knocke_erp': True, 'relativity': True, 'SRP': True}
+    #interpolate the ephemeris data to desired resolution (0.01S)
+    interp_ephemeris_df = interpolate_positions(sp3_ephem_champ, '0.01S')
+    #Numerically differentiate the interpolated ephemeris data to get acceleration
+    velacc_ephem = calculate_acceleration(interp_ephemeris_df, '0.01S', filter_window_length=21, filter_polyorder=7)
+    #Perform density inversion
+    density_df = density_inversion("CHAMP", velacc_ephem, 'accx', 'accy', 'accz', force_model_config)
+    plot_densities_and_indices([density_df], 45, "CHAMP")
