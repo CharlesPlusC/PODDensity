@@ -1,0 +1,26 @@
+{
+    "TerraSAR-X": {
+        "norad_id": 31698,
+        "sp3-c_code": "L13",
+        "mass": 1230.0,
+        "cross_section": 2.4,
+        "cd": 2.4,
+        "cr": 1.5
+    },
+    "CHAMP": {
+        "norad_id": 26405,
+        "sp3-c_code": "L06",
+        "mass": 522.0,
+        "cross_section": 1.0,
+        "cd": 2.2,
+        "cr": 1.0
+    },
+    "GRACE-FO-A": {
+        "norad_id": 43476,
+        "sp3-c_code": "L64",
+        "mass": 600.2,
+        "cross_section": 1.004,
+        "cd": 3.2,
+        "cr": 1.5
+    }
+}

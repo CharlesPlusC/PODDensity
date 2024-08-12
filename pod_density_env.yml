@@ -1,0 +1,26 @@
+name: pod_density_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - numpy
+  - matplotlib
+  - cartopy
+  - netcdf4
+  - imageio
+  - pip
+  - geopy
+  - scipy
+  - sgp4 
+  - pyproj
+  - orekit
+  - netCDF4s
+  - astropy
+  - spacetrack
+  - requests
+  - pandas
+  - plotly
+  - kaleido
+  - sp3
+  - seaborn
