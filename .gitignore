@@ -3,8 +3,6 @@
 *.pyc
 *__pycache__/
 *.ini
-*.csv
-!output/DensityInversion/PODDensityInversion/Data/*/*.csv
 *.DS_Store
 *.gitingore
 misc/orekit-data.zip
