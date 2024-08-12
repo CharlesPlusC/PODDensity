@@ -275,7 +275,7 @@ def select_storms(kp_3hrly):
             already_selected.sort()  # Keep the list sorted to maintain the order
 
     # Write selected storm periods to a file and print in the specified format
-    with open("output/DensityInversion/PODDensityInversion/selected_storms.txt", "w") as file:
+    with open("misc/selected_storms.txt", "w") as file:
         for satellite, levels in storm_selections.items():
             file.write(f"{satellite} Satellite:\n")
             for level, dates in levels.items():

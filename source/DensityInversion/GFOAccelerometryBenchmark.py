@@ -14,7 +14,6 @@ from ..tools.GFODataReadTools import get_gfo_inertial_accelerations
 from .PODDensity import density_inversion
 import numpy as np
 import datetime
-from tqdm import tqdm
 import matplotlib.dates as mdates
 
 # podaac-data-downloader -c GRACEFO_L1B_ASCII_GRAV_JPL_RL04 -d ./GRACE-FO_A_DATA -sd 2023-05-10T06:00:00Z -ed 2023-05-11T23:59:59Z -e ".*" --verbose

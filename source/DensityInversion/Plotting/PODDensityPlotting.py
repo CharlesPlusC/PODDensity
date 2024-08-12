@@ -516,10 +516,7 @@ if __name__ == "__main__":
                 if os.path.isfile(storm_file_path):
                     storm_df = pd.read_csv(storm_file_path) 
     #                 # density_compare_scatter(storm_df, 45, sat_name)
-    #                 # plot_relative_density_change([storm_df], 45, sat_name)
                     plot_densities_and_indices([storm_df], 45, sat_name)
-    #                 # density_compare_scatter([storm_df], 45, sat_name) 
-
 
     # base_dir = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis/"
     # sat_names = [ "TerraSAR-X", "GRACE-FO-A"] #

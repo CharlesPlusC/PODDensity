@@ -50,7 +50,7 @@ def download_files(ftp_server, path, local_directory):
     except ftplib.all_errors as e:
         print(f"FTP error: {e}")
 
-def download_storm_time_ephems(selected_storms_file='output/DensityInversion/PODDensityInversion/selected_storms.txt'):
+def download_storm_time_ephems(selected_storms_file='misc/selected_storms.txt'):
     """
     Download SP3 files for storm time periods based on a selected storms file.
 
