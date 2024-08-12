@@ -1,0 +1,13 @@
+*.nc
+*.png
+*.nc
+*.pyc
+*__pycache__/
+*.ini
+*.csv
+!output/DensityInversion/PODDensityInversion/Data/*/*.csv
+*.jpg
+*Myriad_FM_Bench
+*.DS_Store
+*.gitingore
+misc/orekit-data.zip
