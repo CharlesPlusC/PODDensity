@@ -41,9 +41,11 @@ python -m source.DensityInversion.Plotting.PODDensityPlotting
 The following repo will enable you to replicate all figures in the paper (and a number of others that were not included for brevity). As a quick illustration of the capabilities contained some example are included below.
 
 __Comparison of POD-Derived Densities to Model Densities Across All Available Storms__
+
 <img src="output/DensityInversion/PODDensityInversion/Plots/CHAMP_allstorm_density_scatter_plots.png" width="50%" height="50%">
 
 __Relative POD Density for Each Storm As A Function of Argument Latitude and Time__
+
 <img src="output/DensityInversion/PODDensityInversion/Plots/CHAMP_computed_density_plots.png" width="50%" height="50%">
 
 __Time Series of POD-Derived Densities and Model Densities for a Single Storm__
@@ -51,12 +53,15 @@ __Time Series of POD-Derived Densities and Model Densities for a Single Storm__
 <img src="output/DensityInversion/PODDensityInversion/Plots/CHAMP/tseries_indices_7_5_2005.png" width="50%" height="50%">
 
 __Time Series Benchmarking of All Studied Methods Against Accelerometer Data__
+
 <img src="output/DensityInversion/PODDensityInversion/Plots/GRACE-FO-A/Accelerometer_benchmark/ACTvsEDRvsPOD/ACT_EDR_POD_NRT_Comparison_2024-08-08_09-53-52.png" width="50%" height="50%">
 
 __Amplitude Spectral Density of Accelerometer Data for Each Method__
+
 <img src="output/DensityInversion/PODDensityInversion/Plots/GRACE-FO-A/Accelerometer_benchmark/ACTvsEDRvsPOD/ACT_EDR_POD_NRT_ASD_2024-08-12_10-14-58.png" width="50%" height="50%">
 
 __Mean Absolute Percentage Error and Root Mean Square Error of Each Method__
+
 <img src="output/DensityInversion/PODDensityInversion/Plots/GRACE-FO-A/Accelerometer_benchmark/ACTvsEDRvsPOD/ACT_EDR_POD_NRT_MAPE_2024-08-12_10-15-52.png" width="50%" height="50%">
 
 ## System Overview:
