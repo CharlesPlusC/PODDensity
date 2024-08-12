@@ -5,24 +5,34 @@
   <img src="misc/SGNL_logo_ColouronBlack.jpg" alt="Research Group Logo" width="200">
 </p>
 
-<h3 align="center">POD Density Inversion</h3>
+<h2 align="center">POD Density Inversion</h2>
 
 <p align="center">
-    This repo contains code accompanying the paper "Real-Time Thermospheric Density Retrieval from Low Earth Orbit Spacecraft Ephemerides During Geomagnetic Storms" by Charles Constant, Santosh Bhattarai, Indigo Brownhall, Anasuya Aruliah and Marek Zeibart (2024).
+    This repository contains the code accompanying the paper "Real-Time Thermospheric Density Retrieval from Low Earth Orbit Spacecraft Ephemerides During Geomagnetic Storms" by Charles Constant, Santosh Bhattarai, Indigo Brownhall, Anasuya Aruliah, and Marek Zeibart (2024).
   <br />
-  <a href="https://github.com/CharlesPlusC/PODDensity/issues">Report Bug</a>
+  <a href="https://github.com/CharlesPlusC/PODDensity/issues">Report a Bug</a>
   ·
-  <a href="https://github.com/CharlesPlusC/PODDensity/pulls">Request Feature</a>
+  <a href="https://github.com/CharlesPlusC/PODDensity/pulls">Request a Feature</a>
 </p>
 
-- The repo contains tools to pull SP3 orboits from GFZ potsdam FTP (`Get_SP3_from_GFZ_FTP.py`), merge the files into continuous ephemerides and convert them to an interial-frame (J2000/EME2000) and perform density inversion on these (`source/DensityInversion/PODDensity.py`).
-- The underlying library used for many of the computations (force modelling/frame transformations/ density model calls) is the Orekit Python Wrapper, which is a Python wrapper for the Orekit Java library.
-- The repo comes in 2 branches. The main branch contains the code, the estimated densities for CHAMP, TerraSAR-X and GRACE-A (in output/DensityInversion/PODDensityInversion/Data/StormAnalysis)and the code to reproduce the results in the paper. The `lite' branch is identical but does not contain the SWindices folder (~2Gb of data) which are used to plots containing space weather indices in the paper.
-- Storm Time Density provides a script to perform the denstiy inversion on a compute cluster for all storm specified in `misc/selected_storms.txt' simultaneously.
-- SWIndices.py contains code to idenify and categorize all storms during the lifetime of each satellite studied.
+## Overview
 
-- The figures in the paper can be replicated by running the following from root:
-```zsh
+This repository provides tools for processing precise ephemeris data to retrieve thermospheric densities during geomagnetic storms. The main functionalities include:
+
+- **Data Acquisition:** Scripts to retrieve SP3 orbit files from the GFZ Potsdam FTP server (`Get_SP3_from_GFZ_FTP.py`), merge them into continuous ephemerides, convert them to the inertial frame (J2000/EME2000)
+- **Density Inversion:** Scripts to perform density inversion (`source/DensityInversion/PODDensity.py`).
+- **Branches:** 
+  - The `main` branch contains the complete codebase, including estimated densities for CHAMP, TerraSAR-X, and GRACE-FO-A, as well as scripts to reproduce the paper's results.
+  - The `lite` branch is identical but excludes the `SWindices` folder (~2 GB of space weather index data), which is used for plotting indices in the paper.
+- **Batch Processing:** The `Storm Time Density` script allows for simultaneous density inversion across multiple storms listed in `misc/selected_storms.txt` on a compute cluster.
+- **Space Weather Indices:** `SWIndices.py` contains code to identify and categorize all geomagnetic storms during the operational lifetime of each satellite studied.
+- **Computation Libraries:** The Orekit Python Wrapper is used extensively for force modeling, frame transformations, and density model computations.
+
+## Reproducing the Paper's Results
+
+To replicate the figures presented in the paper, run the following commands from the root directory:
+
+```bash
 python -m source.DensityInversion.GFOAccelerometryBenchmark
 python -m source.DensityInversion.Plotting.PODDensityPlotting
 ```

@@ -4,6 +4,11 @@ import seaborn as sns
 import pandas as pd
 from matplotlib.colors import LogNorm
 from pandas.tseries import offsets
+import orekit
+from orekit.pyhelpers import setup_orekit_curdir
+# download_orekit_data_curdir("misc")
+vm = orekit.initVM()
+setup_orekit_curdir("misc/orekit-data.zip")
 from org.hipparchus.geometry.euclidean.threed import Vector3D
 from org.orekit.utils import PVCoordinates
 from orekit.pyhelpers import datetime_to_absolutedate
@@ -501,7 +506,7 @@ if __name__ == "__main__":
     # # Base directory for storm analysis
     base_dir = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis/"
     # # List of satellite names
-    sat_names = ["TerraSAR-X", "GRACE-FO-A"] #"GRACE-FO-A", "TerraSAR-X", "CHAMP"
+    sat_names = ["CHAMP"] #"GRACE-FO-A", "TerraSAR-X", "CHAMP"
 
     for sat_name in sat_names:
         storm_analysis_dir = os.path.join(base_dir, sat_name)
@@ -516,7 +521,7 @@ if __name__ == "__main__":
                 if os.path.isfile(storm_file_path):
                     storm_df = pd.read_csv(storm_file_path) 
     #                 # density_compare_scatter(storm_df, 45, sat_name)
-                    plot_densities_and_indices([storm_df], 45, sat_name)
+                    plot_densities_and_indices([storm_df], 23, sat_name)
 
     # base_dir = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis/"
     # sat_names = [ "TerraSAR-X", "GRACE-FO-A"] #
