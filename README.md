@@ -59,6 +59,10 @@ __Amplitude Spectral Density of Accelerometer Data for Each Method__
 __Mean Absolute Percentage Error and Root Mean Square Error of Each Method__
 <img src="output/DensityInversion/PODDensityInversion/Plots/GRACE-FO-A/Accelerometer_benchmark/ACTvsEDRvsPOD/ACT_EDR_POD_NRT_MAPE_2024-08-12_10-15-52.png" width="50%" height="50%">
 
+## System Overview:
+The system is designed to be run on a compute cluster, with the following structure:
+<img src="misc/PODDensitFlow.drawio.png" width="100%" height="100%">
+
 ## Environment Activation
 1. Clone the repository
 2. Install the requirements using the megeaconst_env.yml file:
