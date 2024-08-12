@@ -119,7 +119,7 @@ if __name__ == "__main__":
     #Load ephemeris data
     sp3_ephem_champ = sp3_ephem_to_df("CHAMP","2005-05-07")
     #slice to keep only first 1000 rows
-    sp3_ephem_champ = sp3_ephem_champ.iloc[:1000]
+    sp3_ephem_champ = sp3_ephem_champ.iloc[:1000] #This should take around 20 minutes on a single core
     #specify the force model configuration
     force_model_config = {
     '90x90gravity': True, '3BP': True, 'solid_tides': True,
