@@ -1,5 +1,5 @@
-[![HitCount](https://hits.dwyl.com/CharlesPlusC/PODDensity.svg?style=flat-square&show=unique)](http://hits.dwyl.com/CharlesPlusC/PODDensity)
-[![GitHub issues](https://img.shields.io/github/issues/CharlesPlusC/PODDensity)](
+[![HitCount](https://hits.dwyl.com/CharlesPlusC/ERP_tools.svg?style=flat-square&show=unique)](http://hits.dwyl.com/CharlesPlusC/PODDensity)
+[![GitHub issues](https://img.shields.io/github/issues/CharlesPlusC/PODDensity)]
 
 <p align="center">
   <img src="misc/UCL-logo-black.jpg" alt="University Logo" width="200"><br/>
