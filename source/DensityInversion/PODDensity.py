@@ -119,7 +119,7 @@ if __name__ == "__main__":
     #Load ephemeris data
     sp3_ephem_champ = sp3_ephem_to_df("CHAMP","2005-05-07")
     #slice to keep only first 1000 rows
-    sp3_ephem_champ = sp3_ephem_champ.iloc[:1000] #This should take around 20 minutes on a single core
+    sp3_ephem_champ = sp3_ephem_champ.iloc[:1000] #This should take around 15/20 minutes on a single core
     #specify the force model configuration
     force_model_config = {
     '90x90gravity': True, '3BP': True, 'solid_tides': True,
@@ -130,4 +130,4 @@ if __name__ == "__main__":
     velacc_ephem = calculate_acceleration(interp_ephemeris_df, '0.01S', filter_window_length=21, filter_polyorder=7)
     #Perform density inversion
     density_df = density_inversion("CHAMP", velacc_ephem, 'accx', 'accy', 'accz', force_model_config)
-    plot_densities_and_indices([density_df], 45, "CHAMP")
+    plot_densities_and_indices([density_df], moving_avg_minutes=23, sat_name="CHAMP")
