@@ -4,6 +4,7 @@ import datetime
 import os
 import gzip
 import netCDF4 as nc
+import requests
 
 def read_ae(start_date, end_date, components=['AE']):
     """
@@ -360,8 +361,39 @@ def read_imf(start_date, end_date):
     imf_df = imf_df[(imf_df['DateTime'] >= start_date) & (imf_df['DateTime'] <= end_date)]
     return imf_df
 
+def update_kp_ap_Ap_SN_F107():
+    url = "https://www-app3.gfz-potsdam.de/kp_index/Kp_ap_Ap_SN_F107_since_1932.txt"
+    local_path = "external/SWIndices/Kp_ap_Ap_SN_F107_since_1932.txt"
+
+    response = requests.get(url)
+    response.raise_for_status()
+
+    with open(local_path, "wb") as file:
+        file.write(response.content)
+
+def get_current_kp_index():
+    url = "https://kp.gfz-potsdam.de/app/files/Kp_ap_nowcast.txt"
+    
+    response = requests.get(url)
+    response.raise_for_status()
+
+    lines = response.text.strip().splitlines()
+    now = datetime.datetime.now(datetime.timezone.utc)
+
+    for line in reversed(lines):
+        if not line.startswith('#'):
+            parts = line.split()
+            date_str = f"{parts[0]} {parts[1]} {parts[2]} {parts[3]}"
+            line_time = datetime.datetime.strptime(date_str, "%Y %m %d %H.%f").replace(tzinfo=datetime.timezone.utc)
+
+            # Ensure the line_time is not in the future
+            if line_time <= now:
+                current_kp_value = float(parts[7])
+                return (current_kp_value)
 if __name__ == "__main__":
-    pass
+    kp_index = get_current_kp_index()
+    print(kp_index)
+    # update_kp_ap_Ap_SN_F107()
     ####Access Space Weather Indices
     # daily_indices, kp_3hrly, hourly_dst = get_kp_ap_dst_f107()
 
