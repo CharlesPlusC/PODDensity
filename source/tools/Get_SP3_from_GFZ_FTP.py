@@ -27,7 +27,7 @@ def download_files(ftp_server, path, local_directory):
     except ftplib.all_errors as e:
         print(f"FTP error: {e}")
 
-def download_sp3(start_date, end_date, spacecraft_name, json_path="misc/sat_list.json"):
+def download_sp3(start_date, end_date, spacecraft_name, orbit_type="RSO", json_path="misc/sat_list.json"):
     print(f"Downloading SP3 files for {spacecraft_name} from {start_date} to {end_date}")
     sp3_codes = load_sp3_codes(json_path)
     if spacecraft_name in sp3_codes:
@@ -49,7 +49,7 @@ def download_sp3(start_date, end_date, spacecraft_name, json_path="misc/sat_list
         
         current_date = start_date
         while current_date <= end_date:
-            ftp_path = create_ftp_url(spacecraft_folder, sp3_code, current_date)
+            ftp_path = create_ftp_url(spacecraft_folder, sp3_code, current_date, orbit_type)
             local_directory = f"external/sp3_files/{sp3_code}/{current_date.year}/{current_date.strftime('%j')}"
             os.makedirs(local_directory, exist_ok=True)
             download_files(base_url, ftp_path, local_directory)

@@ -390,10 +390,11 @@ def get_current_kp_index():
             if line_time <= now:
                 current_kp_value = float(parts[7])
                 return (current_kp_value)
+            
 if __name__ == "__main__":
-    kp_index = get_current_kp_index()
-    print(kp_index)
-    # update_kp_ap_Ap_SN_F107()
+    pass
+    # kp_index = get_current_kp_index() # Get the current Kp index
+    # update_kp_ap_Ap_SN_F107() ### Uncomment to update the Kp, Ap, Ap_SN, and F10.7 indices
     ####Access Space Weather Indices
     # daily_indices, kp_3hrly, hourly_dst = get_kp_ap_dst_f107()
 
