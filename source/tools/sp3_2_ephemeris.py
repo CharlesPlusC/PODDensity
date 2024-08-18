@@ -1,5 +1,5 @@
-# for all the satellites listed in main, this script will take the sp3 files in sp3_files, and concatenate them into a single dataframe per spacecraft. 
-# the datatframe will then be used to write out an ephemeris file for each spacecraft that will be saved in the specified directory.
+# for all the satellites listed in main, this script will take all the time-contiguous sp3 files in sp3_files, and concatenate them into a single dataframe per contiguous time period per spacecraft. 
+# the datatframe will then be used to write out an ephemeris file for each spacecraft that will be saved in the ephems directory.
 
 import json
 import pandas as pd
@@ -12,43 +12,48 @@ import glob
 from ..tools.utilities import SP3_to_EME2000, utc_to_mjd
 
 def read_sp3_gz_file(sp3_gz_file_path):
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.sp3')
-    temp_file_path = temp_file.name
+    try:
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.sp3')
+        temp_file_path = temp_file.name
 
-    with gzip.open(sp3_gz_file_path, 'rb') as gz_file:
-        temp_file.write(gz_file.read())
-    temp_file.close()
+        with gzip.open(sp3_gz_file_path, 'rb') as gz_file:
+            temp_file.write(gz_file.read())
+        temp_file.close()
 
-    print(f"Reading SP3 file: {sp3_gz_file_path}")
+        print(f"Reading SP3 file: {sp3_gz_file_path}")
 
-    product = sp3.Product.from_file(temp_file_path)
+        product = sp3.Product.from_file(temp_file_path)
+        
+        satellite = product.satellites[0]
+        records = satellite.records
+
+        times = []
+        positions = []
+        velocities = []
+
+        for record in records:
+            times.append(record.time)
+            positions.append(record.position)
+            velocities.append(record.velocity)
+
+        df = pd.DataFrame({
+            'Time': times,
+            'Position_X': [pos[0]/1000 for pos in positions],
+            'Position_Y': [pos[1]/1000 for pos in positions],
+            'Position_Z': [pos[2]/1000 for pos in positions],
+            'Velocity_X': [vel[0]/1000 for vel in velocities],
+            'Velocity_Y': [vel[1]/1000 for vel in velocities],
+            'Velocity_Z': [vel[2]/1000 for vel in velocities]
+        })
+
+        print(f"Read {len(df)} records from {temp_file_path}")
+        os.remove(temp_file_path)
+        return df
+
+    except Exception as e:
+        print(f"Error processing file {sp3_gz_file_path}: {e}")
+        return None  # Return None if an error occurs
     
-    satellite = product.satellites[0]
-    records = satellite.records
-
-    times = []
-    positions = []
-    velocities = []
-
-    for record in records:
-        times.append(record.time)
-        positions.append(record.position)
-        velocities.append(record.velocity)
-
-    df = pd.DataFrame({
-        'Time': times,
-        'Position_X': [pos[0]/1000 for pos in positions],
-        'Position_Y': [pos[1]/1000 for pos in positions],
-        'Position_Z': [pos[2]/1000 for pos in positions],
-        'Velocity_X': [vel[0]/1000 for vel in velocities],
-        'Velocity_Y': [vel[1]/1000 for vel in velocities],
-        'Velocity_Z': [vel[2]/1000 for vel in velocities]
-    })
-
-    print(f"Read {len(df)} records from {temp_file_path}")
-    os.remove(temp_file_path)
-    return df
-
 def process_sp3_files_for_range(base_path, sat_name, start_date, end_date, sat_list_path="misc/sat_list.json"):
     all_dataframes = []
     start_date = datetime.strptime(start_date, "%Y-%m-%d")
@@ -100,6 +105,51 @@ def process_sp3_files_for_range(base_path, sat_name, start_date, end_date, sat_l
         return grouped_dfs
     else:
         return []
+
+def process_sp3_files(base_path, sat_dict):
+    all_dataframes = {sat_name: [] for sat_name in sat_dict}
+
+    for sat_name, sat_info in sat_dict.items():
+        sp3_c_code = sat_info['sp3-c_code']
+        satellite_path = os.path.join(base_path, sp3_c_code)
+
+        # Loop through all year folders
+        for year_folder in glob.glob(f"{satellite_path}/*"):
+            # Loop through all day-of-year folders
+            for day_folder in glob.glob(f"{year_folder}/*"):
+                # Loop through all SP3 files in the day-of-year folder
+                for sp3_gz_file in glob.glob(f"{day_folder}/*.sp3.gz"):
+                    df = read_sp3_gz_file(sp3_gz_file)
+                    if df is not None:
+                        df['Time'] = pd.to_datetime(df['Time'])
+                        all_dataframes[sat_name].append(df)
+
+    contiguous_dataframes = {}
+    for sat_name, dfs in all_dataframes.items():
+        if dfs:
+            concatenated_df = pd.concat(dfs).drop_duplicates(subset='Time').set_index('Time').sort_index()
+
+            date_diffs = concatenated_df.index.to_series().diff().dt.total_seconds() > 1800  # 30 minutes
+            split_points = concatenated_df[date_diffs].index
+
+            grouped_dfs = []
+            last_idx = concatenated_df.index[0] if not split_points.empty else None
+
+            for idx in split_points:
+                current_df = concatenated_df.loc[last_idx:idx - pd.Timedelta(seconds=1)]
+                grouped_dfs.append(current_df)
+                last_idx = idx
+
+            if last_idx is not None and last_idx != concatenated_df.index[-1]:
+                grouped_dfs.append(concatenated_df.loc[last_idx:])
+            elif split_points.empty:
+                grouped_dfs.append(concatenated_df)
+
+            contiguous_dataframes[sat_name] = grouped_dfs
+        else:
+            contiguous_dataframes[sat_name] = []
+
+    return contiguous_dataframes
 
 def write_ephemeris_file(file_name, df, satellite_info, output_dir="external/ephems"):
     sat_dir = os.path.join(output_dir, file_name.split('_')[0])

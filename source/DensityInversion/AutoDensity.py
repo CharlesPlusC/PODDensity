@@ -143,3 +143,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#TODO: Delete the local SP3 files after the storm has ended (but keep the ephemeris)
