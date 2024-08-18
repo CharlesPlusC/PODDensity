@@ -3,7 +3,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 from matplotlib.colors import LogNorm
-from pandas.tseries import offsets
+import os
+import numpy as np
+from scipy.signal import savgol_filter
+from datetime import datetime, timedelta
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
 import orekit
 from orekit.pyhelpers import setup_orekit_curdir
 # download_orekit_data_curdir("misc")
@@ -15,9 +20,7 @@ from orekit.pyhelpers import datetime_to_absolutedate
 from source.tools.utilities import project_acc_into_HCL, pv_to_kep, interpolate_positions, calculate_acceleration
 from source.tools.SWIndices import get_kp_ap_dst_f107, read_ae, read_sym, read_imf
 from org.orekit.frames import FramesFactory
-import os
-import numpy as np
-from scipy.signal import savgol_filter
+
 
 def get_arglat_from_df(densitydf_df):
     frame = FramesFactory.getEME2000()
@@ -44,12 +47,6 @@ def get_arglat_from_df(densitydf_df):
     return densitydf_df
 
 def plot_densities_and_indices(data_frames, moving_avg_minutes, sat_name):
-    import numpy as np
-    import matplotlib.pyplot as plt
-    import pandas as pd
-    import seaborn as sns
-    from scipy.signal import savgol_filter
-    from datetime import datetime, timedelta
 
     sns.set_style(style="whitegrid")
 
@@ -387,9 +384,6 @@ def reldens_sat_megaplot(base_dir, sat_name, moving_avg_minutes):
     cbar.set_label('Normalized Computed Density', rotation=270, labelpad=15)
     plt.savefig(f'output/DensityInversion/PODDensityInversion/Plots/{sat_name}_relative_density_subplot_arrays.png', dpi=300, bbox_inches='tight')
 
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
-
 def plot_all_storms_scatter(base_dir, sat_name, moving_avg_minutes=45):
     def aggregate_density_data(storm_analysis_dir, moving_avg_minutes):
         aggregated_data = []
@@ -500,6 +494,151 @@ def plot_all_storms_scatter(base_dir, sat_name, moving_avg_minutes=45):
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.savefig(f'output/DensityInversion/PODDensityInversion/Plots/{sat_name}_allstorm_density_scatter_plots.png', dpi=600, bbox_inches='tight')
     # plt.show()
+
+def plot_arglat_density_and_kp(data_frames, moving_avg_minutes, sat_name, save_path=None):
+    sns.set_style("darkgrid", {
+        'axes.facecolor': '#2d2d2d', 'axes.edgecolor': 'white', 
+        'axes.labelcolor': 'white', 'xtick.color': 'white', 
+        'ytick.color': 'white', 'figure.facecolor': '#2d2d2d', 'text.color': 'white'
+    })
+    
+    fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(6, 6), dpi=600, gridspec_kw={'height_ratios': [3, 1], 'hspace': 0.4})
+
+    _, kp_3hrly, _ = get_kp_ap_dst_f107()
+    
+    kp_3hrly['DateTime'] = pd.to_datetime(kp_3hrly['DateTime']).dt.tz_localize('UTC')
+
+    for i in range(len(data_frames)):
+        if 'UTC' in data_frames[i].columns:
+            data_frames[i]['UTC'] = pd.to_datetime(data_frames[i]['UTC'], utc=True)
+            data_frames[i].set_index('UTC', inplace=True)
+        data_frames[i].index = data_frames[i].index.tz_localize('UTC') if data_frames[i].index.tz is None else data_frames[i].index.tz_convert('UTC')
+
+    start_time = pd.to_datetime(min(df.index.min() for df in data_frames))
+    end_time = pd.to_datetime(max(df.index.max() for df in data_frames))
+
+    kp_3hrly = kp_3hrly[(kp_3hrly['DateTime'] >= start_time) & (kp_3hrly['DateTime'] <= end_time)]
+
+    kp_3hrly = kp_3hrly.sort_values(by='DateTime')
+
+    for i, density_df in enumerate(data_frames):
+        density_df = density_df[(density_df.index >= start_time) & (density_df.index <= end_time)].copy()
+        seconds_per_point = 15
+        window_size = (moving_avg_minutes * 60) // seconds_per_point
+        density_df = get_arglat_from_df(density_df)
+        
+        density_df['Computed Density'] = density_df['Computed Density'].rolling(window=window_size, center=True).mean()
+        median_density = density_df['Computed Density'].median()
+        density_df['Computed Density'] = density_df['Computed Density'].apply(lambda x: median_density if x > 10 * median_density or x < median_density / 10 else x)
+        density_df['Computed Density'] = savgol_filter(density_df['Computed Density'], 51, 3)
+        density_df = density_df[(density_df.index >= start_time) & (density_df.index <= end_time)]
+        
+        sc = axs[0].scatter(density_df.index, density_df['arglat'], c=density_df['Computed Density'], cmap='cubehelix', alpha=0.6, edgecolor='none', norm=LogNorm())
+        #get the dd-mm-yyyy of the middle of the plot
+        day = density_df.index[len(density_df.index)//2].strftime("%d")
+        month = density_df.index[len(density_df.index)//2].strftime("%m")
+        year = density_df.index[len(density_df.index)//2].strftime("%Y")
+        axs[0].set_title(f'Density from Near-Real Time Orbit for: {sat_name}\n Date: {day}-{month}-{year}', fontsize=12)
+        axs[0].set_ylabel('Argument of Latitude (°)')
+        axs[0].set_yticks([-180, 0, 180])
+        cbar = fig.colorbar(sc, ax=axs[0], orientation='horizontal', pad=0.2)
+        cbar.set_label('Density (kg/m³)', rotation=0, labelpad=10)
+        axs[0].set_xlabel('Time (UTC)')
+        for label in axs[0].get_xticklabels():
+            label.set_rotation(45)
+            label.set_horizontalalignment('right')
+
+    # Plot the Kp index as bar plots below the density plot
+    axs[1].bar(kp_3hrly['DateTime'], kp_3hrly['Kp'], width=0.03, color='xkcd:hot pink', align='center')
+
+    axs[1].set_ylabel('Kp', color='xkcd:hot pink')
+    axs[1].yaxis.label.set_color('xkcd:hot pink')
+    axs[1].set_ylim(0, 9)
+    axs[1].tick_params(axis='y', colors='xkcd:hot pink')
+    axs[1].set_yticks(np.arange(0, 10, 3))
+    axs[1].set_xlim(start_time, end_time)
+    axs[1].set_xlabel('Time (UTC)', fontsize=12)
+    axs[1].grid(True, linestyle='--', linewidth=0.5)
+
+    # Set x-axis limits of the top plot to match the bottom plot
+    axs[0].set_xlim(start_time, end_time)
+
+    plt.tight_layout()
+    if save_path is None:
+        plt.savefig(f'output/DensityInversion/PODBasedAccelerometry/Plots/{sat_name}/arglat_density_kp_{start_time.strftime("%Y%m%d%H%M")}.png', dpi=600)
+    else:
+        plt.savefig(save_path, dpi=600)
+    plt.close()
+
+def plot_density_and_kp(data_frames, moving_avg_minutes, sat_name, save_path=None):
+    sns.set_style("darkgrid", {
+        'axes.facecolor': '#2d2d2d', 'axes.edgecolor': 'white', 
+        'axes.labelcolor': 'white', 'xtick.color': 'white', 
+        'ytick.color': 'white', 'figure.facecolor': '#2d2d2d', 'text.color': 'white'
+    })
+    
+    fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(6, 6), dpi=600, gridspec_kw={'height_ratios': [3, 1], 'hspace': 0.4})
+
+    _, kp_3hrly, _ = get_kp_ap_dst_f107()
+    kp_3hrly['DateTime'] = pd.to_datetime(kp_3hrly['DateTime']).dt.tz_localize('UTC')
+
+    for i in range(len(data_frames)):
+        if 'UTC' in data_frames[i].columns:
+            data_frames[i]['UTC'] = pd.to_datetime(data_frames[i]['UTC'], utc=True)
+            data_frames[i].set_index('UTC', inplace=True)
+        data_frames[i].index = data_frames[i].index.tz_localize('UTC') if data_frames[i].index.tz is None else data_frames[i].index.tz_convert('UTC')
+
+    start_time = pd.to_datetime(min(df.index.min() for df in data_frames))
+    end_time = pd.to_datetime(max(df.index.max() for df in data_frames))
+
+    kp_3hrly = kp_3hrly[(kp_3hrly['DateTime'] >= start_time) & (kp_3hrly['DateTime'] <= end_time)]
+    kp_3hrly = kp_3hrly.sort_values(by='DateTime')
+
+    for i, density_df in enumerate(data_frames):
+        density_df = density_df[(density_df.index >= start_time) & (density_df.index <= end_time)].copy()
+        seconds_per_point = 15
+        window_size = (moving_avg_minutes * 60) // seconds_per_point
+        
+        density_df['Computed Density'] = density_df['Computed Density'].rolling(window=window_size, center=True).mean()
+        median_density = density_df['Computed Density'].median()
+        density_df['Computed Density'] = density_df['Computed Density'].apply(lambda x: median_density if x > 10 * median_density or x < median_density / 10 else x)
+        density_df['Computed Density'] = savgol_filter(density_df['Computed Density'], 51, 3)
+        density_df = density_df[(density_df.index >= start_time) & (density_df.index <= end_time)]
+        
+        # Plot density vs time as a line plot
+        axs[0].plot(density_df.index, density_df['Computed Density'], color='xkcd:light blue', label=sat_name)
+        
+        day = density_df.index[len(density_df.index)//2].strftime("%d")
+        month = density_df.index[len(density_df.index)//2].strftime("%m")
+        year = density_df.index[len(density_df.index)//2].strftime("%Y")
+        axs[0].set_title(f'Density from Near-Real Time Orbit for: {sat_name}\n Date: {day}-{month}-{year}', fontsize=12)
+        axs[0].set_ylabel('Density (kg/m³)')
+        axs[0].set_xlabel('Time (UTC)')
+        for label in axs[0].get_xticklabels():
+            label.set_rotation(45)
+            label.set_horizontalalignment('right')
+
+    # Plot the Kp index as bar plots below the density plot
+    axs[1].bar(kp_3hrly['DateTime'], kp_3hrly['Kp'], width=0.03, color='xkcd:hot pink', align='center')
+
+    axs[1].set_ylabel('Kp', color='xkcd:hot pink')
+    axs[1].yaxis.label.set_color('xkcd:hot pink')
+    axs[1].set_ylim(0, 9)
+    axs[1].tick_params(axis='y', colors='xkcd:hot pink')
+    axs[1].set_yticks(np.arange(0, 10, 3))
+    axs[1].set_xlim(start_time, end_time)
+    axs[1].set_xlabel('Time (UTC)', fontsize=12)
+    axs[1].grid(True, linestyle='--', linewidth=0.5)
+
+    # Set x-axis limits of the top plot to match the bottom plot
+    axs[0].set_xlim(start_time, end_time)
+
+    plt.tight_layout()
+    if save_path is None:
+        plt.savefig(f'output/DensityInversion/PODBasedAccelerometry/Plots/{sat_name}/density_kp_{start_time.strftime("%Y%m%d%H%M")}.png', dpi=600)
+    else:
+        plt.savefig(save_path, dpi=600)
+    plt.close()
 
 if __name__ == "__main__":
     

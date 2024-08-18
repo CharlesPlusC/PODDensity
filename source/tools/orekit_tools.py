@@ -178,7 +178,6 @@ def state2acceleration(state_vector, t0, cr, cd, cross_section, mass, **force_mo
         relativity_eci_t0 = np.array([relativity_eci_t0[0].getX(), relativity_eci_t0[0].getY(), relativity_eci_t0[0].getZ()])
         accelerations_dict['relativity'] = relativity_eci_t0
 
-    ###NOTE: Drag force model has to stay last in the if-loop (see below)
     if force_model_config.get('jb08drag', False):
         wgs84Ellipsoid = ReferenceEllipsoid.getWgs84(FramesFactory.getITRF(IERSConventions.IERS_2010, False))
         jb08_data = JB2008SpaceEnvironmentData(solfsmy_data_source,

@@ -184,6 +184,11 @@ def classify_storm(kp_val):
         return NOAA_storm_classification.get(kp_int, 'G1')
 
 def process_kp_ap_f107_sn(filepath='external/SWIndices/Kp_ap_Ap_SN_F107_since_1932.txt'):
+
+    #if the file has been not been updated in the last 24 hours, update it
+    if not os.path.exists(filepath) or (datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(filepath))).days > 1:
+        update_kp_ap_Ap_SN_F107()
+
     # Read the data, skipping the header lines
     kp_data = pd.read_csv(filepath, delim_whitespace=True, skiprows=40, header=None,
                           names=[

@@ -1,15 +1,18 @@
 import datetime
 import os
+import pandas as pd
 from ..tools.SWIndices import get_current_kp_index, update_kp_ap_Ap_SN_F107
 from ..tools.utilities import interpolate_positions, calculate_acceleration
 from ..tools.Get_SP3_from_GFZ_FTP import download_sp3
 from ..tools.sp3_2_ephemeris import sp3_ephem_to_df, process_satellite_for_date_range
+from source.DensityInversion.Plotting.PODDensityPlotting import plot_arglat_density_and_kp, plot_density_and_kp
 from .PODDensity import density_inversion
 
 # Define paths and constants
 BASE_DIR = "output/DensityInversion/PODDensityInversion/Data"
 SATELLITES = ["GRACE-FO-A", "TerraSAR-X"]
 Kp_THRESHOLD = 5
+STORM_END_DELAY_HOURS = 18
 
 # Function to generate storm name based on the start date
 def generate_storm_name(start_time):
@@ -39,40 +42,46 @@ def update_storm_status(satellite, start_time, kp_index):
     storm_status_file = construct_file_path(satellite, "", "storm_status.txt")
     os.makedirs(os.path.dirname(storm_status_file), exist_ok=True)
     with open(storm_status_file, "a") as file:
+        if os.path.getsize(storm_status_file) == 0:
+            file.write(f"{start_time.strftime('%Y-%m-%d %H:%M:%S')}\n")
         file.write(f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}, {kp_index}\n")
 
 # Function to check if the storm is still ongoing
 def is_storm_ongoing(kp_history):
     now = datetime.datetime.now(datetime.timezone.utc)
-    kp_history = [(time, kp) for time, kp in kp_history if now - time <= datetime.timedelta(hours=12)]
-    if any(kp >= Kp_THRESHOLD for _, kp in kp_history):
+    # Filter the Kp history to only include the last 18 hours
+    recent_history = [(time, kp) for time, kp in kp_history if now - time <= datetime.timedelta(hours=STORM_END_DELAY_HOURS)]
+    
+    # Check if Kp has been above the threshold in the recent history
+    if any(kp >= Kp_THRESHOLD for _, kp in recent_history):
         return True
+    
+    # Check if the last Kp measurement was above the threshold and within the delay period
+    if recent_history:
+        last_time, last_kp = recent_history[-1]
+        if last_kp < Kp_THRESHOLD and (now - last_time).total_seconds() / 3600 <= STORM_END_DELAY_HOURS:
+            return True
+    
     return False
 
-# Function to verify if SP3 data has been downloaded successfully
-def verify_sp3_download(satellite, storm_start_time, storm_end_time):
-    sp3_codes = {
-        "GRACE-FO-A": "L64",
-        "TerraSAR-X": "L13",
-    }
-    
-    sp3_code = sp3_codes.get(satellite)
-    if not sp3_code:
-        print(f"Unknown satellite code for {satellite}")
-        return False
-    
-    current_date = storm_start_time
-    while current_date <= storm_end_time:
-        year = current_date.year
-        day_of_year = current_date.strftime("%j")
-        expected_directory = f"external/sp3_files/{sp3_code}/{year}/{day_of_year}"
-        
-        # Check if the directory exists and contains files
-        if not os.path.exists(expected_directory) or not os.listdir(expected_directory):
-            return False  # If any expected directory or files are missing, return False
-        current_date += datetime.timedelta(days=1)
-    
-    return True  # All expected files are present
+# Function to find the last timestamp of processed density data
+def find_last_density_timestamp(density_output_file):
+    if os.path.exists(density_output_file):
+        density_df = pd.read_csv(density_output_file)
+        if not density_df.empty:
+            return pd.to_datetime(density_df['UTC'].max())
+    return None
+
+# Function to append new density data without duplications
+def append_density_data(density_df, density_output_file):
+    if os.path.exists(density_output_file):
+        existing_df = pd.read_csv(density_output_file, parse_dates=['UTC'])
+        combined_df = pd.concat([existing_df, density_df]).drop_duplicates(subset=['UTC']).sort_values(by='UTC')
+        combined_df.to_csv(density_output_file, index=False)
+    else:
+        #make sure the directory exists
+        os.makedirs(os.path.dirname(density_output_file), exist_ok=True)
+        density_df.to_csv(density_output_file, index=False)
 
 # Function to perform the workflow if a storm is ongoing
 def handle_storm():
@@ -84,50 +93,53 @@ def handle_storm():
             storm_name = generate_storm_name(storm_start_time)
             update_storm_status(satellite, storm_start_time, get_current_kp_index())
         
-        # Determine the start and end dates for SP3 data download
+        # Determine the start and end dates for SP3 data processing
         storm_end_time = datetime.datetime.now(datetime.timezone.utc)
+        #add one day to the storm end time to ensure all data in that range is processed
+        storm_end_time += datetime.timedelta(days=1)
         
-        # Check if SP3 data was successfully downloaded
-        if not verify_sp3_download(satellite, storm_start_time, storm_end_time):
-            print(f"SP3 data not found for {satellite}, attempting to download again...")
-            download_sp3(storm_start_time, storm_end_time, satellite, orbit_type="NRT")
+        # Process SP3 data for the satellite within the storm date range
+        process_satellite_for_date_range(satellite, storm_start_time.strftime("%Y-%m-%d"), storm_end_time.strftime("%Y-%m-%d"))
         
-        # If download was successful, proceed with data processing
-        if verify_sp3_download(satellite, storm_start_time, storm_end_time):
-            storm_start_time_str = storm_start_time.strftime("%Y-%m-%d")
-            storm_end_time_str = storm_end_time.strftime("%Y-%m-%d")
-            print(f"storm start time: {storm_start_time_str}, storm end time: {storm_end_time_str}")
-            print(f"satellite: {satellite}")
-            process_satellite_for_date_range(satellite, storm_start_time_str, storm_end_time_str)
-
-            sp3_ephem_df = sp3_ephem_to_df(satellite, storm_start_time_str)
-            force_model_config = {'90x90gravity': True, '3BP': True, 'solid_tides': True,
-                                  'ocean_tides': True, 'knocke_erp': True, 'relativity': True, 'SRP': True}
+        # Determine the output file path for the density estimates
+        density_output_file = construct_file_path(satellite, storm_name, "density_estimates.csv")
+        last_density_time = find_last_density_timestamp(density_output_file)
+        
+        sp3_ephem_df = sp3_ephem_to_df(satellite, storm_start_time.strftime("%Y-%m-%d"))
+        force_model_config = {'90x90gravity': True, '3BP': True, 'solid_tides': True,
+                              'ocean_tides': True, 'knocke_erp': True, 'relativity': True, 'SRP': True}
+        
+        # Filter the ephemeris data to only include times after the last computed density
+        if last_density_time is not None:
+            sp3_ephem_df = sp3_ephem_df[sp3_ephem_df['UTC'] > last_density_time]
+        
+        if not sp3_ephem_df.empty:
             # Interpolate the ephemeris data to desired resolution (0.01S)
-            print(f"head of sp3_ephem_df: {sp3_ephem_df.head()}")
             interp_ephemeris_df = interpolate_positions(sp3_ephem_df, '0.01S')
             # Numerically differentiate the interpolated ephemeris data to get acceleration
             velacc_ephem = calculate_acceleration(interp_ephemeris_df, '0.01S', filter_window_length=21, filter_polyorder=7)
             # Perform density inversion
-            print(f"length of velacc_ephem: {len(velacc_ephem)}")
-            density_df = density_inversion(satellite, velacc_ephem, 'accx', 'accy', 'accz', force_model_config, models_to_query=[None], density_freq='360S')
+            density_df = density_inversion(satellite, velacc_ephem, 'accx', 'accy', 'accz', force_model_config, models_to_query=[None], density_freq='60S') # The frequency you select will drastically change compute time.
             
-            # Save or append density inversion result to the output file
-            density_output_file = construct_file_path(satellite, storm_name, "density_estimates.csv")
-            os.makedirs(os.path.dirname(density_output_file), exist_ok=True)
-            if os.path.exists(density_output_file):
-                density_df.to_csv(density_output_file, mode='a', header=False, index=False)
-            else:
-                density_df.to_csv(density_output_file, index=False)
+            # Append the new density data while avoiding duplicates
+            append_density_data(density_df, density_output_file)
+            
+            # Load the density estimates CSV into a DataFrame
+            density_estimates_df = pd.read_csv(density_output_file, parse_dates=['UTC'])
+            # Generate the path to the storm folder to save the plot to
+            arglat_plot_path_storm_folder = construct_file_path(satellite, storm_name, "arglat_latest_plot")
+            plot_arglat_density_and_kp([density_estimates_df], moving_avg_minutes=45, sat_name=satellite, save_path=arglat_plot_path_storm_folder)
+            lineplot_path_storm_folder = construct_file_path(satellite, storm_name, "lineplot_latest_plot")
+            plot_density_and_kp([density_estimates_df], moving_avg_minutes=45, sat_name=satellite, save_path=lineplot_path_storm_folder)
         else:
-            print(f"Failed to download SP3 data for {satellite}. Will retry in the next cycle.")
+            print(f"No new data to process for {satellite} since last density computation.")
 
 # Main script execution
 def main():
     update_kp_ap_Ap_SN_F107()
     current_kp = get_current_kp_index()
-    current_kp = 6  # For testing
-    print(f"Current Kp index is {current_kp}")
+    print(f"Actual current Kp index is {current_kp}")
+    current_kp = 5.3 # For testing purposes
 
     if current_kp >= Kp_THRESHOLD:
         handle_storm()
@@ -143,5 +155,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-#TODO: Delete the local SP3 files after the storm has ended (but keep the ephemeris)
