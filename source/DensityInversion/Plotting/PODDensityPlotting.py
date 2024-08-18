@@ -505,22 +505,21 @@ if __name__ == "__main__":
     
     # # Base directory for storm analysis
     base_dir = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis/"
-    # # List of satellite names
-    sat_names = ["CHAMP"] #"GRACE-FO-A", "TerraSAR-X", "CHAMP"
+    # # List of satellite names you want to generate plots for
+    sat_names = ["CHAMP"] #"GRACE-FO-A", "TerraSAR-X"
 
     for sat_name in sat_names:
         storm_analysis_dir = os.path.join(base_dir, sat_name)
         
-    #     # Check if the directory exists before listing files
+         # Check if the directory exists before listing files
         if os.path.exists(storm_analysis_dir):
             for storm_file in os.listdir(storm_analysis_dir):
-    #             # Form the full path to the storm file
+                # Form the full path to the storm file
                 storm_file_path = os.path.join(storm_analysis_dir, storm_file)
-                
                 # Check if it's actually a file
                 if os.path.isfile(storm_file_path):
                     storm_df = pd.read_csv(storm_file_path) 
-    #                 # density_compare_scatter(storm_df, 45, sat_name)
+                    # density_compare_scatter(storm_df, 45, sat_name)
                     plot_densities_and_indices([storm_df], 23, sat_name)
 
     # base_dir = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis/"

@@ -9,6 +9,7 @@ from .PODDensity import density_inversion
 # Define paths and constants
 BASE_DIR = "output/DensityInversion/PODDensityInversion/Data"
 SATELLITES = ["GRACE-FO-A", "TerraSAR-X"]
+Kp_THRESHOLD = 5
 
 # Function to generate storm name based on the start date
 def generate_storm_name(start_time):
@@ -23,31 +24,30 @@ def read_storm_status(satellite):
     storm_status_file = construct_file_path(satellite, "", "storm_status.txt")
     if os.path.exists(storm_status_file):
         with open(storm_status_file, "r") as file:
-            start_time_str = file.readline().strip()
+            data = file.readlines()
+            start_time_str = data[0].strip()
+            kp_history = [(datetime.datetime.strptime(line.split(',')[0].strip(), "%Y-%m-%d %H:%M:%S"),
+                           float(line.split(',')[1].strip())) for line in data[1:]]
             start_time = datetime.datetime.strptime(start_time_str, "%Y-%m-%d %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
             storm_name = generate_storm_name(start_time)
-            return start_time, storm_name
-    return None, None
+            return start_time, storm_name, kp_history
+    return None, None, []
 
-# Function to update storm status file
-def update_storm_status(satellite, start_time):
+# Function to update storm status file with current Kp index
+def update_storm_status(satellite, start_time, kp_index):
     storm_name = generate_storm_name(start_time)
     storm_status_file = construct_file_path(satellite, "", "storm_status.txt")
     os.makedirs(os.path.dirname(storm_status_file), exist_ok=True)
-    with open(storm_status_file, "w") as file:
-        file.write(start_time.strftime("%Y-%m-%d %H:%M:%S"))
+    with open(storm_status_file, "a") as file:
+        file.write(f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}, {kp_index}\n")
 
 # Function to check if the storm is still ongoing
-def is_storm_ongoing():
-    kp_history = []
+def is_storm_ongoing(kp_history):
     now = datetime.datetime.now(datetime.timezone.utc)
-    for hour_offset in range(0, 12 * 3, 3):
-        kp_time = now - datetime.timedelta(hours=hour_offset)
-        kp_index = get_current_kp_index()
-        kp_history.append(kp_index)
-        if kp_index >= 5:
-            return True
-    return all(kp < 5 for kp in kp_history)
+    kp_history = [(time, kp) for time, kp in kp_history if now - time <= datetime.timedelta(hours=12)]
+    if any(kp >= Kp_THRESHOLD for _, kp in kp_history):
+        return True
+    return False
 
 # Function to verify if SP3 data has been downloaded successfully
 def verify_sp3_download(satellite, storm_start_time, storm_end_time):
@@ -77,12 +77,12 @@ def verify_sp3_download(satellite, storm_start_time, storm_end_time):
 # Function to perform the workflow if a storm is ongoing
 def handle_storm():
     for satellite in SATELLITES:
-        storm_start_time, storm_name = read_storm_status(satellite)
+        storm_start_time, storm_name, kp_history = read_storm_status(satellite)
         
         if storm_start_time is None:
             storm_start_time = datetime.datetime.now(datetime.timezone.utc)
             storm_name = generate_storm_name(storm_start_time)
-            update_storm_status(satellite, storm_start_time)
+            update_storm_status(satellite, storm_start_time, get_current_kp_index())
         
         # Determine the start and end dates for SP3 data download
         storm_end_time = datetime.datetime.now(datetime.timezone.utc)
@@ -96,17 +96,21 @@ def handle_storm():
         if verify_sp3_download(satellite, storm_start_time, storm_end_time):
             storm_start_time_str = storm_start_time.strftime("%Y-%m-%d")
             storm_end_time_str = storm_end_time.strftime("%Y-%m-%d")
+            print(f"storm start time: {storm_start_time_str}, storm end time: {storm_end_time_str}")
+            print(f"satellite: {satellite}")
             process_satellite_for_date_range(satellite, storm_start_time_str, storm_end_time_str)
+
             sp3_ephem_df = sp3_ephem_to_df(satellite, storm_start_time_str)
             force_model_config = {'90x90gravity': True, '3BP': True, 'solid_tides': True,
                                   'ocean_tides': True, 'knocke_erp': True, 'relativity': True, 'SRP': True}
-            #interpolate the ephemeris data to desired resolution (0.01S)
+            # Interpolate the ephemeris data to desired resolution (0.01S)
             print(f"head of sp3_ephem_df: {sp3_ephem_df.head()}")
             interp_ephemeris_df = interpolate_positions(sp3_ephem_df, '0.01S')
-            #Numerically differentiate the interpolated ephemeris data to get acceleration
+            # Numerically differentiate the interpolated ephemeris data to get acceleration
             velacc_ephem = calculate_acceleration(interp_ephemeris_df, '0.01S', filter_window_length=21, filter_polyorder=7)
-            #Perform density inversion
-            density_df = density_inversion(satellite, velacc_ephem, 'accx', 'accy', 'accz', force_model_config)
+            # Perform density inversion
+            print(f"length of velacc_ephem: {len(velacc_ephem)}")
+            density_df = density_inversion(satellite, velacc_ephem, 'accx', 'accy', 'accz', force_model_config, models_to_query=[None], density_freq='360S')
             
             # Save or append density inversion result to the output file
             density_output_file = construct_file_path(satellite, storm_name, "density_estimates.csv")
@@ -125,12 +129,12 @@ def main():
     current_kp = 6  # For testing
     print(f"Current Kp index is {current_kp}")
 
-    if current_kp >= 5:
+    if current_kp >= Kp_THRESHOLD:
         handle_storm()
     else:
         for satellite in SATELLITES:
-            storm_start_time, storm_name = read_storm_status(satellite)
-            if storm_start_time and not is_storm_ongoing():
+            storm_start_time, storm_name, kp_history = read_storm_status(satellite)
+            if storm_start_time and not is_storm_ongoing(kp_history):
                 # Storm has ended, so clear the storm status
                 storm_status_file = construct_file_path(satellite, "", "storm_status.txt")
                 if os.path.exists(storm_status_file):

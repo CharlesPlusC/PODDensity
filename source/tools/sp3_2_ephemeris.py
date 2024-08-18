@@ -49,19 +49,31 @@ def read_sp3_gz_file(sp3_gz_file_path):
     os.remove(temp_file_path)
     return df
 
-def process_sp3_files_for_range(base_path, sat_name, start_date, end_date):
+def process_sp3_files_for_range(base_path, sat_name, start_date, end_date, sat_list_path="misc/sat_list.json"):
     all_dataframes = []
     start_date = datetime.strptime(start_date, "%Y-%m-%d")
     end_date = datetime.strptime(end_date, "%Y-%m-%d")
 
-    sp3_c_code = sat_name.lower().replace('-', '')
+    # Load the satellite info from the JSON file
+    with open(sat_list_path, 'r') as file:
+        sat_dict = json.load(file)
+
+    if sat_name not in sat_dict:
+        print(f"Satellite {sat_name} not found in satellite list.")
+        return []
+
+    sp3_c_code = sat_dict[sat_name]['sp3-c_code']
     satellite_path = os.path.join(base_path, sp3_c_code)
-    
+
+    print(f"Processing SP3 files for {sat_name} from {start_date} to {end_date}")
+    print(f"Satellite path: {satellite_path}")
+
     for single_date in (start_date + timedelta(n) for n in range((end_date - start_date).days + 1)):
         year_folder = os.path.join(satellite_path, str(single_date.year))
         day_of_year = single_date.strftime("%j")
         day_folder = os.path.join(year_folder, day_of_year)
         for sp3_gz_file in glob.glob(f"{day_folder}/*.sp3.gz"):
+            print(f"Processing {sp3_gz_file}")
             df = read_sp3_gz_file(sp3_gz_file)
             df['Time'] = pd.to_datetime(df['Time'])
             all_dataframes.append(df)
@@ -178,6 +190,7 @@ def process_satellite_for_date_range(satellite, start_date, end_date, sat_list_p
         return
 
     sp3_dataframes = process_sp3_files_for_range(sp3_files_path, satellite, start_date, end_date)
+    print(f"Processed {len(sp3_dataframes)} dataframes for {satellite}")
 
     for df_index, df in enumerate(sp3_dataframes):
         print(f"Processing {satellite}_{df_index}")
