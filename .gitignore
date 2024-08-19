@@ -5,5 +5,4 @@
 *.ini
 *.DS_Store
 *.gitingore
-*orekit-data.zip
 *.sp3.gz

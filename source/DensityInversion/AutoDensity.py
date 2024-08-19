@@ -2,9 +2,10 @@ import datetime
 import os
 import pandas as pd
 import orekit
-orekit.pyhelpers.download_orekit_data_curdir("misc")
+from orekit.pyhelpers import setup_orekit_curdir
+orekit.pyhelpers.download_orekit_data_curdir()
 vm = orekit.initVM()
-orekit.pyhelpers.setup_orekit_curdir("misc/orekit-data.zip")
+setup_orekit_curdir()
 from ..tools.SWIndices import get_current_kp_index, update_kp_ap_Ap_SN_F107
 from ..tools.utilities import interpolate_positions, calculate_acceleration
 from ..tools.Get_SP3_from_GFZ_FTP import download_sp3
