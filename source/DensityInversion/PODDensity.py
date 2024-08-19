@@ -1,9 +1,9 @@
 import orekit
 from orekit.pyhelpers import setup_orekit_curdir, download_orekit_data_curdir
 
-download_orekit_data_curdir("misc")
-vm = orekit.initVM()
+# download_orekit_data_curdir("misc")
 setup_orekit_curdir("misc/orekit-data.zip")
+vm = orekit.initVM()
 
 import os
 from ..tools.utilities import project_acc_into_HCL, get_satellite_info, interpolate_positions, calculate_acceleration
