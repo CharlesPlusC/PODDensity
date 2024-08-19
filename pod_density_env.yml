@@ -15,12 +15,10 @@ dependencies:
   - sgp4 
   - pyproj
   - orekit
-  - netCDF4s
   - astropy
-  - spacetrack
   - requests
   - pandas
   - plotly
-  - kaleido
-  - sp3
   - seaborn
+  - pip:
+      - sp3
