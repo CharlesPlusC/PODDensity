@@ -17,7 +17,7 @@ source $VENV_DIR/bin/activate
 
 # Run the Python script and redirect output to log file
 cd $SCRIPT_DIR
-python3 -m source.DensityInversion.AutoDensity > $LOG_FILE 2>&1
+$VENV_DIR/python -m source.DensityInversion.AutoDensity > $LOG_FILE 2>&1
 
 # Check if the script was successful
 if [ $? -eq 0 ]; then
@@ -29,7 +29,7 @@ fi
 # Deactivate virtual environment
 deactivate
 
-# Send email notification
+# Send email notification using sendmail
 SUBJECT="Density Inversion Job - $STATUS"
 MAIL_BODY="The density inversion job completed with status: $STATUS.\n\nLog file: $LOG_FILE\n\n-- Log Output --\n$(tail -n 100 $LOG_FILE)"
-echo -e $MAIL_BODY | mail -s "$SUBJECT" $EMAIL
+echo -e "Subject: $SUBJECT\n\n$MAIL_BODY" | /usr/sbin/sendmail $EMAIL
