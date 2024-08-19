@@ -4,7 +4,7 @@
 SCRIPT_DIR="/home/zcesccc/PODDensity/"
 LOG_DIR="/home/zcesccc/output/logs"
 EMAIL="zcesccc@ucl.ac.uk"
-VENV_DIR="/home/zcesccc/.conda/envs/pod_density_env/bin/python"
+VENV_DIR="/home/zcesccc/.conda/envs/pod_density_env"
 
 # Create log directory if it doesn't exist
 mkdir -p $LOG_DIR
@@ -17,7 +17,7 @@ source $VENV_DIR/bin/activate
 
 # Run the Python script and redirect output to log file
 cd $SCRIPT_DIR
-$VENV_DIR/python -m source.DensityInversion.AutoDensity > $LOG_FILE 2>&1
+python3 -m source.DensityInversion.AutoDensity > $LOG_FILE 2>&1
 
 # Check if the script was successful
 if [ $? -eq 0 ]; then
@@ -27,7 +27,7 @@ else
 fi
 
 # Deactivate virtual environment
-deactivate
+conda deactivate
 
 # Send email notification using sendmail
 SUBJECT="Density Inversion Job - $STATUS"
