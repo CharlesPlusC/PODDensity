@@ -113,8 +113,16 @@ def handle_storm():
         if last_density_time is not None:
             sp3_ephem_df = sp3_ephem_df[sp3_ephem_df['UTC'] > last_density_time]
         
-        if not sp3_ephem_df.empty:
+        #check it is not empty and it is longer than 3
+        if not sp3_ephem_df.empty and len(sp3_ephem_df) > 3:
+            print(f"length of sp3_ephem_df: {len(sp3_ephem_df)}")
             # Interpolate the ephemeris data to desired resolution (0.01S)
+            print(f"head of sp3_ephem_df: {sp3_ephem_df.head()}")
+
+            unique_times_count = sp3_ephem_df['UTC'].nunique()
+            print(f"Number of unique UTC timestamps: {unique_times_count}")
+            print(sp3_ephem_df[['UTC', 'x', 'y', 'z']].head(10))
+
             interp_ephemeris_df = interpolate_positions(sp3_ephem_df, '0.01S')
             # Numerically differentiate the interpolated ephemeris data to get acceleration
             velacc_ephem = calculate_acceleration(interp_ephemeris_df, '0.01S', filter_window_length=21, filter_polyorder=7)

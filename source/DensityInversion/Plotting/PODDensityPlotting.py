@@ -612,7 +612,7 @@ def plot_density_and_kp(data_frames, moving_avg_minutes, sat_name, save_path=Non
         month = density_df.index[len(density_df.index)//2].strftime("%m")
         year = density_df.index[len(density_df.index)//2].strftime("%Y")
         axs[0].set_title(f'Density from Near-Real Time Orbit for: {sat_name}\n Date: {day}-{month}-{year}', fontsize=12)
-        axs[0].set_ylabel('Density (kg/m³)')
+        axs[0].set_ylabel('Density (kg/m³)', color='xkcd:light blue')
         axs[0].set_xlabel('Time (UTC)')
         for label in axs[0].get_xticklabels():
             label.set_rotation(45)
@@ -629,6 +629,9 @@ def plot_density_and_kp(data_frames, moving_avg_minutes, sat_name, save_path=Non
     axs[1].set_xlim(start_time, end_time)
     axs[1].set_xlabel('Time (UTC)', fontsize=12)
     axs[1].grid(True, linestyle='--', linewidth=0.5)
+    for label in axs[1].get_xticklabels():
+        label.set_rotation(45)
+        label.set_horizontalalignment('right')
 
     # Set x-axis limits of the top plot to match the bottom plot
     axs[0].set_xlim(start_time, end_time)

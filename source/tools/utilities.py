@@ -594,13 +594,21 @@ def interpolate_positions(df, fine_freq):
     columns = ['x', 'y', 'z', 'xv', 'yv', 'zv']
     df_interpolated = pd.DataFrame(index=df_resampled.index, columns=columns)
 
+    #print the first 10 values of pos col
+
+    
+
     for pos_col, vel_col in zip(['x', 'y', 'z'], ['xv', 'yv', 'zv']):
         times = df.index.astype(int) / 10**9
         new_times = df_resampled.index.astype(int) / 10**9
 
         df_interpolated[pos_col] = CubicSpline(times, df[pos_col])(new_times)
         df_interpolated[vel_col] = CubicSpline(times, df[vel_col])(new_times)
-
+        # Print the first 10 values of the original position column before interpolation
+        print(f'First 10 values of original {pos_col} column before interpolation:')
+        print(df[pos_col].head(10))
+        print()  # Add a line break for better readability
+        
     df_interpolated.reset_index(inplace=True)
     df_interpolated.rename(columns={'index': 'UTC'}, inplace=True)
 
