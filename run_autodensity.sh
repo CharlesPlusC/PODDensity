@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "Running script: $0"
 
 # Define paths
 SCRIPT_DIR="/home/zcesccc/PODDensity/"
@@ -35,4 +36,4 @@ conda deactivate
 # Send email notification using sendmail
 SUBJECT="Density Inversion Job - $STATUS"
 MAIL_BODY="The density inversion job completed with status: $STATUS.\n\nLog file: $LOG_FILE\n\n-- Log Output --\n$(tail -n 100 $LOG_FILE)"
-echo -e "Subject: $SUBJECT\n\n$MAIL_BODY" | /usr/sbin/sendmail $EMAIL
+echo -e "Subject: $SUBJECT\n\n$MAIL_BODY" | /usr/sbin/sendmail
