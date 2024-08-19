@@ -20,5 +20,6 @@ dependencies:
   - pandas
   - plotly
   - seaborn
+  - scikit-learn
   - pip:
       - sp3

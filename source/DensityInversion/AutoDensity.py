@@ -5,9 +5,6 @@ import orekit
 orekit.pyhelpers.download_orekit_data_curdir("misc")
 vm = orekit.initVM()
 orekit.pyhelpers.setup_orekit_curdir("misc/orekit-data.zip")
-from org.orekit.forces.gravity.potential import GravityFieldFactory
-from org.orekit.utils import Constants
-
 from ..tools.SWIndices import get_current_kp_index, update_kp_ap_Ap_SN_F107
 from ..tools.utilities import interpolate_positions, calculate_acceleration
 from ..tools.Get_SP3_from_GFZ_FTP import download_sp3
