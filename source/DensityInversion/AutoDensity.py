@@ -138,8 +138,8 @@ def handle_storm():
 def main():
     update_kp_ap_Ap_SN_F107()
     current_kp = get_current_kp_index()
-    print(f"Actual current Kp index is {current_kp}")
-    current_kp = 5.3 # For testing purposes
+    print(f"Current Kp index is {current_kp}")
+    # current_kp = 5.3 # For testing purposes
 
     if current_kp >= Kp_THRESHOLD:
         handle_storm()
