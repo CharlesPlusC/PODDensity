@@ -4,7 +4,7 @@
 SCRIPT_DIR="/home/zcesccc/PODDensity/"
 LOG_DIR="/home/zcesccc/output/logs"
 EMAIL="zcesccc@ucl.ac.uk"
-VENV_DIR="/home/zcesccc/.conda/envs/pod_density_env"
+VENV_NAME="pod_density_env"
 
 # Create log directory if it doesn't exist
 mkdir -p $LOG_DIR
@@ -13,11 +13,12 @@ mkdir -p $LOG_DIR
 LOG_FILE="$LOG_DIR/$(date +'%Y%m%d_%H%M%S').log"
 
 # Activate virtual environment
-source $VENV_DIR/bin/activate
+source /shared/ucl/apps/miniconda/4.10.3/etc/profile.d/conda.sh
+conda activate $VENV_NAME
 
 # Run the Python script and redirect output to log file
 cd $SCRIPT_DIR
-python3 -m source.DensityInversion.AutoDensity > $LOG_FILE 2>&1
+python -m source.DensityInversion.AutoDensity > $LOG_FILE 2>&1
 
 # Check if the script was successful
 if [ $? -eq 0 ]; then
