@@ -13,9 +13,9 @@ mkdir -p $LOG_DIR
 LOG_FILE="$LOG_DIR/$(date +'%Y%m%d_%H%M%S').log"
 
 # Ensure conda is initialized
-source /shared/ucl/apps/miniconda3/4.10.3/etc/profile.d/conda.sh
+source /shared/ucl/apps/miniconda/4.10.3/etc/profile.d/conda.sh
 
-# Activate virtual environment
+# Activate the virtual environment
 conda activate $VENV_NAME
 
 # Run the Python script and redirect output to log file
@@ -29,7 +29,7 @@ else
     STATUS="FAILURE"
 fi
 
-# Deactivate virtual environment
+# Deactivate the virtual environment
 conda deactivate
 
 # Send email notification using sendmail
