@@ -12,8 +12,10 @@ mkdir -p $LOG_DIR
 # Log file for this run
 LOG_FILE="$LOG_DIR/$(date +'%Y%m%d_%H%M%S').log"
 
+# Ensure conda is initialized
+source /shared/ucl/apps/miniconda3/4.10.3/etc/profile.d/conda.sh
+
 # Activate virtual environment
-source /shared/ucl/apps/miniconda/4.10.3/etc/profile.d/conda.sh
 conda activate $VENV_NAME
 
 # Run the Python script and redirect output to log file
