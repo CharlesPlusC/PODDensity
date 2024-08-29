@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import orekit
 from orekit.pyhelpers import setup_orekit_curdir
-orekit.pyhelpers.download_orekit_data_curdir()
+# orekit.pyhelpers.download_orekit_data_curdir()
 vm = orekit.initVM()
 setup_orekit_curdir()
 from ..tools.SWIndices import get_current_kp_index, update_kp_ap_Ap_SN_F107

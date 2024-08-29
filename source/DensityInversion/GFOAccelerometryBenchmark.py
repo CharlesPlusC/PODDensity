@@ -44,8 +44,8 @@ def ACT_vs_EDR_vs_POD_NRT_plot(POD_and_ACT_data, EDR_data, NRT_data):
     merged_data['ACT_Density'] = 2 * median_ACT - merged_data['ACT_Density']
     date_of_data = merged_data['UTC'].iloc[0].strftime("%Y-%m-%d")
 
-    # Create a figure with 2 subplots (one for the densities and one for the residuals)
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(11, 10), sharex=True)
+    # Adjust the figure size to make it taller while keeping the width the same
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8.27*1.2, 9.8), sharex=True)
 
     merged_data['ACT_Density'] = -1 * merged_data['ACT_Density']
 
@@ -407,9 +407,9 @@ if __name__ == '__main__':
     POD_and_ACT_data = POD_and_ACT_data.iloc[3:]
     POD_and_ACT_data = POD_and_ACT_data.iloc[:-5]
 
-    act_edr_pod_nrt_stats(POD_and_ACT_data, EDR_data, NRT_data)
+    # act_edr_pod_nrt_stats(POD_and_ACT_data, EDR_data, NRT_data)
     # act_edr_pod_nrt_ASD(POD_and_ACT_data, EDR_data, NRT_data)
-    # ACT_vs_EDR_vs_POD_NRT_plot(POD_and_ACT_data, EDR_data, NRT_data)
+    ACT_vs_EDR_vs_POD_NRT_plot(POD_and_ACT_data, EDR_data, NRT_data)
 
 #     sat_name = "GRACE-FO-A"
 #     force_model_config = {'90x90gravity': True, '3BP': True, 'solid_tides': True, 'ocean_tides': True, 'knocke_erp': True, 'relativity': True, 'SRP': True}
