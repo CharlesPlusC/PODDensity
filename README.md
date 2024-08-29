@@ -5,7 +5,7 @@
 <h2 align="center">POD Density Inversion</h2>
 
 <p align="center">
-    This repository contains the code accompanying the paper "Real-Time Thermospheric Density Retrieval from Low Earth Orbit Spacecraft Ephemerides During Geomagnetic Storms" by Charles Constant, Santosh Bhattarai, Indigo Brownhall, Anasuya Aruliah, and Marek Zeibart (2024).
+    This repository contains the code accompanying the paper "Near-Real Time Thermospheric Density Retrieval from Precise Low Earth Orbit Spacecraft Ephemerides During Geomagnetic Storms" by Charles Constant, Santosh Bhattarai, Indigo Brownhall, Anasuya Aruliah, and Marek Zeibart (2024).
   <br />
   <a href="https://github.com/CharlesPlusC/PODDensity/issues">Report a Bug</a>
   ·
