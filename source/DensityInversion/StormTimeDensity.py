@@ -1,10 +1,10 @@
 #Files to run the density inversion for the storms outlined in the selected_storms_v1.txt file
-# the select_storms function in SWIndices.py is used to select the storms
+# the select_storms() function in SWIndices.py is used to select the storms
+
 from ..tools.Get_SP3_from_GFZ_FTP import download_sp3
 from ..tools.sp3_2_ephemeris import sp3_ephem_to_df
 from .PODDensity import density_inversion
 from ..tools.utilities import interpolate_positions, calculate_acceleration
-
 import os
 import json
 import ftplib
