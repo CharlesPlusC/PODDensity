@@ -15,11 +15,19 @@ from .PODDensity import density_inversion
 import numpy as np
 import datetime
 import matplotlib.dates as mdates
-
+from scipy.signal import welch
 # podaac-data-downloader -c GRACEFO_L1B_ASCII_GRAV_JPL_RL04 -d ./GRACE-FO_A_DATA -sd 2023-05-10T06:00:00Z -ed 2023-05-11T23:59:59Z -e ".*" --verbose
 # podaac-data-downloader -c GRACEFO_L1B_ASCII_GRAV_JPL_RL04 -d ./GRACE-FO_A_DATA -sd 2024-05-10T06:00:00Z -ed 2024-05-12T23:59:59Z -e ".*" --verbose
 
 def ACT_vs_EDR_vs_POD_NRT_plot(POD_and_ACT_data, EDR_data, NRT_data):
+    """
+    Plot a comparison between ACT, EDR, POD, and NRT data for GRACE-FO-A satellite.
+
+    Parameters:
+        POD_and_ACT_data (pd.DataFrame): DataFrame containing POD and ACT density data.
+        EDR_data (pd.DataFrame): DataFrame containing EDR density data.
+        NRT_data (pd.DataFrame): DataFrame containing NRT density data.
+    """
     POD_and_ACT_data['UTC'] = pd.to_datetime(POD_and_ACT_data['UTC'])
     EDR_data['UTC'] = pd.to_datetime(EDR_data['UTC'])
     NRT_data['UTC'] = pd.to_datetime(NRT_data['UTC'])
@@ -130,7 +138,14 @@ def ACT_vs_EDR_vs_POD_NRT_plot(POD_and_ACT_data, EDR_data, NRT_data):
     plt.show()
 
 def act_edr_pod_nrt_stats(POD_and_ACT_data, EDR_data, NRT_data):
-    # Load and process data
+    """
+    Calculate and plot statistics (MAPE and RMSE) for ACT, EDR, POD, and NRT data.
+
+    Parameters:
+        POD_and_ACT_data (pd.DataFrame): DataFrame containing POD and ACT density data.
+        EDR_data (pd.DataFrame): DataFrame containing EDR density data.
+        NRT_data (pd.DataFrame): DataFrame containing NRT density data.
+    """
     POD_and_ACT_data['UTC'] = pd.to_datetime(POD_and_ACT_data['UTC'])
     EDR_data['UTC'] = pd.to_datetime(EDR_data['UTC'])
     NRT_data['UTC'] = pd.to_datetime(NRT_data['UTC'])
@@ -218,9 +233,7 @@ def act_edr_pod_nrt_stats(POD_and_ACT_data, EDR_data, NRT_data):
     plt.show()
 
 def act_edr_pod_nrt_ASD(POD_and_ACT_data, EDR_data, NRT_data):
-    from scipy.signal import welch
-    import matplotlib.pyplot as plt
-    import numpy as np
+
 
     POD_and_ACT_data['UTC'] = pd.to_datetime(POD_and_ACT_data['UTC'])
     EDR_data['UTC'] = pd.to_datetime(EDR_data['UTC'])
@@ -382,12 +395,12 @@ def ACT_vs_POD(acc_data_path, quat_data_path, sat_name="GRACE-FO-A", max_time=24
     merged_df.to_csv(f"output/DensityInversion/PODDensityInversion/Data/{sat_name}/Accelerometer_benchmark/{timenow}_bench.csv", index=False)
 
 if __name__ == '__main__':
+    #Run this script from root using the following command:
+    # python -m source.DensityInversion.GFOAccelerometryBenchmark
 
-    # File paths
+    # Uncomment the following to run the ACT vs POD benchmark
     # acc_data_path = "external/GFOInstrumentData/ACT1B_2023-05-06_C_04.txt"
     # quat_data_path = "external/GFOInstrumentData/SCA1B_2023-05-06_C_04.txt"
-
-    # # Call the function with appropriate parameters
     # ACT_vs_POD(
     #     acc_data_path=acc_data_path,
     #     quat_data_path=quat_data_path,
@@ -396,66 +409,20 @@ if __name__ == '__main__':
     #     calculate_rho_from_vel=True,
     #     models_to_query=['JB08', 'DTM2000', 'NRLMSISE00'])
 
+    #This will load the data from the steps above and plot the results
     POD_and_ACT_data = pd.read_csv("output/DensityInversion/PODDensityInversion/Plots/GRACE-FO-A/Accelerometer_benchmark/ACTvsEDRvsPOD/ACT_vs_POD_2023_05_06_GFOA.csv")
     EDR_data = pd.read_csv("output/DensityInversion/PODDensityInversion/Plots/GRACE-FO-A/Accelerometer_benchmark/ACTvsEDRvsPOD/EDR_2023_05_06_GFOA.csv")
     NRT_data = pd.read_csv("output/DensityInversion/PODDensityInversion/Plots/GRACE-FO-A/Accelerometer_benchmark/ACTvsEDRvsPOD/NRT_2023_05_06_GFOA.csv")
     median_NRT = NRT_data['Computed Density'].median()
     NRT_data['Computed Density'] = NRT_data['Computed Density'].apply(lambda x: median_NRT if x < -2e-12 else x)
     POD_and_ACT_data['POD_Density'] = POD_and_ACT_data['POD_Density'].apply(lambda x: median_NRT if x < -2e-12 else x)
+
+    # Remove the first 3 and last 5 rows of the data to deal with the rolling window effect
     NRT_data = NRT_data.iloc[3:]
     NRT_data = NRT_data.iloc[:-5]
     POD_and_ACT_data = POD_and_ACT_data.iloc[3:]
     POD_and_ACT_data = POD_and_ACT_data.iloc[:-5]
 
-    # act_edr_pod_nrt_stats(POD_and_ACT_data, EDR_data, NRT_data)
-    # act_edr_pod_nrt_ASD(POD_and_ACT_data, EDR_data, NRT_data)
+    act_edr_pod_nrt_stats(POD_and_ACT_data, EDR_data, NRT_data)
+    act_edr_pod_nrt_ASD(POD_and_ACT_data, EDR_data, NRT_data)
     ACT_vs_EDR_vs_POD_NRT_plot(POD_and_ACT_data, EDR_data, NRT_data)
-
-#     sat_name = "GRACE-FO-A"
-#     force_model_config = {'90x90gravity': True, '3BP': True, 'solid_tides': True, 'ocean_tides': True, 'knocke_erp': True, 'relativity': True, 'SRP': True}
-#     max_time = 24
-#     acc_data_path = "external/GFOInstrumentData/ACT1B_2023-05-06_C_04.txt"
-#     quat_data_path = "external/GFOInstrumentData/SCA1B_2023-05-06_C_04.txt"
-#     inertial_gfo_data = get_gfo_inertial_accelerations(acc_data_path, quat_data_path)
-#     inertial_gfo_data['UTC'] = pd.to_datetime(inertial_gfo_data['utc_time'])
-#     inertial_gfo_data.drop(columns=['utc_time'], inplace=True)
-
-#     intertial_t0 = inertial_gfo_data['UTC'].iloc[0]
-#     inertial_act_gfo_data = inertial_gfo_data[(inertial_gfo_data['UTC'] >= intertial_t0) & (inertial_gfo_data['UTC'] <= intertial_t0 + pd.Timedelta(hours=max_time))]
-#     sp3_ephemeris_df = sp3_ephem_to_df(satellite="GRACE-FO-A", date="2023-05-06")
-#     sp3_ephemeris_df['UTC'] = pd.to_datetime(sp3_ephemeris_df['UTC'])
-#     sp3_ephemeris_df = sp3_ephemeris_df[(sp3_ephemeris_df['UTC'] >= intertial_t0) & (sp3_ephemeris_df['UTC'] <= intertial_t0 + pd.Timedelta(hours=max_time))]
-
-#     inertial_act_gfo_ephem = pd.merge(inertial_act_gfo_data, sp3_ephemeris_df, on='UTC', how='inner')
-#     print(f"head of inertial_act_gfo_ephem: {inertial_act_gfo_ephem.head()}")
-#     print(f"columns of inertial_act_gfo_ephem: {inertial_act_gfo_ephem.columns}")
-
-#     act_x_acc_col, act_y_acc_col, act_z_acc_col = 'inertial_x_acc', 'inertial_y_acc', 'inertial_z_acc'
-#     rho_from_ACT = density_inversion(sat_name, inertial_act_gfo_ephem, 
-#                                      act_x_acc_col, act_y_acc_col, act_z_acc_col, 
-#                                      force_model_config, nc_accs=True, 
-#                                      models_to_query=['JB08', "DTM2000", "NRLMSISE00"], density_freq='15S')
-#     rho_from_ACT.rename(columns={'Computed Density': 'ACT_Density'}, inplace=True)
-
-#     print(f"head of rho_from_ACT: {rho_from_ACT.head()}")
-
-#     interp_ephemeris_df = interpolate_positions(sp3_ephemeris_df, '0.01S')
-#     sp3_velacc_ephem = calculate_acceleration(interp_ephemeris_df, '0.01S', filter_window_length=21, filter_polyorder=7)
-#     sp3_vel_acc_col_x, sp3_vel_acc_col_y, sp3_vel_acc_col_z = 'vel_acc_x', 'vel_acc_y', 'vel_acc_z'
-#     rho_from_vel = density_inversion(sat_name, sp3_velacc_ephem, 
-#                                     sp3_vel_acc_col_x, sp3_vel_acc_col_y, sp3_vel_acc_col_z, 
-#                                     force_model_config=force_model_config, nc_accs=False, 
-#                                     models_to_query=[None], density_freq='15S')
-#     rho_from_vel.rename(columns={'Computed Density': 'POD_Density'}, inplace=True)
-
-#     print(f"head of rho_from_vel: {rho_from_vel.head()}")
-
-#     merged_df = pd.merge(rho_from_ACT[['UTC', 'ACT_Density', 'JB08', 'DTM2000', 'NRLMSISE00']], rho_from_vel[['UTC', 'POD_Density']], on='UTC', how='inner')
-
-#     timenow = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-#     merged_df.dropna(inplace=True)
-
-#     print(f"head of merged_df: {merged_df.head()}")
-#     print(f"columns of merged_df: {merged_df.columns}")
-#     merged_df.to_csv(f"output/DensityInversion/PODDensityInversion/Plots/GRACE-FO-A/Accelerometer_benchmark/{timenow}_bench.csv", index=False)
-
