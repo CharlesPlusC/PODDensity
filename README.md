@@ -1,8 +1,5 @@
-[![HitCount](https://hits.dwyl.com/CharlesPlusC/ERP_tools.svg?style=flat-square&show=unique)](http://hits.dwyl.com/CharlesPlusC/PODDensity)
-
 <p align="center">
   <img src="misc/UCL-logo-black.jpg" alt="University Logo" width="200"><br/>
-  <img src="misc/SGNL_logo_ColouronBlack.jpg" alt="Research Group Logo" width="200">
 </p>
 
 <h2 align="center">POD Density Inversion</h2>
