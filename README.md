@@ -60,7 +60,7 @@ This repository allows the reproduction of all figures included in the paper, al
 ### Time Series Benchmarking of All Studied Methods Against Accelerometer Data
 
 <p align="center">
-  <img src="output/DensityInversion/PODDensityInversion/Plots/GRACE-FO-A/Accelerometer_benchmark/ACTvsEDRvsPOD/ACT_EDR_POD_NRT_Comparison_2024-08-08_09-53-52.png" width="50%" height="50%">
+  <img src="output/DensityInversion/PODDensityInversion/Plots/GRACE-FO-A/Accelerometer_benchmark/ACTvsEDRvsPOD/ACT_EDR_POD_NRT_Comparison_2024-08-29_08-45-35.png" width="50%" height="50%">
 </p>
 
 ### Amplitude Spectral Density of Accelerometer Data for Each Method
