@@ -423,6 +423,7 @@ if __name__ == '__main__':
     POD_and_ACT_data = POD_and_ACT_data.iloc[3:]
     POD_and_ACT_data = POD_and_ACT_data.iloc[:-5]
 
+    #the following functions will plot the data
     act_edr_pod_nrt_stats(POD_and_ACT_data, EDR_data, NRT_data)
     act_edr_pod_nrt_ASD(POD_and_ACT_data, EDR_data, NRT_data)
     ACT_vs_EDR_vs_POD_NRT_plot(POD_and_ACT_data, EDR_data, NRT_data)
