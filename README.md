@@ -12,10 +12,6 @@
   <a href="https://github.com/CharlesPlusC/PODDensity/pulls">Request Features</a>
 </p>
 
-<p align="center">
-  <img src="https://visitor-badge.glitch.me/badge?page_id=CharlesPlusC.PODDensity" alt="visitor badge"/>
-</p>
-
 ## Introduction
 
 This repository provides a suite of tools for the processing and analysis of precise ephemeris data to derive thermospheric densities during geomagnetic storms.
