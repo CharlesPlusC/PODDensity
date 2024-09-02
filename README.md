@@ -21,9 +21,9 @@ This repository provides a suite of tools for the processing and analysis of pre
 - **Data Acquisition**: Automated scripts to fetch SP3 orbit files from the GFZ Potsdam FTP server, convert them into continuous ephemerides, and transform the data to the inertial frame (J2000/EME2000). See `Get_SP3_from_GFZ_FTP.py` for implementation details.
 - **Density Inversion**: Core routines to perform density inversion from satellite ephemerides, as detailed in `source/DensityInversion/PODDensity.py`.
 - **Branch Structure**:
-  - The `main` branch includes the complete codebase and precomputed density results for satellites such as CHAMP, TerraSAR-X, and GRACE-FO-A, along with scripts to reproduce all results in the paper.
+  - The `main` branch includes the complete codebase and precomputed density results for the satellites studied: CHAMP, TerraSAR-X, and GRACE-FO-A. Also contains with scripts to reproduce all results in the paper.
   - The `lite` branch mirrors the `main` branch but excludes the `SWindices` directory (~2 GB of space weather index data), which is primarily used for index plotting.
-- **Batch Processing**: The `Storm Time Density` script enables batch processing of multiple geomagnetic storms, facilitating high-throughput density inversion on compute clusters.
+- **Batch Processing**: The `StormTimeDensity.py` script enables batch processing of multiple geomagnetic storms, facilitating density inversion on compute clusters.
 - **Space Weather Indices**: Scripts for identifying and categorizing geomagnetic storms based on space weather indices are available in `SWIndices.py`, which includes methods to process data for the entire operational lifetime of each satellite.
 
 ## Reproducing the Paper's Results
@@ -107,8 +107,7 @@ To set up the environment required to run the code, follow these steps:
 
 ## Invitation to Collaborate
 
-We welcome and encourage contributions and collaborations from researchers, engineers, and enthusiasts who are interested in advancing the field of thermospheric density retrieval and space weather modeling. Whether you have suggestions for improvements, want to extend the existing functionality, or have ideas for new features, your input is invaluable to the ongoing development of this project.
-
+We welcome and encourage contributions and collaborations from researchers, engineers, and enthusiasts who are interested in advancing the fields of space weather modeling and satellite operations.
 If you would like to contribute or collaborate, please feel free to fork the repository and submit a pull request, or raise an issue with a description of your proposal or question. I will review and respond to all submissions and inquiries as promptly as possible.
 
 Thank you for your interest and support!
