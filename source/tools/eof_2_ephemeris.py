@@ -1,9 +1,3 @@
-#read in .EOF data to pandas dataframe
-#convert pos/vels to EME2000
-# Write out ephemeris to .txt file 
-# 2001-04-11 09:59:47.000000 -4015.0921448672484 -4840.464357089205 -2691.41391220233 2.2188680290067504 2.057530378290252 -6.992561959392307
-# 0.5 0.5 0.5 0.001 0.001 0.001
-
 #TODO: use the Sentinel API to get the ephemeris data. Currently I'm just getting it from the Coperincus website :) 
 
 import os
