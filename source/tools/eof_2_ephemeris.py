@@ -127,6 +127,8 @@ def convert_to_eme2000_and_write(ephemeris_dataframes, satellite):
         # Write ephemeris to file
         file_name = f"{satellite}_{df_index}"
         print(f"Writing ephemeris file for {file_name}")
+        #make UTC the index
+        df.set_index('UTC', inplace=True)
         write_ephemeris_file(file_name, df, sat_dict[satellite])
 
 # Dictionary to store dataframes for each spacecraft
