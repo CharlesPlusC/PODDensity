@@ -159,22 +159,3 @@ for spacecraft in spacecraft_folders:
 # Apply conversion for each spacecraft's ephemeris dataframes
 for spacecraft, dfs in spacecraft_dataframes.items():
     convert_to_eme2000_and_write(dfs, spacecraft)
-
-
-# # Example: To access the dataframe for S1A (Sentinel-1A)
-# s1a_ephemeris_dfs = spacecraft_dataframes.get('S1A')
-
-# # You can display or save the dataframes, for example:
-# for spacecraft, dfs in spacecraft_dataframes.items():
-#     for i, df in enumerate(dfs):
-#         print(f"Spacecraft: {spacecraft}, Ephemeris Segment {i+1}")
-#         print(df.head())  # Show first few rows of the dataframe
-
-#         # Plot the norm of the position vector for each segment
-#         df['R'] = (df['X']**2 + df['Y']**2 + df['Z']**2)**0.5 / 1000  # Convert to kilometers
-#         import matplotlib.pyplot as plt
-#         plt.plot(df['UTC'], df['R'])
-#         plt.xlabel('Time')
-#         plt.ylabel('Position Norm (km)')
-#         plt.title(f"{spacecraft} Position Norm (Segment {i+1})")
-#         plt.show()
