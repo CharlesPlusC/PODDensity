@@ -306,4 +306,4 @@ def main(satellite_list=None):
             write_ephemeris_file(file_name, df, sat_dict[base_satellite_name])  
 
 if __name__ == "__main__":
-    main(satellite_list = ['TerraSAR-X', 'TanDEM-X', 'GRACE-FO-A',])
+    main(satellite_list = ['TerraSAR-X'])#, 'GRACE-FO-A'

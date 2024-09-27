@@ -22,5 +22,14 @@
         "cross_section": 1.004,
         "cd": 3.2,
         "cr": 1.5
+    },
+    "Sentinel-1A": {
+        "norad_id": 39634,
+        "sp3-c_code": "L70",
+        "eof_header": "S1A",
+        "mass": 2170.0,
+        "cross_section": 3.9,
+        "cd": 2.2,
+        "cr": 1.5
     }
 }
