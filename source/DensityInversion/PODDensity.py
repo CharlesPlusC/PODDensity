@@ -16,7 +16,6 @@ from .Plotting.PODDensityPlotting import plot_all_storms_scatter, plot_densities
 vm = orekit.initVM()
 setup_orekit_curdir("misc/orekit-data.zip")
 
-
 def density_inversion(sat_name, ephemeris_df, x_acc_col, y_acc_col, z_acc_col, force_model_config, nc_accs=False, models_to_query=['JB08'], density_freq='15S'):
     """
     Perform density inversion.
@@ -119,27 +118,51 @@ def density_inversion(sat_name, ephemeris_df, x_acc_col, y_acc_col, z_acc_col, f
         new_rows_df = pd.DataFrame(rows_list)
         density_inversion_df = pd.concat([density_inversion_df, new_rows_df], ignore_index=True)
 
+    # Save to CSV
+    yyyy_mm_dd = datetime.datetime.strftime(ephemeris_df.index[0], "%Y-%m-%d")
+    density_inversion_df.to_csv(f"output/DensityInversion/PODDensityInversion/Data/{sat_name}/{sat_name}_{yyyy_mm_dd}_density_inversion.csv", index=False)
+
     return density_inversion_df
 
 if __name__ == "__main__":
     # Example usage for a single storm (testing purposes with a small dataset)
-    sp3_ephem_champ = sp3_ephem_to_df("CHAMP", "2005-05-07")
-    sp3_ephem_champ = sp3_ephem_champ.iloc[:1000]  # Keep only first 1000 rows for testing locally (should take around 15/20 minutes to run on a single core)
+    sp3_ephem_gfo = sp3_ephem_to_df("GRACE-FO-A", "2024-05-11")
+    # sp3_ephem = sp3_ephem.iloc[:1000]  # Keep only first 1000 rows for testing locally (should take around 15/20 minutes to run on a single core)
 
     # Force model configuration
-    force_model_config = {
+    force_model_config_gfo = {
         '90x90gravity': True, '3BP': True, 'solid_tides': True,
         'ocean_tides': True, 'knocke_erp': True, 'relativity': True, 'SRP': True
     }
 
     # Interpolate ephemeris data to desired resolution
-    interp_ephemeris_df = interpolate_positions(sp3_ephem_champ, '0.01S')
+    interp_ephemeris_df_gfo = interpolate_positions(sp3_ephem_gfo, '0.01S')
 
     # Calculate acceleration from interpolated ephemeris data
-    velacc_ephem = calculate_acceleration(interp_ephemeris_df, '0.01S', filter_window_length=21, filter_polyorder=7)
+    velacc_ephem_gfo = calculate_acceleration(interp_ephemeris_df_gfo, '0.01S', filter_window_length=21, filter_polyorder=7)
 
     # Perform density inversion
-    density_df = density_inversion("CHAMP", velacc_ephem, 'accx', 'accy', 'accz', force_model_config)
+    density_df_gfo = density_inversion("GRACE-FO-A", velacc_ephem_gfo, 'accx', 'accy', 'accz', force_model_config_gfo, models_to_query=['JB08', 'DTM2000', 'NRLMSISE00'], density_freq='60S')
+
+    # Example usage for a single storm (testing purposes with a small dataset)
+    sp3_ephem_tsx = sp3_ephem_to_df("TerraSAR-X", "2024-05-11")
+    # sp3_ephem = sp3_ephem.iloc[:1000]  # Keep only first 1000 rows for testing locally (should take around 15/20 minutes to run on a single core)
+
+    # Force model configuration
+    force_model_config_tsx = {
+        '90x90gravity': True, '3BP': True, 'solid_tides': True,
+        'ocean_tides': True, 'knocke_erp': True, 'relativity': True, 'SRP': True
+    }
+
+    # Interpolate ephemeris data to desired resolution
+    interp_ephemeris_df_tsx = interpolate_positions(sp3_ephem_tsx, '0.01S')
+
+    # Calculate acceleration from interpolated ephemeris data
+    velacc_ephem_tsx = calculate_acceleration(interp_ephemeris_df_tsx, '0.01S', filter_window_length=21, filter_polyorder=7)
+
+    # Perform density inversion
+    density_df_tsx = density_inversion("TerraSAR-X", velacc_ephem_tsx, 'accx', 'accy', 'accz', force_model_config_tsx, models_to_query=['JB08', 'DTM2000', 'NRLMSISE00'], density_freq='60S')
+
 
     # Plot results
-    plot_densities_and_indices([density_df], moving_avg_minutes=23, sat_name="CHAMP")
+    # plot_densities_and_indices([density_df], moving_avg_minutes=45, sat_name="TerraSAR-X")
