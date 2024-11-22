@@ -23,6 +23,14 @@
         "cd": 3.2,
         "cr": 1.5
     },
+    "GRACE-FO": {
+        "norad_id": 43476,
+        "sp3-c_code": "L64",
+        "mass": 600.2,
+        "cross_section": 1.004,
+        "cd": 3.2,
+        "cr": 1.5
+    },
     "Sentinel-1A": {
         "norad_id": 39634,
         "sp3-c_code": "L70",
