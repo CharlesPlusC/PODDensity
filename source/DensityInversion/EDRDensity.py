@@ -128,7 +128,7 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
         v_rel = np.linalg.norm(v - np.cross(atm_rot, r))
 
         # Density calculation
-        density = 2* drag_work / (3.2 * settings['cross_section'] * v_rel**3)
+        density = drag_work / (3.2 * settings['cross_section'] * v_rel**3)
 
         # Append results to row data
         row_data = {
