@@ -210,12 +210,12 @@ if __name__ == "__main__":
     sp3_ephem_gfo = sp3_ephem_to_df("GRACE-FO-A", ephem_date_str)
     sp3_ephem_gfo = sp3_ephem_gfo.iloc[1000:3500]
     print(f"first and last 5 rows of SP3 Ephemeris DataFrame:\n{sp3_ephem_gfo.head()}\n{sp3_ephem_gfo.tail()}")
+    
     import matplotlib.dates as mdates
-
     output_file = "output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv"
     # add_jb08_accelerations(sp3_ephem_gfo, output_file, freq='30S')
-
-    # print(f"SP3 Ephemeris DataFrame:\n{sp3_ephem_gfo.head()}")    
+    # print(f"SP3 Ephemeris DataFrame:\n{sp3_ephem_gfo.head()}")
+    
     edr_density_df, drag_works = density_inversion_edr("GRACE-FO", sp3_ephem_gfo, models_to_query=[None], freq='1S')
 
     edr_density_df_jb = pd.read_csv("output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv")
