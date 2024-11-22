@@ -7,3 +7,4 @@
 *.gitingore
 *.sp3.gzexternal/
 external/
+*.log
