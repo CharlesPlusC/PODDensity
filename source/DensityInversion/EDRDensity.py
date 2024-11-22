@@ -19,7 +19,7 @@ setup_orekit_curdir("misc/orekit-data.zip")
 def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='1S'):
 
     # Path to store and load precomputed accelerations
-    acc_csv_path = f"output/DensityInversion/EDRDensityInversion/Data/{sat_name}/precomputed_accelerations.csv"
+    acc_csv_path = f"output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv"
 
     # Interpolate ephemeris to the desired frequency
     ephemeris_df = interpolate_positions(ephemeris_df, freq)
@@ -103,12 +103,12 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
         end_idx = i + 1  # Include current point
 
         # Compute non-conservative integral
-        g_noncon_integ = sum(
+        g_noncon_integ = -sum(
             [trapz(nc_eci_accs[start_idx:end_idx, j], eci_positions[start_idx:end_idx, j]) for j in range(3)]
         )
 
         # Compute conservative integral
-        g_con_integ = -sum(
+        g_con_integ = sum(
             [trapz(c_eci_accs[start_idx:end_idx, j], eci_positions[start_idx:end_idx, j]) for j in range(3)]
         )
 
@@ -218,6 +218,7 @@ if __name__ == "__main__":
 
     # print(f"SP3 Ephemeris DataFrame:\n{sp3_ephem_gfo.head()}")    
     edr_density_df, drag_works = density_inversion_edr("GRACE-FO", sp3_ephem_gfo, models_to_query=[None], freq='1S')
+    print(f"first and last 5 rows of EDR Density DataFrame:\n{edr_density_df.head()}\n{edr_density_df.tail()}")
 
     edr_density_df_jb = pd.read_csv("output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv")
     edr_density_df_jb['UTC'] = pd.to_datetime(edr_density_df_jb['UTC'])
