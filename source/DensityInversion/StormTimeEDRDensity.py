@@ -11,12 +11,12 @@ def create_and_submit_density_jobs():
     """
     # Automatically set directories
     user_home_dir = os.getenv("HOME")
-    project_root_dir = f"{user_home_dir}/Rhoin/POD-Density-Inversion/"
+    project_root_dir = f"{user_home_dir}/EDR_in/POD-Density-Inversion/"
     ephemerides_folder = f"{project_root_dir}/output/PODDensityInversion/Data/StormAnalysis"
-    folder_for_jobs = f"{user_home_dir}/Scratch/Rhoin/sge_jobs"
-    work_dir = f"{user_home_dir}/Scratch/Rhoin/working"
-    logs_folder = f"{user_home_dir}/Scratch/Rhoin/logs"
-    output_folder = f"{user_home_dir}/Scratch/Rhoin/output"
+    folder_for_jobs = f"{user_home_dir}/Scratch/EDR_in/sge_jobs"
+    work_dir = f"{user_home_dir}/Scratch/EDR_in/working"
+    logs_folder = f"{user_home_dir}/Scratch/EDR_in/logs"
+    output_folder = f"{user_home_dir}/Scratch/EDR_in/output"
 
     # Create necessary directories
     os.makedirs(folder_for_jobs, exist_ok=True)
@@ -40,7 +40,7 @@ def create_and_submit_density_jobs():
         script_filename = os.path.join(folder_for_jobs, f"{spacecraft}_density_inversion.sh")
         script_content = f"""#!/bin/bash -l
 #$ -l h_rt=24:0:0
-#$ -l mem=8G
+#$ -l mem=16G
 #$ -N {spacecraft}_density_inversion
 #$ -t 1-{len(storm_files)}
 #$ -wd {work_dir}
