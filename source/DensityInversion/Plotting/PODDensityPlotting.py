@@ -50,7 +50,7 @@ def plot_densities_and_indices(data_frames, moving_avg_minutes, sat_name):
 
     sns.set_style(style="whitegrid")
 
-    custom_palette = ["#FF6347", "#3CB371", "#1E90FF"]
+    custom_palette = ["#FF6347", "#3CB371", "#1E90FF", "black"]
 
     _, kp_3hrly, hourly_dst = get_kp_ap_dst_f107()
     
@@ -88,7 +88,8 @@ def plot_densities_and_indices(data_frames, moving_avg_minutes, sat_name):
     ae = read_ae(start_date_str, end_date_str)
     sym = read_sym(start_date_str, end_date_str)
     imf = read_imf(start_date_str, end_date_str)
-
+    print(f"plotting storm date: {start_date_str}, sat_name: {sat_name}")
+    print(f"dataframe path: {data_frames[0]}")
     def process_dataframe(df, time_col):
         if df is not None:
             df[time_col] = pd.to_datetime(df[time_col], utc=True)
@@ -111,9 +112,10 @@ def plot_densities_and_indices(data_frames, moving_avg_minutes, sat_name):
         #remove all values above 1e-11 and below -1e-11
         median_density = density_df['Computed Density'].median()
         density_df['Computed Density'] = density_df['Computed Density'].apply(lambda x: 1e-11 if x > 1e-11 else (median_density if x < -1e-11 else x))
-        density_df['Computed Density'] = density_df['Computed Density'].rolling(window=window_size, center=True).mean()
+        density_df['Computed Density'] = density_df['Computed Density'].rolling(window=window_size, center=True).median()
+        # density_df['Computed Density'] = density_df['Computed Density'].shift(window_size*2)
         median_density = density_df['Computed Density'].median()
-        density_df['Computed Density'] = density_df['Computed Density'].apply(lambda x: median_density if x > 10 * median_density or x < median_density / 10 else x)
+        density_df['Computed Density'] = density_df['Computed Density'].apply(lambda x: median_density if x > 7 * median_density or x < median_density / 7 else x)
         density_df['Computed Density'] = savgol_filter(density_df['Computed Density'], 51, 3)
         density_df = density_df[(density_df.index >= analysis_start_time) & (density_df.index <= analysis_end_time)]
 
@@ -126,9 +128,10 @@ def plot_densities_and_indices(data_frames, moving_avg_minutes, sat_name):
         sns.lineplot(ax=axs[0], data=data_frames[0], x=data_frames[0].index, y='JB08', label='JB08 Density', color=custom_palette[0], linewidth=1)
     if 'DTM2000' in data_frames[0]:
         sns.lineplot(ax=axs[0], data=data_frames[0], x=data_frames[0].index, y='DTM2000', label='DTM2000 Density', color=custom_palette[1], linewidth=1)
-    if 'NRLMSISE00' in data_frames[0]:
-        sns.lineplot(ax=axs[0], data=data_frames[0], x=data_frames[0].index, y='NRLMSISE00', label='NRLMSISE00 Density', color=custom_palette[2], linewidth=1)
-
+    if 'NRLMSISE-00' in data_frames[0]:
+        sns.lineplot(ax=axs[0], data=data_frames[0], x=data_frames[0].index, y='NRLMSISE-00', label='NRLMSISE-00 Density', color=custom_palette[2], linewidth=1)
+    if "AccelerometerDensity" in data_frames[0]:
+        sns.lineplot(ax=axs[0], data=data_frames[0], x=data_frames[0].index, y='AccelerometerDensity', label='Accelerometer Density', color=custom_palette[3], linewidth=1)
     for i, density_df in enumerate(data_frames):
         if 'Computed Density' in density_df:
             sns.lineplot(ax=axs[0], data=density_df, x=density_df.index, y='Computed Density', label='Computed Density', color="xkcd:hot pink", linewidth=0.5)
@@ -229,7 +232,7 @@ def density_compare_scatter(density_df, moving_avg_window, sat_name):
 
     # Model names to compare    
     print(f"columns: {density_df.columns}")
-    model_names = ['JB08', 'DTM2000', 'NRLMSISE00']
+    model_names = ['JB08', 'DTM2000', 'NRLMSISE-00']
 
     for model in model_names:
         plot_data = density_df.dropna(subset=['Computed Density', model])
@@ -327,15 +330,15 @@ def reldens_sat_megaplot(base_dir, sat_name, moving_avg_minutes):
                     df[density_type] = df[density_type].apply(lambda x: median_density if x > 10 * median_density or x < median_density / 10 else x)
                     df[density_type] = savgol_filter(df[density_type], 51, 3)
 
-            kp_filtered = kp_3hrly[(kp_3hrly['DateTime'] >= start_time) & (kp_3hrly['DateTime'] <= start_time + datetime.timedelta(days=3))]
+            kp_filtered = kp_3hrly[(kp_3hrly['DateTime'] >= start_time) & (kp_3hrly['DateTime'] <= start_time + timedelta(days=3))]
             max_kp_time = kp_filtered.loc[kp_filtered['Kp'].idxmax()]['DateTime'] if not kp_filtered.empty else start_time
 
             storm_category = determine_storm_category(kp_filtered['Kp'].max())
             storm_number = -int(storm_category[1:]) if storm_category != "Below G1" else 0
 
             # Adjust the plotting times based on the max Kp time
-            adjusted_start_time = max_kp_time - datetime.timedelta(hours=12)
-            adjusted_end_time = max_kp_time + datetime.timedelta(hours=32)
+            adjusted_start_time = max_kp_time - timedelta(hours=12)
+            adjusted_end_time = max_kp_time + timedelta(hours=32)
 
             storm_data.append((df, adjusted_start_time, adjusted_end_time, storm_category, storm_number))
 
@@ -385,106 +388,96 @@ def reldens_sat_megaplot(base_dir, sat_name, moving_avg_minutes):
     plt.savefig(f'output/DensityInversion/PODDensityInversion/Plots/{sat_name}_relative_density_subplot_arrays.png', dpi=300, bbox_inches='tight')
 
 def plot_all_storms_scatter(base_dir, sat_name, moving_avg_minutes=45):
-    def aggregate_density_data(storm_analysis_dir, moving_avg_minutes):
+    def aggregate_density_data(storm_analysis_dir):
         aggregated_data = []
-
         for storm_file in sorted(os.listdir(storm_analysis_dir)):
             storm_file_path = os.path.join(storm_analysis_dir, storm_file)
             if os.path.isfile(storm_file_path):
                 df = pd.read_csv(storm_file_path)
                 df['UTC'] = pd.to_datetime(df['UTC'], utc=True)
-                df.set_index('UTC', inplace=True)
-                df.index = df.index.tz_convert('UTC')
+                print(f"Processing file: {storm_file}")
 
-                model_columns = ['JB08', 'DTM2000', 'NRLMSISE00']
-                if (df[model_columns] < 1e-14).any(axis=None):
+                max_time = df.loc[df["AccelerometerDensity"].idxmax(), "UTC"]
+                df = df[(df["UTC"] >= max_time - pd.Timedelta(hours=12)) & 
+                        (df["UTC"] <= max_time + pd.Timedelta(hours=24))]
+                if df.empty:
                     continue
 
-                density_types = ['Computed Density']
-                for density_type in density_types:
-                    if density_type in df.columns:
-                        window_size = (moving_avg_minutes * 60) // 30
-                        df[density_type] = df[density_type].rolling(window=window_size, min_periods=1, center=True).mean()
-                        median_density = df[density_type].median()
-                        df[density_type] = df[density_type].apply(lambda x: median_density if x > 10 * median_density or x < median_density / 10 else x)
-                        df[density_type] = savgol_filter(df[density_type], 51, 3)
+                median_density = df['Computed Density'].median()
+                df['Computed Density'] = df['Computed Density'].apply(
+                    lambda x: 1e-11 if x > 1.2e-11 else (median_density if x < -2e-11 else x)
+                )
 
-                if (df['Computed Density'] < 1e-14).any():
+                specific_window = 23 if sat_name == "CHAMP" else 45
+                window_size = (specific_window * 60) // 15
+                df['Computed Density'] = df['Computed Density'].rolling(window=window_size, center=True).mean()
+
+                IQR = df['Computed Density'].quantile(0.75) - df['Computed Density'].quantile(0.25)
+                lower_bound, upper_bound = median_density - 5 * IQR, median_density + 5 * IQR
+                df['Computed Density'] = df['Computed Density'].apply(
+                    lambda x: median_density if x < lower_bound or x > upper_bound else x
+                )
+                df['Computed Density'] = savgol_filter(df['Computed Density'], 51, 3)
+
+                peak_time = df.loc[df['AccelerometerDensity'].idxmax(), 'UTC']
+                df = df[(df['UTC'] >= peak_time - pd.Timedelta(hours=12)) & 
+                        (df['UTC'] <= peak_time + pd.Timedelta(hours=12))]
+                if df.empty:
                     continue
 
+                # mape = (100 / len(df)) * np.sum(np.abs(df["Computed Density"] - df["AccelerometerDensity"]) / np.abs(df["AccelerometerDensity"]))
+                # if mape < 75:
                 aggregated_data.append(df)
 
-        if aggregated_data: 
-            return pd.concat(aggregated_data)
-        else:
+        if not aggregated_data:
             return pd.DataFrame()
+        return pd.concat(aggregated_data)
 
     storm_analysis_dir = os.path.join(base_dir, sat_name)
     if not os.path.exists(storm_analysis_dir):
         print(f"No data directory found for {sat_name}")
         return
 
-    aggregated_df = aggregate_density_data(storm_analysis_dir, moving_avg_minutes)
-    
+    aggregated_df = aggregate_density_data(storm_analysis_dir)
     if aggregated_df.empty:
         print("No aggregated data available.")
         return
 
-    aggregated_df.index = aggregated_df.index.tz_localize('UTC') if aggregated_df.index.tz is None else aggregated_df.index.tz_convert('UTC')
+    print("Aggregated Data Sample:")
+    print(aggregated_df.head())
+    print(aggregated_df.info())  # Check for missing values
 
-    freq_in_seconds = 30
-    window_size = (moving_avg_minutes * 60) // freq_in_seconds
-    
-    median_density = aggregated_df['Computed Density'].median()
-    IQR = aggregated_df['Computed Density'].quantile(0.75) - aggregated_df['Computed Density'].quantile(0.25)
-    lower_bound = median_density - 5 * IQR
-    upper_bound = median_density + 5 * IQR
-    aggregated_df.loc[:, 'Computed Density'] = aggregated_df['Computed Density'].apply(lambda x: median_density if x < lower_bound or x > upper_bound else x)
-    aggregated_df['Computed Density'] = aggregated_df['Computed Density'].rolling(window=window_size, min_periods=1, center=True).mean()
-    aggregated_df['Computed Density'] = savgol_filter(aggregated_df['Computed Density'], 51, 3)
-
-    model_names = ['JB08', 'DTM2000', 'NRLMSISE00']
-    x_min, x_max = np.inf, -np.inf
-    y_min, y_max = np.inf, -np.inf
-
-    for model in model_names:
-        model_data = aggregated_df.dropna(subset=['Computed Density', model])
-        model_data = model_data[model_data['Computed Density'] > 1e-14]
-        model_data = model_data[model_data[model] > 1e-14]
-
-        x_min = min(x_min, model_data[model].min())
-        x_max = max(x_max, model_data[model].max())
-        y_min = min(y_min, model_data['Computed Density'].min())
-        y_max = max(y_max, model_data['Computed Density'].max())
-
+    model_names = ['JB08', 'DTM2000', 'NRLMSISE-00']
+    x_min, x_max, y_min, y_max = np.inf, -np.inf, np.inf, -np.inf
     f, axs = plt.subplots(1, 3, figsize=(18, 6), sharex=True, sharey=True)
 
-    cmap = "rocket"
+    for model in model_names:
+        if model not in aggregated_df.columns:
+            print(f"Warning: {model} column missing.")
+        model_data = aggregated_df.dropna(subset=['Computed Density', model])
+        x_min, x_max = min(x_min, model_data[model].min()), max(x_max, model_data[model].max())
+        y_min, y_max = min(y_min, model_data['Computed Density'].min()), max(y_max, model_data['Computed Density'].max())
 
+    cmap = "rocket"
     for i, model in enumerate(model_names):
         plot_data = aggregated_df.dropna(subset=['Computed Density', model])
+        print(f"{model} plot data size: {len(plot_data)}")
         
         sns.scatterplot(x=plot_data[model], y=plot_data['Computed Density'], s=5, color=".15", ax=axs[i])
-        hist = sns.histplot(x=plot_data[model], y=plot_data['Computed Density'], bins=150, pthresh=0.05, cmap=cmap, ax=axs[i], cbar=False)
+        sns.histplot(x=plot_data[model], y=plot_data['Computed Density'], bins=150, pthresh=0.05, cmap=cmap, ax=axs[i], cbar=False)
 
-        # Calculate the histogram data manually
-        hist_data, x_edges, y_edges = np.histogram2d(plot_data[model], plot_data['Computed Density'], bins=150)
-        norm = plt.Normalize(vmin=0, vmax=hist_data.max())
-        sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-        sm.set_array([])
-        cbar = f.colorbar(sm, ax=axs[i])
-        cbar.set_label('Number of Points')
-        
-        sns.kdeplot(x=plot_data[model], y=plot_data['Computed Density'], levels=4, color="xkcd:white", linewidths=1, ax=axs[i], bw_adjust=0.8, thresh=0.2)
-
-        X = plot_data[model].values.reshape(-1, 1)
-        y = plot_data['Computed Density'].values
-        reg = LinearRegression().fit(X, y)
-        r2 = r2_score(y, reg.predict(X))
+        # Ensure there's data for linear regression
+        X, y = plot_data[model].values.reshape(-1, 1), plot_data['Computed Density'].values
+        if len(X) > 0 and len(y) > 0:
+            reg = LinearRegression().fit(X, y)
+            r2 = r2_score(y, reg.predict(X))
+        else:
+            print(f"No data available for linear regression for model {model}")
+            r2 = np.nan
 
         axs[i].set_xscale('log')
         axs[i].set_yscale('log')
-        axs[i].set_title(f'{model} (R²={r2:.2f})')
+        axs[i].set_title(f'{model} (R²={r2:.2f})' if not np.isnan(r2) else f'{model} (No data)')
         axs[i].set_xlabel('Model Density')
         axs[i].set_ylabel('Computed Density')
         axs[i].grid(color='black', linestyle='-', linewidth=0.5)
@@ -493,7 +486,9 @@ def plot_all_storms_scatter(base_dir, sat_name, moving_avg_minutes=45):
     plt.suptitle(f'{sat_name}')
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.savefig(f'output/DensityInversion/PODDensityInversion/Plots/{sat_name}_allstorm_density_scatter_plots.png', dpi=600, bbox_inches='tight')
-    # plt.show()
+    plt.show()
+
+
 
 def plot_arglat_density_and_kp(data_frames, moving_avg_minutes, sat_name, save_path=None):
     sns.set_style("darkgrid", {
@@ -646,27 +641,60 @@ def plot_density_and_kp(data_frames, moving_avg_minutes, sat_name, save_path=Non
 if __name__ == "__main__":
     
     # # Base directory for storm analysis
-    base_dir = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis/"
-    # # List of satellite names you want to generate plots for
-    sat_names = ["CHAMP"] #"GRACE-FO-A", "TerraSAR-X"
+    # base_dir = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis/"
+    # # # List of satellite names you want to generate plots for
+    # sat_names = ["GRACE-FO"] #, "TerraSAR-X", "CHAMP"
 
-    for sat_name in sat_names:
-        storm_analysis_dir = os.path.join(base_dir, sat_name)
+    # for sat_name in sat_names:
+    #     storm_analysis_dir = os.path.join(base_dir, sat_name)
         
-         # Check if the directory exists before listing files
-        if os.path.exists(storm_analysis_dir):
-            for storm_file in os.listdir(storm_analysis_dir):
-                # Form the full path to the storm file
-                storm_file_path = os.path.join(storm_analysis_dir, storm_file)
-                # Check if it's actually a file
-                if os.path.isfile(storm_file_path):
-                    storm_df = pd.read_csv(storm_file_path) 
-                    # density_compare_scatter(storm_df, 45, sat_name)
-                    plot_densities_and_indices([storm_df], 23, sat_name)
+    #      # Check if the directory exists before listing files
+    #     if os.path.exists(storm_analysis_dir):
+    #         for storm_file in os.listdir(storm_analysis_dir):
+    #             # Form the full path to the storm file
+    #             storm_file_path = os.path.join(storm_analysis_dir, storm_file)
+    #             # Check if it's actually a file
+    #             if os.path.isfile(storm_file_path):
+    #                 storm_df = pd.read_csv(storm_file_path) 
+    #                 # density_compare_scatter(storm_df, 45, sat_name)
+                    # plot_densities_and_indices([storm_df], 45, sat_name)
 
     # base_dir = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis/"
-    # sat_names = [ "TerraSAR-X", "GRACE-FO-A"] #
+    # sat_names = ["GRACE-FO"] #TerraSAR-X,"GRACE-FO","CHAMP"
     # for sat_name in sat_names:
-        # plot_all_storms_scatter(base_dir, sat_name, moving_avg_minutes=90)
+        # print(f"Plotting for {sat_name}")
+        # plot_all_storms_scatter(base_dir, sat_name, moving_avg_minutes=45)
         # reldens_sat_megaplot(base_dir, sat_name, moving_avg_minutes=90)
-        
+
+    #plot densities and indices for single storm:
+    # storm_df = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO_storm_density_22.csv"
+    # plot_densities_and_indices([storm_df], 45, "GRACE-FO")
+
+    import matplotlib.pyplot as plt
+    sat_names_to_test = ["GRACE-FO","CHAMP"]
+    for sat_name in sat_names_to_test:
+        storm_folder = os.path.join("output/DensityInversion/PODDensityInversion/Data/StormAnalysis", sat_name)
+        for storm_csv_path in os.listdir(storm_folder)[2:]:
+            print(f"Processing {storm_csv_path} for {sat_name}")
+            ephem_df = pd.read_csv(os.path.join(storm_folder, storm_csv_path))
+            EDR_densities_df = pd.read_csv("output/DensityInversion/EDR/Data/StormAnalysis/GRACE-FOEDRDensity_2023-11-03 21:59:57.csv")
+            #plot the rho_eff values against the AccelerometeDensities that are in ephem_df
+            plt.figure(figsize=(12, 8))
+            plt.plot(EDR_densities_df['UTC'], EDR_densities_df['rho_eff']*25, label='rho_eff')
+            #calculate the MAPE between the rho_eff and the AccelerometerDensity
+            mape = np.mean(np.abs((EDR_densities_df['rho_eff'].rolling(window=2*90, center=True).median()*25 - ephem_df['AccelerometerDensity']) / ephem_df['AccelerometerDensity'])) * 100
+            plt.plot(ephem_df['UTC'], ephem_df['AccelerometerDensity'], label='AccelerometerDensity, mape = {:.2f}%'.format(mape))
+            plt.xlabel('rho_eff')
+            plt.ylabel('AccelerometerDensity')
+            #plot x-labels only every 3 hours
+            plt.xticks(EDR_densities_df['UTC'][::3*60*12])
+            plt.legend()
+            #log the y axis
+            plt.yscale('log')
+            plt.title(f"{sat_name} EDR vs AccelerometerDensity")
+            # Adjust layout and save the plot
+            plt.tight_layout()
+            output_path = os.path.join(f"output/DensityInversion/EDR/Data/StormAnalysis/{sat_name}/", f"EDR_vs_Acc_{storm_csv_path}.png")
+            # plt.savefig(output_path)
+            plt.show()
+            print(f"Finished processing {storm_csv_path} for {sat_name}")
