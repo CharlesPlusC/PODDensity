@@ -11,7 +11,7 @@ def create_and_submit_density_jobs():
     """
     # Automatically set directories
     user_home_dir = os.getenv("HOME")
-    project_root_dir = f"{user_home_dir}/EDR_in/POD-Density-Inversion/"
+    project_root_dir = f"{user_home_dir}/EDRDensity/PODDensity/"
     ephemerides_folder = f"{project_root_dir}/output/PODDensityInversion/Data/StormAnalysis"
     folder_for_jobs = f"{user_home_dir}/Scratch/EDR_in/sge_jobs"
     work_dir = f"{user_home_dir}/Scratch/EDR_in/working"
@@ -25,11 +25,12 @@ def create_and_submit_density_jobs():
     os.makedirs(output_folder, exist_ok=True)
 
     spacecraft_folders = [f for f in os.listdir(ephemerides_folder) if os.path.isdir(os.path.join(ephemerides_folder, f))]
+    print(f"spacecraft_folders: {spacecraft_folders}")
     job_count = 0
 
     for spacecraft in spacecraft_folders:
         spacecraft_folder = os.path.join(ephemerides_folder, spacecraft)
-
+        print(f"spacecraft_folder: {spacecraft_folder}")
         # Find all CSV files for the spacecraft
         storm_files = glob.glob(os.path.join(spacecraft_folder, "*.csv"))
         if not storm_files:
