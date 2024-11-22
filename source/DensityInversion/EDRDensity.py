@@ -33,7 +33,6 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
     times = ephemeris_df.index
 
     sat_info = get_satellite_info(sat_name)
-    print(f"Satellite info: {sat_info}")
     settings = {
         'cr': sat_info['cr'],
         'cd': sat_info['cd'],
@@ -91,7 +90,7 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
     c_eci_accs = acc_df[['c_x', 'c_y', 'c_z']].values
 
     rows_list = []
-    arc_length = 45 * 60  # 45 minutes
+    arc_length = 40 * 60
     sample_time = int(pd.to_timedelta(freq).total_seconds())
     num_points_per_arc = arc_length // sample_time
 
@@ -103,29 +102,24 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
         end_idx = i + 1  # Include current point
 
         # Compute non-conservative integral
-        g_noncon_integ = -sum(
+        g_noncon_integ = sum(
             [trapz(nc_eci_accs[start_idx:end_idx, j], eci_positions[start_idx:end_idx, j]) for j in range(3)]
         )
 
         # Compute conservative integral
-        g_con_integ = sum(
+        g_con_integ = -sum(
             [trapz(c_eci_accs[start_idx:end_idx, j], eci_positions[start_idx:end_idx, j]) for j in range(3)]
         )
 
         # Kinetic energy change
         vel_window = np.linalg.norm(eci_velocities[start_idx:end_idx], axis=1)
-        # print(f"vel_window: {vel_window}")
         delta_v = 0.5 * (vel_window[-1]**2 - vel_window[0]**2)
-        print(f"delta_v: {delta_v}")
-        print(f"g_con_integ: {g_con_integ}")
 
         # Total energy change
         delta_ener = delta_v + g_con_integ
-        # print(f"delta_ener: {delta_ener}")
 
         # Drag work
-        drag_work = -delta_ener + g_noncon_integ
-        # print(f"drag_work: {drag_work}")
+        drag_work = -delta_ener - g_noncon_integ
 
         # Relative velocity
         v = eci_velocities[i]
@@ -218,12 +212,11 @@ if __name__ == "__main__":
     print(f"first and last 5 rows of SP3 Ephemeris DataFrame:\n{sp3_ephem_gfo.head()}\n{sp3_ephem_gfo.tail()}")
     import matplotlib.dates as mdates
 
-    # output_file = "output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv"
+    output_file = "output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv"
     # add_jb08_accelerations(sp3_ephem_gfo, output_file, freq='30S')
 
     # print(f"SP3 Ephemeris DataFrame:\n{sp3_ephem_gfo.head()}")    
     edr_density_df, drag_works = density_inversion_edr("GRACE-FO", sp3_ephem_gfo, models_to_query=[None], freq='1S')
-    print(f"first and last 5 rows of EDR Density DataFrame:\n{edr_density_df.head()}\n{edr_density_df.tail()}")
 
     edr_density_df_jb = pd.read_csv("output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv")
     edr_density_df_jb['UTC'] = pd.to_datetime(edr_density_df_jb['UTC'])
@@ -292,4 +285,4 @@ if __name__ == "__main__":
     plt.tight_layout()
 
     # Show the plot
-    plt.show()
+    plt.show()  
