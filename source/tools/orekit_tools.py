@@ -1,5 +1,5 @@
 import orekit
-from orekit.pyhelpers import setup_orekit_curdir
+from orekit.pyhelpers import setup_orekit_curdir, datetime_to_absolutedate
 
 # orekit.pyhelpers.download_orekit_data_curdir()
 vm = orekit.initVM()
@@ -214,3 +214,11 @@ def state2acceleration(state_vector, t0, cr, cd, cross_section, mass, **force_mo
         accelerations_dict['nrlmsise00drag'] = atmospheric_drag_eci_t0
 
     return accelerations_dict
+
+def get_gravity_potential(position_vector, date, degree, order):
+    position = Vector3D(float(position_vector[0]), float(position_vector[1]), float(position_vector[2]))
+    Epoch_date = datetime_to_absolutedate(date)
+    gravityProvider = GravityFieldFactory.getNormalizedProvider(int(degree), int(order))
+    gravityfield = HolmesFeatherstoneAttractionModel(FramesFactory.getITRF(IERSConventions.IERS_2010, True), gravityProvider)
+    grav_pot = gravityfield.value(Epoch_date, position, Constants.WGS84_EARTH_MU)
+    return grav_pot
