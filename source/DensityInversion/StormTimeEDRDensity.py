@@ -89,16 +89,10 @@ source $UCL_CONDA_PATH/etc/profile.d/conda.sh
 conda activate pod_density_env
 export PYTHONPATH="{project_root_dir}:$PYTHONPATH"
 
-cp -r {user_home_dir}/EDRDensity/PODDensity/ $TMPDIR
+cp -r {user_home_dir}/PODDensity/ $TMPDIR
 
 # Navigate to the copied directory
 cd $TMPDIR/PODDensity/
-
-echo "Current working directory: $(pwd)"
-ls misc/
-
-echo "Contents of misc directory:"
-ls $TMPDIR/EDRDensity/PODDensity/misc/
 
 storm_file=$(ls {spacecraft_folder}/*.csv | sed -n "${{SGE_TASK_ID}}p")
 

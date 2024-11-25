@@ -4,7 +4,7 @@ import os
 import pandas as pd
 import json
 import xml.etree.ElementTree as ET
-from ..tools.utilities import SP3_to_EME2000, utc_to_mjd
+from source.tools.utilities import SP3_to_EME2000, utc_to_mjd
 
 # Define the root folder where the EOF files are stored
 root_folder = 'external/eof_files/'

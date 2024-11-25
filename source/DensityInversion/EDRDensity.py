@@ -31,9 +31,6 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
     mjd_times = [utc_to_mjd(dt) for dt in ephemeris_df.index]
     ephemeris_df['MJD'] = mjd_times
 
-    #slice the ephmeris to take only the first 100 rows for testing
-    ephemeris_df = ephemeris_df.iloc[:100]
-
     eci_positions = ephemeris_df[['x', 'y', 'z']].values
     eci_velocities = ephemeris_df[['xv', 'yv', 'zv']].values
     times = ephemeris_df.index
@@ -98,7 +95,7 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
     c_eci_accs = acc_df[['c_x', 'c_y', 'c_z']].values
 
     rows_list = []
-    arc_length = 10 #making this shorter for testing 40 * 60
+    arc_length = 40 * 60
     sample_time = int(pd.to_timedelta(freq).total_seconds())
     num_points_per_arc = arc_length // sample_time
 
@@ -214,16 +211,16 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
 #     print(f"Updated file saved to {output_path}")
 
 if __name__ == "__main__": 
-    pass
-    # storm_df_path = "output/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO-A_2024-05-08_density_inversion.csv"
-    # storm_df = pd.read_csv(storm_df_path)
-    # satellite = "GRACE-FO"
-    # density_inversion_edr(
-    #     sat_name=satellite,
-    #     ephemeris_df=storm_df,
-    #     models_to_query=[None],
-    #     freq='1S'
-    #     )
+    
+    storm_df_path = "output/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO-A_2024-05-08_density_inversion.csv"
+    storm_df = pd.read_csv(storm_df_path)
+    satellite = "GRACE-FO"
+    density_inversion_edr(
+        sat_name=satellite,
+        ephemeris_df=storm_df,
+        models_to_query=[None],
+        freq='1S'
+        )
 
 #     ephem_date_str = "2023-03-23"
 #     sp3_ephem_gfo = sp3_ephem_to_df("GRACE-FO-A", ephem_date_str)

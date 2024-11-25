@@ -9,7 +9,7 @@ import tempfile
 from datetime import datetime, timedelta
 import os
 import glob
-from ..tools.utilities import SP3_to_EME2000, utc_to_mjd
+from source.tools.utilities import SP3_to_EME2000, utc_to_mjd
 
 def read_sp3_gz_file(sp3_gz_file_path):
     try:
