@@ -95,7 +95,7 @@ cd $TMPDIR
 
 storm_file=$(ls {spacecraft_folder}/*.csv | sed -n "${{SGE_TASK_ID}}p")
 
-/home/{os.getenv('USER')}/.conda/envs/POD_Density_Inversion/bin/python -m source.DensityInversion.StormTimeEDRDensity {spacecraft} "$storm_file"
+/home/{os.getenv('USER')}/.conda/envs/pod_density_env/bin/python -m source.DensityInversion.StormTimeEDRDensity {spacecraft} "$storm_file"
 """
         # Write the job script
         with open(script_filename, "w") as script_file:
