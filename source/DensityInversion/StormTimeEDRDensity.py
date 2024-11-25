@@ -76,8 +76,9 @@ def create_and_submit_density_jobs():
         # Create job script
         script_filename = os.path.join(folder_for_jobs, f"{spacecraft}_density_inversion.sh")
         script_content = f"""#!/bin/bash -l
-#$ -l h_rt=0:10:0
-#$ -l mem=4G
+#$ -l h_rt=96:00:0
+#$ -l mem=12G
+#$ -l tmpfs=15G
 #$ -N {spacecraft}_density_inversion
 #$ -t 1-{len(storm_files)}
 #$ -wd {work_dir}
