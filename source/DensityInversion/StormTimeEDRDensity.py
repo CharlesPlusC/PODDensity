@@ -1,6 +1,37 @@
 import os
 import glob
 import pandas as pd
+from source.EDRDensity import density_inversion_edr
+
+def run_density_inversion(storm_file, satellite):
+    """
+    Run the density inversion for a given storm file and satellite.
+
+    Args:
+        storm_file (str): Path to the storm CSV file.
+        satellite (str): Satellite name.
+
+    Returns:
+        None
+    """
+    try:
+        print(f"Running density inversion for storm file: {storm_file}, satellite: {satellite}")
+        
+        # Load the storm file
+        ephemeris_df = pd.read_csv(storm_file, parse_dates=['UTC'])
+        ephemeris_df.set_index('UTC', inplace=True)
+        
+        # Run the density inversion
+        density_inversion_edr(
+            sat_name=satellite,
+            ephemeris_df=ephemeris_df,
+            models_to_query=[None],
+            freq='1S'
+        )
+        print(f"Density inversion completed for {satellite}.")
+    except Exception as e:
+        print(f"Error during density inversion for {satellite}: {e}")
+        raise
 
 def create_and_submit_density_jobs():
     """
@@ -61,22 +92,10 @@ cd $TMPDIR
 storm_file=$(ls {spacecraft_folder}/*.csv | sed -n "${{SGE_TASK_ID}}p")
 
 python -c "
-#print the storm file
-print(f'Storm file: $storm_file')
-import pandas as pd
-from source.EDRDensity import density_inversion_edr
+from StormTimeEDRDensity import run_density_inversion
 
-# Load the storm file
-ephemeris_df = pd.read_csv('$storm_file', parse_dates=['UTC'])
-ephemeris_df.set_index('UTC', inplace=True)
-
-# Run the density inversion
-density_inversion_edr(
-    sat_name='{spacecraft}',
-    ephemeris_df=ephemeris_df,
-    models_to_query=[None],
-    freq='1S'
-)
+# Call the run_density_inversion function
+run_density_inversion(storm_file='$storm_file', satellite='{spacecraft}')
 "
 """
         # Write the job script
