@@ -48,8 +48,8 @@ def create_and_submit_density_jobs():
 #$ -o {logs_folder}/{spacecraft}_$TASK_ID.out
 #$ -e {logs_folder}/{spacecraft}_$TASK_ID.err
 
-source $UCL_CONDA_PATH/etc/profile.d/conda.sh
 module load python/miniconda3/4.10.3
+source $UCL_CONDA_PATH/etc/profile.d/conda.sh
 conda activate pod_density_env
 
 export PYTHONPATH=/home/zcesccc/EDRDensity/PODDensity/source:$PYTHONPATH
@@ -59,7 +59,6 @@ echo "PYTHONPATH during execution: $PYTHONPATH"
 cd $TMPDIR
 
 storm_file=$(ls {spacecraft_folder}/*.csv | sed -n "${{SGE_TASK_ID}}p")
-
 
 python -c "
 #print the storm file
