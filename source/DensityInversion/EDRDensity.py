@@ -1,15 +1,12 @@
-from source.tools.sp3_2_ephemeris import sp3_ephem_to_df
 import os
 import orekit
 import numpy as np
 import pandas as pd
 import datetime
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 from scipy.integrate import trapezoid as trapz
 from orekit.pyhelpers import setup_orekit_curdir, download_orekit_data_curdir
 from source.tools.utilities import get_satellite_info, utc_to_mjd, interpolate_positions
-from source.tools.sp3_2_ephemeris import sp3_ephem_to_df
 from source.tools.orekit_tools import state2acceleration
 
 # Initialize Orekit VM and setup
