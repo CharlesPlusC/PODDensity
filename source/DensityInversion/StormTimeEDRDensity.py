@@ -41,7 +41,7 @@ def create_and_submit_density_jobs():
     """
     # Automatically set directories
     user_home_dir = os.getenv("HOME")
-    project_root_dir = f"{user_home_dir}/EDRDensity/PODDensity/"
+    project_root_dir = f"{user_home_dir}/PODDensity/"
     ephemerides_folder = f"{project_root_dir}/output/PODDensityInversion/Data/StormAnalysis"
     folder_for_jobs = f"{user_home_dir}/Scratch/EDR_in/sge_jobs"
     work_dir = f"{user_home_dir}/Scratch/EDR_in/working"
