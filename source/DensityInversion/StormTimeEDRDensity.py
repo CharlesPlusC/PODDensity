@@ -18,11 +18,9 @@ def run_density_inversion(storm_file, satellite):
     try:
         print(f"Running density inversion for storm file: {storm_file}, satellite: {satellite}")
         
-        # Load the storm file
         ephemeris_df = pd.read_csv(storm_file, parse_dates=['UTC'])
         ephemeris_df.set_index('UTC', inplace=True)
         
-        # Run the density inversion
         density_inversion_edr(
             sat_name=satellite,
             ephemeris_df=ephemeris_df,
@@ -89,14 +87,15 @@ def create_and_submit_density_jobs():
 module load python/miniconda3/4.10.3
 source $UCL_CONDA_PATH/etc/profile.d/conda.sh
 conda activate pod_density_env
+export PYTHONPATH="{project_root_dir}:$PYTHONPATH"
 
-export PYTHONPATH=/home/zcesccc/EDRDensity/PODDensity/source:$PYTHONPATH
+cp -r {user_home_dir}/EDRDensity/PODDensity/ $TMPDIR
 
 cd $TMPDIR
 
 storm_file=$(ls {spacecraft_folder}/*.csv | sed -n "${{SGE_TASK_ID}}p")
 
-python -m source.DensityInversion.StormTimeEDRDensity {spacecraft} "$storm_file"
+/home/{os.getenv('USER')}/.conda/envs/POD_Density_Inversion/bin/python -m source.DensityInversion.StormTimeEDRDensity {spacecraft} "$storm_file"
 """
         # Write the job script
         with open(script_filename, "w") as script_file:
