@@ -48,8 +48,8 @@ def create_and_submit_density_jobs():
 #$ -o {logs_folder}/{spacecraft}_$TASK_ID.out
 #$ -e {logs_folder}/{spacecraft}_$TASK_ID.err
 
-module load python/miniconda3/4.10.3
 source $UCL_CONDA_PATH/etc/profile.d/conda.sh
+module load python/miniconda3/4.10.3
 conda activate pod_density_env
 
 export PYTHONPATH=$PYTHONPATH:/home/zcesccc/EDRDensity/PODDensity/source
