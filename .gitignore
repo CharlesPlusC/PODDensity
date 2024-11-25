@@ -7,4 +7,6 @@
 *.gitingore
 *.sp3.gzexternal/
 external/
+!external/jb08_inputs/
+!external/jb08_inputs/*
 *.log
