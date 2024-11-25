@@ -586,23 +586,38 @@ def posvel_to_sma(x, y, z, u, v, w):
     return a
 
 def interpolate_positions(df, fine_freq):
-    df = df.drop_duplicates(subset='UTC').set_index('UTC')
+    # Ensure 'UTC' is the index
+    if df.index.name != 'UTC':
+        if 'UTC' in df.columns:
+            df = df.drop_duplicates(subset='UTC').set_index('UTC')
+        else:
+            raise ValueError("DataFrame must have 'UTC' as a column or index.")
+
+    # Ensure the index is sorted and in datetime format
+    if not np.issubdtype(df.index.dtype, np.datetime64):
+        df.index = pd.to_datetime(df.index)
     df = df.sort_index()
+
     start_time, end_time = df.index.min(), df.index.max()
 
+    # Create resampled DataFrame
     df_resampled = pd.DataFrame(index=pd.date_range(start=start_time, end=end_time, freq=fine_freq))
     columns = ['x', 'y', 'z', 'xv', 'yv', 'zv']
     df_interpolated = pd.DataFrame(index=df_resampled.index, columns=columns)
 
+    # Interpolate positions and velocities
     for pos_col, vel_col in zip(['x', 'y', 'z'], ['xv', 'yv', 'zv']):
-        times = df.index.astype(int) / 10**9
-        new_times = df_resampled.index.astype(int) / 10**9
+        times = df.index.astype(np.int64) / 10**9  # Convert datetime to seconds
+        new_times = df_resampled.index.astype(np.int64) / 10**9
         df_interpolated[pos_col] = CubicSpline(times, df[pos_col])(new_times)
         df_interpolated[vel_col] = CubicSpline(times, df[vel_col])(new_times)
+
+    # Reset index and rename for clarity
     df_interpolated.reset_index(inplace=True)
     df_interpolated.rename(columns={'index': 'UTC'}, inplace=True)
 
     return df_interpolated
+
 
 def calculate_acceleration(df_interpolated, fine_freq, filter_window_length, filter_polyorder):
     fine_freq_seconds = pd.to_timedelta(fine_freq).total_seconds()
