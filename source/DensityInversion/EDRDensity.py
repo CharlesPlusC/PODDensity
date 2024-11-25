@@ -18,8 +18,24 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
 
     # Path to store and load precomputed accelerations
     # acc_csv_path = f"output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv"
+    print(f"columns in ephemeris_df: {ephemeris_df.columns}")
+
+    ephemeris_df['UTC'] = pd.to_datetime(ephemeris_df['UTC'])
+    ephemeris_df.set_index('UTC', inplace=True)
+    mjd_times = [utc_to_mjd(dt) for dt in ephemeris_df.index]
+    ephemeris_df['MJD'] = mjd_times
+
+    #find the peak NRLMSISE-00 density value
+    peak_density = max(ephemeris_df['NRLMSISE-00'])
+    #now slice the dataframe so that it starts 12 hours before this and ends 24 hours after this
+    peak_density_time = ephemeris_df[ephemeris_df['NRLMSISE-00'] == peak_density].index[0]
+    start_time = peak_density_time - datetime.timedelta(hours=12)
+    end_time = peak_density_time + datetime.timedelta(hours=24)
+    ephemeris_df = ephemeris_df[start_time:end_time]
 
     ephemeris_df = interpolate_positions(ephemeris_df, freq)
+
+
     ephemeris_df['UTC'] = pd.to_datetime(ephemeris_df['UTC'])
     ephemeris_df.set_index('UTC', inplace=True)
     mjd_times = [utc_to_mjd(dt) for dt in ephemeris_df.index]
@@ -207,6 +223,7 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
 if __name__ == "__main__": 
     pass
     # storm_df_path = "output/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO-A_2024-05-08_density_inversion.csv"
+    # storm_df_path = "output/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO_storm_density_15_1_20240511215004.csv"
     # storm_df = pd.read_csv(storm_df_path)
     # satellite = "GRACE-FO"
     # density_inversion_edr(
