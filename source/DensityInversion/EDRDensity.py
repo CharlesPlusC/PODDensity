@@ -19,7 +19,7 @@ setup_orekit_curdir("misc/orekit-data.zip")
 def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='1S'):
 
     # Path to store and load precomputed accelerations
-    acc_csv_path = f"output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv"
+    # acc_csv_path = f"output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv"
 
     # Interpolate ephemeris to the desired frequency
     ephemeris_df = interpolate_positions(ephemeris_df, freq)
@@ -42,47 +42,49 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
     force_model_config = {'knocke_erp': True, 'SRP': True, '90x90gravity': True, '3BP': True, 'ocean_tides': True, 'solid_tides': True}
 
     # If precomputed accelerations exist, load them; otherwise, compute and save them
-    if os.path.exists(acc_csv_path):
-        print(f"Loading precomputed accelerations from {acc_csv_path}")
-        acc_df = pd.read_csv(acc_csv_path, parse_dates=['UTC'])
-        acc_df.set_index('UTC', inplace=True)
-        nc_eci_accs = acc_df[['nc_x', 'nc_y', 'nc_z']].values
-        c_eci_accs = acc_df[['c_x', 'c_y', 'c_z']].values
-    else:
-        print("Computing accelerations...")
-        nc_eci_accs = []
-        c_eci_accs = []
-        rows = []
+    # if os.path.exists(acc_csv_path):
+    #     print(f"Loading precomputed accelerations from {acc_csv_path}")
+    #     acc_df = pd.read_csv(acc_csv_path, parse_dates=['UTC'])
+    #     acc_df.set_index('UTC', inplace=True)
+    #     nc_eci_accs = acc_df[['nc_x', 'nc_y', 'nc_z']].values
+    #     c_eci_accs = acc_df[['c_x', 'c_y', 'c_z']].values
+    # else:
+    print("Computing accelerations...")
+    nc_eci_accs = []
+    c_eci_accs = []
+    rows = []
 
-        for i in tqdm(range(len(times)), desc="Computing Accelerations"):
-            r = eci_positions[i]
-            v = eci_velocities[i]
-            time = times[i]
+    for i in tqdm(range(len(times)), desc="Computing Accelerations"):
+        r = eci_positions[i]
+        v = eci_velocities[i]
+        time = times[i]
 
-            acc_eci = state2acceleration(
-                np.hstack((r, v)), time, settings['cr'], settings['cd'], settings['cross_section'], settings['mass'], **force_model_config
-            )
+        acc_eci = state2acceleration(
+            np.hstack((r, v)), time, settings['cr'], settings['cd'], settings['cross_section'], settings['mass'], **force_model_config
+        )
 
-            # Extract accelerations
-            nc_acc_eci_sum = acc_eci['knocke_erp'] + acc_eci['SRP']
-            c_acc_eci_sum = acc_eci['90x90gravity'] + acc_eci['3BP'] + acc_eci['ocean_tides'] + acc_eci['solid_tides']
+        # Extract accelerations
+        nc_acc_eci_sum = acc_eci['knocke_erp'] + acc_eci['SRP']
+        c_acc_eci_sum = acc_eci['90x90gravity'] + acc_eci['3BP'] + acc_eci['ocean_tides'] + acc_eci['solid_tides']
 
-            nc_eci_accs.append(nc_acc_eci_sum)
-            c_eci_accs.append(c_acc_eci_sum)
+        nc_eci_accs.append(nc_acc_eci_sum)
+        c_eci_accs.append(c_acc_eci_sum)
 
-            # Save to rows for CSV
-            rows.append({
-                'UTC': time,
-                'nc_x': nc_acc_eci_sum[0], 'nc_y': nc_acc_eci_sum[1], 'nc_z': nc_acc_eci_sum[2],
-                'c_x': c_acc_eci_sum[0], 'c_y': c_acc_eci_sum[1], 'c_z': c_acc_eci_sum[2]
-            })
+        # Save to rows for CSV
+        rows.append({
+            'UTC': time,
+            'nc_x': nc_acc_eci_sum[0], 'nc_y': nc_acc_eci_sum[1], 'nc_z': nc_acc_eci_sum[2],
+            'c_x': c_acc_eci_sum[0], 'c_y': c_acc_eci_sum[1], 'c_z': c_acc_eci_sum[2]
+        })
 
-        # Save precomputed accelerations to a CSV
-        acc_df = pd.DataFrame(rows)
-        os.makedirs(os.path.dirname(acc_csv_path), exist_ok=True)
-        acc_df.to_csv(acc_csv_path, index=False)
-        nc_eci_accs = np.array(nc_eci_accs)
-        c_eci_accs = np.array(c_eci_accs)
+    # Save precomputed accelerations to a CSV
+    acc_df = pd.DataFrame(rows)
+    yyyy_mm_dd = datetime.datetime.strftime(ephemeris_df.index[0], "%Y-%m-%d")
+    acc_csv_path = f"output/EDR/Data/{sat_name}/precomp_accs_{yyyy_mm_dd}.csv"
+    os.makedirs(os.path.dirname(acc_csv_path), exist_ok=True)
+    acc_df.to_csv(acc_csv_path, index=False)
+    nc_eci_accs = np.array(nc_eci_accs)
+    c_eci_accs = np.array(c_eci_accs)
 
     # Resample accelerations to match the desired frequency
     acc_df = acc_df.asfreq(freq)
