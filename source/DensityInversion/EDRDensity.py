@@ -19,12 +19,6 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
     # Path to store and load precomputed accelerations
     # acc_csv_path = f"output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv"
 
-    # Interpolate ephemeris to the desired frequency
-    #If the dataframe has a UTC column, convert it to datetime and set it as the index
-    print("Columns in ephemeris_df:", ephemeris_df.columns)
-    print("Index name:", ephemeris_df.index.name)
-    print(ephemeris_df.head())
-
     ephemeris_df = interpolate_positions(ephemeris_df, freq)
     ephemeris_df['UTC'] = pd.to_datetime(ephemeris_df['UTC'])
     ephemeris_df.set_index('UTC', inplace=True)
@@ -211,7 +205,7 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
 #     print(f"Updated file saved to {output_path}")
 
 if __name__ == "__main__": 
-    
+    pass
     # storm_df_path = "output/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO-A_2024-05-08_density_inversion.csv"
     # storm_df = pd.read_csv(storm_df_path)
     # satellite = "GRACE-FO"
