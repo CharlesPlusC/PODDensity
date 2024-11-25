@@ -1,7 +1,7 @@
 import os
 import glob
 import pandas as pd
-from source.EDRDensity import density_inversion_edr
+from source.DensityInversion.EDRDensity import density_inversion_edr
 
 def run_density_inversion(storm_file, satellite):
     """
