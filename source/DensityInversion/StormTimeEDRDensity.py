@@ -91,8 +91,14 @@ export PYTHONPATH="{project_root_dir}:$PYTHONPATH"
 
 cp -r {user_home_dir}/EDRDensity/PODDensity/ $TMPDIR
 
-# Change to the copied directory
-cd $TMPDIR/EDRDensity/PODDensity/
+# Navigate to the copied directory
+cd $TMPDIR/PODDensity/
+
+echo "Current working directory: $(pwd)"
+ls misc/
+
+echo "Contents of misc directory:"
+ls $TMPDIR/EDRDensity/PODDensity/misc/
 
 storm_file=$(ls {spacecraft_folder}/*.csv | sed -n "${{SGE_TASK_ID}}p")
 
