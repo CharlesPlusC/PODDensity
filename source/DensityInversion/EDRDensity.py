@@ -212,15 +212,15 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
 
 if __name__ == "__main__": 
     
-    storm_df_path = "output/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO-A_2024-05-08_density_inversion.csv"
-    storm_df = pd.read_csv(storm_df_path)
-    satellite = "GRACE-FO"
-    density_inversion_edr(
-        sat_name=satellite,
-        ephemeris_df=storm_df,
-        models_to_query=[None],
-        freq='1S'
-        )
+    # storm_df_path = "output/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO-A_2024-05-08_density_inversion.csv"
+    # storm_df = pd.read_csv(storm_df_path)
+    # satellite = "GRACE-FO"
+    # density_inversion_edr(
+    #     sat_name=satellite,
+    #     ephemeris_df=storm_df,
+    #     models_to_query=[None],
+    #     freq='1S'
+    #     )
 
 #     ephem_date_str = "2023-03-23"
 #     sp3_ephem_gfo = sp3_ephem_to_df("GRACE-FO-A", ephem_date_str)
