@@ -6,7 +6,7 @@ import pandas as pd
 import datetime
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from scipy.integrate import trapz
+from scipy.integrate import trapezoid as trapz
 from orekit.pyhelpers import setup_orekit_curdir
 from source.tools.utilities import get_satellite_info, utc_to_mjd, interpolate_positions
 from source.tools.sp3_2_ephemeris import sp3_ephem_to_df
