@@ -1,5 +1,5 @@
 import os
-import glob
+import sys
 import pandas as pd
 from source.DensityInversion.EDRDensity import density_inversion_edr
 
@@ -55,13 +55,19 @@ def create_and_submit_density_jobs():
     os.makedirs(logs_folder, exist_ok=True)
     os.makedirs(output_folder, exist_ok=True)
 
-    spacecraft_folders = [f for f in os.listdir(ephemerides_folder) if os.path.isdir(os.path.join(ephemerides_folder, f))]
+    # Find spacecraft folders
+    spacecraft_folders = [
+        f for f in os.listdir(ephemerides_folder)
+        if os.path.isdir(os.path.join(ephemerides_folder, f))
+    ]
     print(f"spacecraft_folders: {spacecraft_folders}")
+
     job_count = 0
 
     for spacecraft in spacecraft_folders:
         spacecraft_folder = os.path.join(ephemerides_folder, spacecraft)
         print(f"spacecraft_folder: {spacecraft_folder}")
+
         # Find all CSV files for the spacecraft
         storm_files = glob.glob(os.path.join(spacecraft_folder, "*.csv"))
         if not storm_files:
@@ -71,7 +77,7 @@ def create_and_submit_density_jobs():
         # Create job script
         script_filename = os.path.join(folder_for_jobs, f"{spacecraft}_density_inversion.sh")
         script_content = f"""#!/bin/bash -l
-#$ -l h_rt=0:5:0
+#$ -l h_rt=24:0:0
 #$ -l mem=4G
 #$ -N {spacecraft}_density_inversion
 #$ -t 1-{len(storm_files)}
@@ -85,18 +91,11 @@ conda activate pod_density_env
 
 export PYTHONPATH=/home/zcesccc/EDRDensity/PODDensity/source:$PYTHONPATH
 
-echo "PYTHONPATH during execution: $PYTHONPATH"
-
 cd $TMPDIR
 
 storm_file=$(ls {spacecraft_folder}/*.csv | sed -n "${{SGE_TASK_ID}}p")
 
-python -c "
-from source.DensityInversion.StormTimeEDRDensity import run_density_inversion
-
-# Call the run_density_inversion function
-run_density_inversion(storm_file='$storm_file', satellite='{spacecraft}')
-"
+python -m source.DensityInversion.StormTimeEDRDensity {spacecraft} "$storm_file"
 """
         # Write the job script
         with open(script_filename, "w") as script_file:
@@ -108,5 +107,25 @@ run_density_inversion(storm_file='$storm_file', satellite='{spacecraft}')
 
     print(f"Submitted {job_count} jobs.")
 
+def main_script(satellite, storm_file):
+    """
+    Main function to process a specific storm file and run density inversion.
+
+    Args:
+        satellite (str): Satellite name.
+        storm_file (str): Path to the storm CSV file.
+
+    Returns:
+        None
+    """
+    run_density_inversion(storm_file, satellite)
+
 if __name__ == "__main__":
-    create_and_submit_density_jobs()
+    # Command-line argument handling
+    if len(sys.argv) == 3:
+        satellite = sys.argv[1]
+        storm_file = sys.argv[2]
+        main_script(satellite, storm_file)
+    else:
+        # Default action: create and submit jobs
+        create_and_submit_density_jobs()

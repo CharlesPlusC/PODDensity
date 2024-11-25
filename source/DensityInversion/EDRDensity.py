@@ -207,84 +207,85 @@ def add_jb08_accelerations(ephemeris_df, output_path, freq='1S'):
     updated_df.to_csv(output_path)
     print(f"Updated file saved to {output_path}")
 
-if __name__ == "__main__":
-    ephem_date_str = "2023-03-23"
-    sp3_ephem_gfo = sp3_ephem_to_df("GRACE-FO-A", ephem_date_str)
-    sp3_ephem_gfo = sp3_ephem_gfo.iloc[1000:3500]
-    print(f"first and last 5 rows of SP3 Ephemeris DataFrame:\n{sp3_ephem_gfo.head()}\n{sp3_ephem_gfo.tail()}")
+if __name__ == "__main__": 
+    pass
+#     ephem_date_str = "2023-03-23"
+#     sp3_ephem_gfo = sp3_ephem_to_df("GRACE-FO-A", ephem_date_str)
+#     sp3_ephem_gfo = sp3_ephem_gfo.iloc[1000:3500]
+#     print(f"first and last 5 rows of SP3 Ephemeris DataFrame:\n{sp3_ephem_gfo.head()}\n{sp3_ephem_gfo.tail()}")
     
-    import matplotlib.dates as mdates
-    output_file = "output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv"
-    # add_jb08_accelerations(sp3_ephem_gfo, output_file, freq='30S')
-    # print(f"SP3 Ephemeris DataFrame:\n{sp3_ephem_gfo.head()}")
+#     import matplotlib.dates as mdates
+#     output_file = "output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv"
+#     # add_jb08_accelerations(sp3_ephem_gfo, output_file, freq='30S')
+#     # print(f"SP3 Ephemeris DataFrame:\n{sp3_ephem_gfo.head()}")
     
-    edr_density_df, drag_works = density_inversion_edr("GRACE-FO", sp3_ephem_gfo, models_to_query=[None], freq='1S')
+#     edr_density_df, drag_works = density_inversion_edr("GRACE-FO", sp3_ephem_gfo, models_to_query=[None], freq='1S')
 
-    edr_density_df_jb = pd.read_csv("output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv")
-    edr_density_df_jb['UTC'] = pd.to_datetime(edr_density_df_jb['UTC'])
-    #drop all rows with NaN values
-    edr_density_df_jb = edr_density_df_jb.dropna()
-    print(f"EDR Density DataFrame:\n{edr_density_df_jb.head()}")
+#     edr_density_df_jb = pd.read_csv("output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv")
+#     edr_density_df_jb['UTC'] = pd.to_datetime(edr_density_df_jb['UTC'])
+#     #drop all rows with NaN values
+#     edr_density_df_jb = edr_density_df_jb.dropna()
+#     print(f"EDR Density DataFrame:\n{edr_density_df_jb.head()}")
     
-    # Create subplots
-    fig, axes = plt.subplots(6, 1, figsize=(12, 18), sharex=True)
+#     # Create subplots
+#     fig, axes = plt.subplots(6, 1, figsize=(12, 18), sharex=True)
 
-    axes[0].plot(edr_density_df['UTC'], edr_density_df['delta_v'], label='Kinetic Energy', color='blue')
-    axes[0].plot(edr_density_df['UTC'], -edr_density_df['g_con_integ'], label='Conservative Integral', color='red', linestyle='dashed')
-    axes[0].set_ylabel('Delta V')
-    axes[0].set_title('Kinetic Energy')
-    axes[0].legend()
-    axes[0].grid(True, linestyle='dotted', color='gray', linewidth=0.75)
+#     axes[0].plot(edr_density_df['UTC'], edr_density_df['delta_v'], label='Kinetic Energy', color='blue')
+#     axes[0].plot(edr_density_df['UTC'], -edr_density_df['g_con_integ'], label='Conservative Integral', color='red', linestyle='dashed')
+#     axes[0].set_ylabel('Delta V')
+#     axes[0].set_title('Kinetic Energy')
+#     axes[0].legend()
+#     axes[0].grid(True, linestyle='dotted', color='gray', linewidth=0.75)
 
-    # Plot each line on its own subplot
-    axes[1].plot(edr_density_df['UTC'], edr_density_df['Delta Energy'], label='Kinetic-Potential', color='blue')
-    axes[1].set_ylabel('Delta Energy')
-    axes[1].set_title('Kinetic-Potential Energy')
-    axes[1].legend()
-    axes[1].grid(True, linestyle='dotted', color='gray', linewidth=0.75)
+#     # Plot each line on its own subplot
+#     axes[1].plot(edr_density_df['UTC'], edr_density_df['Delta Energy'], label='Kinetic-Potential', color='blue')
+#     axes[1].set_ylabel('Delta Energy')
+#     axes[1].set_title('Kinetic-Potential Energy')
+#     axes[1].legend()
+#     axes[1].grid(True, linestyle='dotted', color='gray', linewidth=0.75)
 
-    axes[2].plot(edr_density_df['UTC'], edr_density_df['g_con_integ'], label='Conservative Integral', color='blue')
-    axes[2].set_ylabel('Conservative Integral')
-    axes[2].set_title('Conservative Integral')
-    axes[2].legend()
-    axes[2].grid(True, linestyle='dotted', color='gray', linewidth=0.75)
+#     axes[2].plot(edr_density_df['UTC'], edr_density_df['g_con_integ'], label='Conservative Integral', color='blue')
+#     axes[2].set_ylabel('Conservative Integral')
+#     axes[2].set_title('Conservative Integral')
+#     axes[2].legend()
+#     axes[2].grid(True, linestyle='dotted', color='gray', linewidth=0.75)
 
-    axes[3].plot(edr_density_df['UTC'], edr_density_df['g_noncon_integ'], label='Non-Conservative Integral', color='blue')
-    axes[3].set_ylabel('Non-Conservative Integral')
-    axes[3].set_title('Non-Conservative Integral')
-    axes[3].legend()
-    axes[3].grid(True, linestyle='dotted', color='gray', linewidth=0.75)
+#     axes[3].plot(edr_density_df['UTC'], edr_density_df['g_noncon_integ'], label='Non-Conservative Integral', color='blue')
+#     axes[3].set_ylabel('Non-Conservative Integral')
+#     axes[3].set_title('Non-Conservative Integral')
+#     axes[3].legend()
+#     axes[3].grid(True, linestyle='dotted', color='gray', linewidth=0.75)
 
-    axes[4].plot(edr_density_df['UTC'], edr_density_df['Drag Work'], label='Drag Work (Kinetic-Potential + Non-Con)', color='blue')
-    axes[4].set_ylabel('Drag Work')
-    axes[4].set_title('Drag Work')
-    axes[4].legend()
-    axes[4].grid(True, linestyle='dotted', color='gray', linewidth=0.75)
+#     axes[4].plot(edr_density_df['UTC'], edr_density_df['Drag Work'], label='Drag Work (Kinetic-Potential + Non-Con)', color='blue')
+#     axes[4].set_ylabel('Drag Work')
+#     axes[4].set_title('Drag Work')
+#     axes[4].legend()
+#     axes[4].grid(True, linestyle='dotted', color='gray', linewidth=0.75)
 
-    # Plot the last two lines on the same subplot
-    axes[5].plot(edr_density_df['UTC'], edr_density_df['EDR Density'].rolling(window=45*40,center=True).mean(), label='EDR Density Rolling', color='blue')
-    axes[5].plot(edr_density_df['UTC'], edr_density_df['EDR Density'], label='EDR Density', color='orange')
-    axes[5].plot(edr_density_df_jb['UTC'], edr_density_df_jb['JB08'], label='JB08', color='green')
-    axes[5].set_ylabel('Density (kg/m³)')
-    axes[5].set_title('EDR Density vs JB08')
-    #log scale
-    axes[5].set_yscale('log')
-    axes[5].legend()
-    axes[5].grid(True, linestyle='dotted', color='gray', linewidth=0.75)
+#     # Plot the last two lines on the same subplot
+#     axes[5].plot(edr_density_df['UTC'], edr_density_df['EDR Density'].rolling(window=45*40,center=True).mean(), label='EDR Density Rolling', color='blue')
+#     axes[5].plot(edr_density_df['UTC'], edr_density_df['EDR Density'], label='EDR Density', color='orange')
+#     axes[5].plot(edr_density_df_jb['UTC'], edr_density_df_jb['JB08'], label='JB08', color='green')
+#     axes[5].set_ylabel('Density (kg/m³)')
+#     axes[5].set_title('EDR Density vs JB08')
+#     #log scale
+#     axes[5].set_yscale('log')
+#     axes[5].legend()
+#     axes[5].grid(True, linestyle='dotted', color='gray', linewidth=0.75)
 
-    date_formatter = mdates.DateFormatter("%Y-%m-%d %H:%M")  # Include date and hour
-    for ax in axes:
-        ax.xaxis.set_major_formatter(date_formatter)
+#     date_formatter = mdates.DateFormatter("%Y-%m-%d %H:%M")  # Include date and hour
+#     for ax in axes:
+#         ax.xaxis.set_major_formatter(date_formatter)
 
-    # Limit x-axis labels to 10 evenly spaced ticks
-    x_ticks = edr_density_df['UTC'][::max(len(edr_density_df) // 10, 1)]
-    axes[5].set_xticks(x_ticks)
+#     # Limit x-axis labels to 10 evenly spaced ticks
+#     x_ticks = edr_density_df['UTC'][::max(len(edr_density_df) // 10, 1)]
+#     axes[5].set_xticks(x_ticks)
 
-    axes[5].tick_params(axis='x', rotation=45)
-    axes[5].set_xlabel('UTC')
+#     axes[5].tick_params(axis='x', rotation=45)
+#     axes[5].set_xlabel('UTC')
 
-    # Tight layout for better spacing
-    plt.tight_layout()
+#     # Tight layout for better spacing
+#     plt.tight_layout()
 
-    # Show the plot
-    plt.show()  
+#     # Show the plot
+#     plt.show()  
