@@ -7,14 +7,15 @@ import datetime
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from scipy.integrate import trapezoid as trapz
-from orekit.pyhelpers import setup_orekit_curdir
+from orekit.pyhelpers import setup_orekit_curdir, download_orekit_data_curdir
 from source.tools.utilities import get_satellite_info, utc_to_mjd, interpolate_positions
 from source.tools.sp3_2_ephemeris import sp3_ephem_to_df
 from source.tools.orekit_tools import state2acceleration, query_jb08
 
 # Initialize Orekit VM and setup
 vm = orekit.initVM()
-setup_orekit_curdir("misc/orekit-data.zip")
+download_orekit_data_curdir()
+setup_orekit_curdir()
 
 def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='1S'):
 
