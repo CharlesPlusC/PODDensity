@@ -10,7 +10,7 @@ from scipy.integrate import trapezoid as trapz
 from orekit.pyhelpers import setup_orekit_curdir, download_orekit_data_curdir
 from source.tools.utilities import get_satellite_info, utc_to_mjd, interpolate_positions
 from source.tools.sp3_2_ephemeris import sp3_ephem_to_df
-from source.tools.orekit_tools import state2acceleration, query_jb08
+from source.tools.orekit_tools import state2acceleration
 
 # Initialize Orekit VM and setup
 vm = orekit.initVM()
@@ -131,7 +131,7 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
         v_rel = np.linalg.norm(v - np.cross(atm_rot, r))
 
         # Density calculation
-        density = drag_work / (3.2 * settings['cross_section'] * v_rel**3)
+        density = drag_work / (settings['cd'] * settings['cross_section'] * v_rel**3)
 
         # Append results to row data
         row_data = {
@@ -160,53 +160,53 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
 
     return density_inversion_df, drag_work
 
-def add_jb08_accelerations(ephemeris_df, output_path, freq='1S'):
-    # Interpolate ephemeris to desired frequency
-    ephemeris_df = interpolate_positions(ephemeris_df, freq)
-    ephemeris_df['UTC'] = pd.to_datetime(ephemeris_df['UTC'])
-    ephemeris_df.set_index('UTC', inplace=True)
+# def add_jb08_accelerations(ephemeris_df, output_path, freq='1S'):
+#     # Interpolate ephemeris to desired frequency
+#     ephemeris_df = interpolate_positions(ephemeris_df, freq)
+#     ephemeris_df['UTC'] = pd.to_datetime(ephemeris_df['UTC'])
+#     ephemeris_df.set_index('UTC', inplace=True)
 
-    mjd_times = [utc_to_mjd(dt) for dt in ephemeris_df.index]
-    ephemeris_df['MJD'] = mjd_times
+#     mjd_times = [utc_to_mjd(dt) for dt in ephemeris_df.index]
+#     ephemeris_df['MJD'] = mjd_times
 
-    eci_positions = ephemeris_df[['x', 'y', 'z']].values
-    times = ephemeris_df.index
+#     eci_positions = ephemeris_df[['x', 'y', 'z']].values
+#     times = ephemeris_df.index
 
-    # Check if the output file exists
-    if os.path.exists(output_path):
-        print(f"Loading existing data from {output_path}")
-        existing_df = pd.read_csv(output_path, parse_dates=['UTC'])
-        existing_df.set_index('UTC', inplace=True)
-    else:
-        print("No existing file found. Creating a new one.")
-        existing_df = pd.DataFrame()
+#     # Check if the output file exists
+#     if os.path.exists(output_path):
+#         print(f"Loading existing data from {output_path}")
+#         existing_df = pd.read_csv(output_path, parse_dates=['UTC'])
+#         existing_df.set_index('UTC', inplace=True)
+#     else:
+#         print("No existing file found. Creating a new one.")
+#         existing_df = pd.DataFrame()
 
-    # Query JB08 accelerations and add to the existing DataFrame
-    rows = []
-    print("Querying JB08 accelerations...")
-    for i in tqdm(range(len(times)), desc="Computing JB08 Accelerations"):
-        r = eci_positions[i]
-        time = times[i]
+#     # Query JB08 accelerations and add to the existing DataFrame
+#     rows = []
+#     print("Querying JB08 accelerations...")
+#     for i in tqdm(range(len(times)), desc="Computing JB08 Accelerations"):
+#         r = eci_positions[i]
+#         time = times[i]
 
-        # Query JB08 model
-        jb08_rho = query_jb08(position=r, datetime=time)
+#         # Query JB08 model
+#         jb08_rho = query_jb08(position=r, datetime=time)
 
-        # Create a new row for JB08 accelerations
-        row = {
-            'UTC': time,
-            'JB08': jb08_rho,
-        }
-        rows.append(row)
+#         # Create a new row for JB08 accelerations
+#         row = {
+#             'UTC': time,
+#             'JB08': jb08_rho,
+#         }
+#         rows.append(row)
 
-    jb08_df = pd.DataFrame(rows).set_index('UTC')
+#     jb08_df = pd.DataFrame(rows).set_index('UTC')
 
-    # Merge with existing DataFrame
-    updated_df = existing_df.combine_first(jb08_df)
+#     # Merge with existing DataFrame
+#     updated_df = existing_df.combine_first(jb08_df)
 
-    # Save the updated DataFrame
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    updated_df.to_csv(output_path)
-    print(f"Updated file saved to {output_path}")
+#     # Save the updated DataFrame
+#     os.makedirs(os.path.dirname(output_path), exist_ok=True)
+#     updated_df.to_csv(output_path)
+#     print(f"Updated file saved to {output_path}")
 
 if __name__ == "__main__": 
     pass
