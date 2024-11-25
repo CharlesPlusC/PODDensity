@@ -52,13 +52,18 @@ source $UCL_CONDA_PATH/etc/profile.d/conda.sh
 module load python/miniconda3/4.10.3
 conda activate pod_density_env
 
-export PYTHONPATH=$PYTHONPATH:/home/zcesccc/EDRDensity/PODDensity/source
+export PYTHONPATH=/home/zcesccc/EDRDensity/PODDensity/source:$PYTHONPATH
+
+echo "PYTHONPATH during execution: $PYTHONPATH"
 
 cd $TMPDIR
 
 storm_file=$(ls {spacecraft_folder}/*.csv | sed -n "${{SGE_TASK_ID}}p")
 
+
 python -c "
+#print the storm file
+print(f'Storm file: $storm_file')
 import pandas as pd
 from source.EDRDensity import density_inversion_edr
 
