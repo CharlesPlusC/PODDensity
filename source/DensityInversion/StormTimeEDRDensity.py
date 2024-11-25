@@ -92,7 +92,7 @@ cd $TMPDIR
 storm_file=$(ls {spacecraft_folder}/*.csv | sed -n "${{SGE_TASK_ID}}p")
 
 python -c "
-from StormTimeEDRDensity import run_density_inversion
+from source.DensityInversion.StormTimeEDRDensity import run_density_inversion
 
 # Call the run_density_inversion function
 run_density_inversion(storm_file='$storm_file', satellite='{spacecraft}')
