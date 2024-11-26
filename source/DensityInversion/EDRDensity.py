@@ -36,8 +36,10 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
     ephemeris_df = interpolate_positions(ephemeris_df, freq)
 
 
+    # Keep 'UTC' as both a column and the index
     ephemeris_df['UTC'] = pd.to_datetime(ephemeris_df['UTC'])
     ephemeris_df.set_index('UTC', inplace=True)
+    ephemeris_df['UTC'] = ephemeris_df.index  # Make 'UTC' available as a column as well
     mjd_times = [utc_to_mjd(dt) for dt in ephemeris_df.index]
     ephemeris_df['MJD'] = mjd_times
 
