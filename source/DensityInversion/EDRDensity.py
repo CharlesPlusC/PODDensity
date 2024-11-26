@@ -18,6 +18,7 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
 
     # Path to store and load precomputed accelerations
     # acc_csv_path = f"output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv"
+    print(f"head of ephemeris_df: {ephemeris_df.head()}")
     print(f"columns in ephemeris_df: {ephemeris_df.columns}")
 
     ephemeris_df['UTC'] = pd.to_datetime(ephemeris_df['UTC'])
@@ -225,15 +226,15 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
 if __name__ == "__main__": 
     pass
     # storm_df_path = "output/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO-A_2024-05-08_density_inversion.csv"
-    # storm_df_path = "output/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO_storm_density_15_1_20240511215004.csv"
-    # storm_df = pd.read_csv(storm_df_path)
-    # satellite = "GRACE-FO"
-    # density_inversion_edr(
-    #     sat_name=satellite,
-    #     ephemeris_df=storm_df,
-    #     models_to_query=[None],
-    #     freq='1S'
-    #     )
+    storm_df_path = "output/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO_storm_density_15_1_20240511215004.csv"
+    storm_df = pd.read_csv(storm_df_path)
+    satellite = "GRACE-FO"
+    density_inversion_edr(
+        sat_name=satellite,
+        ephemeris_df=storm_df,
+        models_to_query=[None],
+        freq='1S'
+        )
 
 #     ephem_date_str = "2023-03-23"
 #     sp3_ephem_gfo = sp3_ephem_to_df("GRACE-FO-A", ephem_date_str)

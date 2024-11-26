@@ -18,8 +18,7 @@ def run_density_inversion(storm_file, satellite):
     try:
         print(f"Running density inversion for storm file: {storm_file}, satellite: {satellite}")
         
-        ephemeris_df = pd.read_csv(storm_file, parse_dates=['UTC'])
-        ephemeris_df.set_index('UTC', inplace=True)
+        ephemeris_df = pd.read_csv(storm_file)
         
         density_inversion_edr(
             sat_name=satellite,
