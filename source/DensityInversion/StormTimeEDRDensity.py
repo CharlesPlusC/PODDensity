@@ -53,10 +53,10 @@ def create_and_submit_density_jobs():
     os.makedirs(logs_folder, exist_ok=True)
     os.makedirs(output_folder, exist_ok=True)
 
-    # Find spacecraft folders
+    # Find spacecraft folders and filter for CHAMP only
     spacecraft_folders = [
         f for f in os.listdir(ephemerides_folder)
-        if os.path.isdir(os.path.join(ephemerides_folder, f))
+        if os.path.isdir(os.path.join(ephemerides_folder, f)) and "CHAMP" in f
     ]
     print(f"spacecraft_folders: {spacecraft_folders}")
 

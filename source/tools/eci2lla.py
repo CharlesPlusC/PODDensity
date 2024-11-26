@@ -61,7 +61,7 @@ def process_storm_data(storm_folder, missions):
                 storm_csv_path = os.path.join(mission_folder, storm_file)
                 transform_to_lat_lon_alt(storm_csv_path)
 
-storm_folder = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis"
-missions = ["GRACE-FO"]#"CHAMP", ,"TerraSAR-X"
+storm_folder = "output/PODDensityInversion/Data/StormAnalysis/"
+missions = ["CHAMP"]#"CHAMP", ,"TerraSAR-X"
 
 process_storm_data(storm_folder, missions)

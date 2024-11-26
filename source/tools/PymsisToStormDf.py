@@ -46,12 +46,12 @@ def process_storm_data(storm_folder, missions):
                 append_nrlmsise_density(storm_csv_path)
 
 # Specify the storm folder and missions
-# storm_folder = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis"
-# missions = ["GRACE-FO"]#"CHAMP", ,"TerraSAR-X"
+storm_folder = "output/PODDensityInversion/Data/StormAnalysis/"
+missions = ["CHAMP"] # "GRACE-FO","TerraSAR-X"
 
 # Process the storm data
-# process_storm_data(storm_folder, missions)
+process_storm_data(storm_folder, missions)
 
 #if you just want to compute NRLMSISE-00 for a single file:
-storm_csv_path = "output/DensityInversion/PODDensityInversion/Data/OneStormAllMethods/ACT_vs_POD_2023_05_06_GRACE-FOA.csv"
-append_nrlmsise_density(storm_csv_path)
+# storm_csv_path = "output/DensityInversion/PODDensityInversion/Data/OneStormAllMethods/ACT_vs_POD_2023_05_06_GRACE-FOA.csv"
+# append_nrlmsise_density(storm_csv_path)
