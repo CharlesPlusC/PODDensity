@@ -19,6 +19,8 @@ def run_density_inversion(storm_file, satellite):
         print(f"Running density inversion for storm file: {storm_file}, satellite: {satellite}")
         
         ephemeris_df = pd.read_csv(storm_file)
+
+        #slice the ephemeris to be only the first 1000 rows for testing 
         
         # Define the save folder
         save_folder = f"/home/zcesccc/Scratch/EDR_in/output/{satellite}/"

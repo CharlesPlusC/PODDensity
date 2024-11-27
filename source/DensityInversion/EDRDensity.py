@@ -36,7 +36,6 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
 
     ephemeris_df = interpolate_positions(ephemeris_df, freq)
 
-
     # Keep 'UTC' as both a column and the index
     ephemeris_df['UTC'] = pd.to_datetime(ephemeris_df['UTC'])
     ephemeris_df.set_index('UTC', inplace=True)
@@ -107,7 +106,7 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
     c_eci_accs = np.array(c_eci_accs)
 
     # Resample accelerations to match the desired frequency
-    acc_df = acc_df.asfreq(freq)
+    # acc_df = acc_df.asfreq(freq)
     nc_eci_accs = acc_df[['nc_x', 'nc_y', 'nc_z']].values
     c_eci_accs = acc_df[['c_x', 'c_y', 'c_z']].values
 
@@ -116,12 +115,17 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
     sample_time = int(pd.to_timedelta(freq).total_seconds())
     num_points_per_arc = arc_length // sample_time
 
+    print(f"length of eci positions: {len(eci_positions)}")
+    print(f"nc_eci_accs.shape: {np.shape(nc_eci_accs)}, eci_positions.shape: {np.shape(eci_positions)}")
+
     for i in tqdm(range(num_points_per_arc, len(ephemeris_df), sample_time), desc='Processing Density Inversion'):
         time = ephemeris_df.index[i]
 
         # Define window
         start_idx = max(0, i - num_points_per_arc)
         end_idx = i + 1  # Include current point
+
+        print(f"start_idx: {start_idx}, end_idx: {end_idx}")
 
         # Compute non-conservative integral
         g_noncon_integ = sum(
