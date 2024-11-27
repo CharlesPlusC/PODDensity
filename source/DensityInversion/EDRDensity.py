@@ -14,7 +14,7 @@ vm = orekit.initVM()
 # download_orekit_data_curdir()
 setup_orekit_curdir()
 
-def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='1S'):
+def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='1S', save_folder=None):
 
     # Path to store and load precomputed accelerations
     # acc_csv_path = f"output/EDR/Data/GRACE-FO/precomputed_accelerations_2023_03_23.csv"
@@ -96,8 +96,12 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
     # Save precomputed accelerations to a CSV
     acc_df = pd.DataFrame(rows)
     yyyy_mm_dd = datetime.datetime.strftime(ephemeris_df.index[0], "%Y-%m-%d")
-    acc_csv_path = f"output/EDR/Data/{sat_name}/precomp_accs_{yyyy_mm_dd}.csv"
-    os.makedirs(os.path.dirname(acc_csv_path), exist_ok=True)
+    if save_folder == None:
+        acc_csv_path = f"output/EDR/Data/{sat_name}/precomp_accs_{yyyy_mm_dd}.csv"
+        os.makedirs(os.path.dirname(acc_csv_path), exist_ok=True)
+    else:
+        yyyy_mm_dd = datetime.datetime.strftime(ephemeris_df.index[0], "%Y-%m-%d")
+        acc_csv_path = os.path.join(save_folder, f"precomp_accs_{sat_name}_{yyyy_mm_dd}.csv")
     acc_df.to_csv(acc_csv_path, index=False)
     nc_eci_accs = np.array(nc_eci_accs)
     c_eci_accs = np.array(c_eci_accs)
@@ -168,7 +172,12 @@ def density_inversion_edr(sat_name, ephemeris_df, models_to_query=[None], freq='
     if rows_list:
         density_inversion_df = pd.DataFrame(rows_list)
         yyyy_mm_dd = datetime.datetime.strftime(ephemeris_df.index[0], "%Y-%m-%d")
-        output_dir = f"output/DensityInversion/EDRDensityInversion/Data/{sat_name}"
+        if save_folder == None:
+            output_dir = f"output/EDR/Data/{sat_name}/precomp_accs_{yyyy_mm_dd}.csv"
+        else:
+            yyyy_mm_dd = datetime.datetime.strftime(ephemeris_df.index[0], "%Y-%m-%d")
+            output_dir = os.path.join(save_folder, f"precomp_accs_{sat_name}_{yyyy_mm_dd}.csv")
+
         os.makedirs(output_dir, exist_ok=True)
         output_path = os.path.join(output_dir, f"EDR_{sat_name}_{yyyy_mm_dd}_density_inversion.csv")
         density_inversion_df.to_csv(output_path, index=False)
@@ -228,13 +237,10 @@ if __name__ == "__main__":
     # storm_df_path = "output/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO-A_2024-05-08_density_inversion.csv"
     storm_df_path = "output/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO_storm_density_15_1_20240511215004.csv"
     storm_df = pd.read_csv(storm_df_path)
+    #slice dataframe to take only first 200 rows
+    storm_df = storm_df.iloc[:10]
     satellite = "GRACE-FO"
-    density_inversion_edr(
-        sat_name=satellite,
-        ephemeris_df=storm_df,
-        models_to_query=[None],
-        freq='1S'
-        )
+    density_inversion_edr(sat_name=satellite,ephemeris_df=storm_df,models_to_query=[None],freq='1S',save_folder="output/EDR/Data/GRACE-FO/")
 
 #     ephem_date_str = "2023-03-23"
 #     sp3_ephem_gfo = sp3_ephem_to_df("GRACE-FO-A", ephem_date_str)

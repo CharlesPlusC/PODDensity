@@ -20,18 +20,24 @@ def run_density_inversion(storm_file, satellite):
         
         ephemeris_df = pd.read_csv(storm_file)
         
+        # Define the save folder
+        save_folder = f"/home/zcesccc/Scratch/EDR_in/output/{satellite}/"
+        os.makedirs(save_folder, exist_ok=True)  # Ensure the save folder exists
+
+        # Run the density inversion
         density_inversion_edr(
             sat_name=satellite,
             ephemeris_df=ephemeris_df,
             models_to_query=[None],
-            freq='1S'
+            freq='1S',
+            save_folder=save_folder
         )
-        print(f"Density inversion completed for {satellite}.")
+        print(f"Density inversion completed for {satellite}. Results saved to {save_folder}.")
     except Exception as e:
         print(f"Error during density inversion for {satellite}: {e}")
         raise
 
-def create_and_submit_density_jobs():
+def create_and_submit_density_jobs(spacecraft_to_do=None):
     """
     Create and submit job scripts for EDR density retrieval for each spacecraft folder.
 
@@ -54,10 +60,16 @@ def create_and_submit_density_jobs():
     os.makedirs(output_folder, exist_ok=True)
 
     # Find spacecraft folders and filter for CHAMP only
-    spacecraft_folders = [
-        f for f in os.listdir(ephemerides_folder)
-        if os.path.isdir(os.path.join(ephemerides_folder, f)) and "CHAMP" in f
-    ]
+    if spacecraft_to_do:
+        spacecraft_folders = [
+            f for f in os.listdir(ephemerides_folder)
+            if os.path.isdir(os.path.join(ephemerides_folder, f)) and spacecraft_to_do in f
+        ]
+    else:
+        spacecraft_folders = [
+            f for f in os.listdir(ephemerides_folder)
+            if os.path.isdir(os.path.join(ephemerides_folder, f))
+        ]
     print(f"spacecraft_folders: {spacecraft_folders}")
 
     job_count = 0
@@ -75,9 +87,9 @@ def create_and_submit_density_jobs():
         # Create job script
         script_filename = os.path.join(folder_for_jobs, f"{spacecraft}_density_inversion.sh")
         script_content = f"""#!/bin/bash -l
-#$ -l h_rt=24:00:0
+#$ -l h_rt=1:00:0
 #$ -l mem=8G
-#$ -l tmpfs=15G
+#$ -l tmpfs=8G
 #$ -N {spacecraft}_density_inversion
 #$ -t 1-{len(storm_files)}
 #$ -wd {work_dir}
@@ -129,4 +141,4 @@ if __name__ == "__main__":
         main_script(satellite, storm_file)
     else:
         # Default action: create and submit jobs
-        create_and_submit_density_jobs()
+        create_and_submit_density_jobs(spacecraft_to_do=None) #pass the name of the spacecraft to do, e.g. "CHAMP" otherwise it will do them all
