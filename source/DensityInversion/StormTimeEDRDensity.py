@@ -21,6 +21,7 @@ def run_density_inversion(storm_file, satellite):
         ephemeris_df = pd.read_csv(storm_file)
 
         #slice the ephemeris to be only the first 1000 rows for testing 
+        ephemeris_df = ephemeris_df.iloc[:1000]
         
         # Define the save folder
         save_folder = f"/home/zcesccc/Scratch/EDR_in/output/{satellite}/"
