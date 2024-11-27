@@ -19,9 +19,6 @@ def run_density_inversion(storm_file, satellite):
         print(f"Running density inversion for storm file: {storm_file}, satellite: {satellite}")
         
         ephemeris_df = pd.read_csv(storm_file)
-
-        #slice the ephemeris to be only the first 1000 rows for testing 
-        ephemeris_df = ephemeris_df.iloc[:10]
         
         # Define the save folder
         save_folder = f"/home/zcesccc/Scratch/EDR_in/output/{satellite}/"
@@ -90,7 +87,7 @@ def create_and_submit_density_jobs(spacecraft_to_do=None):
         # Create job script
         script_filename = os.path.join(folder_for_jobs, f"{spacecraft}_density_inversion.sh")
         script_content = f"""#!/bin/bash -l
-#$ -l h_rt=1:00:0
+#$ -l h_rt=30:00:0
 #$ -l mem=8G
 #$ -l tmpfs=8G
 #$ -N {spacecraft}_density_inversion
