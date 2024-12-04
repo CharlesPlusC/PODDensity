@@ -25,26 +25,26 @@ from ..tools.utilities import extract_acceleration, download_file_url
 import numpy as np
 
 # Download SOLFSMY and DTCFILE files for JB2008 model
-# solfsmy_file = download_file_url("https://sol.spacenvironment.net/JB2008/indices/SOLFSMY.TXT", "external/jb08_inputs/SOLFSMY.TXT")
-# dtcfile_file = download_file_url("https://sol.spacenvironment.net/JB2008/indices/DTCFILE.TXT", "external/jb08_inputs/DTCFILE.TXT")
+solfsmy_file = download_file_url("https://sol.spacenvironment.net/JB2008/indices/SOLFSMY.TXT", "external/jb08_inputs/SOLFSMY.TXT")
+dtcfile_file = download_file_url("https://sol.spacenvironment.net/JB2008/indices/DTCFILE.TXT", "external/jb08_inputs/DTCFILE.TXT")
 
 # Create DataSource instances
-# solfsmy_data_source = DataSource(solfsmy_file)
-# dtcfile_data_source = DataSource(dtcfile_file)
+solfsmy_data_source = DataSource(solfsmy_file)
+dtcfile_data_source = DataSource(dtcfile_file)
 
-# def query_jb08(position, datetime):
-#     frame = FramesFactory.getEME2000()
-#     wgs84Ellipsoid = ReferenceEllipsoid.getWgs84(FramesFactory.getITRF(IERSConventions.IERS_2010, False))
-#     jb08_data = JB2008SpaceEnvironmentData(solfsmy_data_source,
-#                                         dtcfile_data_source)
+def query_jb08(position, datetime):
+    frame = FramesFactory.getEME2000()
+    wgs84Ellipsoid = ReferenceEllipsoid.getWgs84(FramesFactory.getITRF(IERSConventions.IERS_2010, False))
+    jb08_data = JB2008SpaceEnvironmentData(solfsmy_data_source,
+                                        dtcfile_data_source)
 
-#     utc = TimeScalesFactory.getUTC()
-#     sun = CelestialBodyFactory.getSun()
-#     atmosphere = JB2008(jb08_data, sun, wgs84Ellipsoid, utc)
-#     absolute_date = datetime_to_absolutedate(datetime)
-#     position_vector = Vector3D(float(position[0]), float(position[1]), float(position[2]))
-#     density = atmosphere.getDensity(absolute_date, position_vector, frame)
-#     return density
+    utc = TimeScalesFactory.getUTC()
+    sun = CelestialBodyFactory.getSun()
+    atmosphere = JB2008(jb08_data, sun, wgs84Ellipsoid, utc)
+    absolute_date = datetime_to_absolutedate(datetime)
+    position_vector = Vector3D(float(position[0]), float(position[1]), float(position[2]))
+    density = atmosphere.getDensity(absolute_date, position_vector, frame)
+    return density
 
 def query_dtm2000(position, datetime):
     frame = FramesFactory.getEME2000()

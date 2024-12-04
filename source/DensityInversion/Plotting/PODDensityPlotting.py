@@ -203,7 +203,7 @@ def plot_densities_and_indices(data_frames, moving_avg_minutes, sat_name):
     axs[2].set_ylim(min_dst_sym, max_dst_sym)
 
     plt.tight_layout() 
-    plt.savefig(f'output/DensityInversion/PODDensityInversion/Plots/{sat_name}/tseries_indices_{day}_{month}_{year}.png', dpi=600)
+    plt.savefig(f'output/PODDensityInversion/Plots/{sat_name}/tseries_indices_{day}_{month}_{year}.png', dpi=600)
     plt.close()
 
 def density_compare_scatter(density_df, moving_avg_window, sat_name):
@@ -425,8 +425,6 @@ def plot_all_storms_scatter(base_dir, sat_name, moving_avg_minutes=45):
                 if df.empty:
                     continue
 
-                # mape = (100 / len(df)) * np.sum(np.abs(df["Computed Density"] - df["AccelerometerDensity"]) / np.abs(df["AccelerometerDensity"]))
-                # if mape < 75:
                 aggregated_data.append(df)
 
         if not aggregated_data:
@@ -487,8 +485,6 @@ def plot_all_storms_scatter(base_dir, sat_name, moving_avg_minutes=45):
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.savefig(f'output/DensityInversion/PODDensityInversion/Plots/{sat_name}_allstorm_density_scatter_plots.png', dpi=600, bbox_inches='tight')
     plt.show()
-
-
 
 def plot_arglat_density_and_kp(data_frames, moving_avg_minutes, sat_name, save_path=None):
     sns.set_style("darkgrid", {
@@ -638,6 +634,191 @@ def plot_density_and_kp(data_frames, moving_avg_minutes, sat_name, save_path=Non
         plt.savefig(save_path, dpi=600)
     plt.close()
 
+def plot_density_scatter(base_dir, sat_names):
+    def aggregate_density_data(storm_analysis_dir, sat_name):
+        aggregated_data = []
+        for storm_file in sorted(os.listdir(storm_analysis_dir)):
+            storm_file_path = os.path.join(storm_analysis_dir, storm_file)
+            if os.path.isfile(storm_file_path) and storm_file.endswith("EDR.csv"):
+                df = pd.read_csv(storm_file_path)
+
+                if "AccelerometerDensity" not in df.columns:
+                    continue
+
+                df['UTC'] = pd.to_datetime(df['UTC'], utc=True)
+
+                if df.empty:
+                    continue
+
+                max_time = df.loc[df["AccelerometerDensity"].idxmax(), "UTC"]
+                df = df[(df["UTC"] >= max_time - pd.Timedelta(hours=12)) & 
+                        (df["UTC"] <= max_time + pd.Timedelta(hours=12))]
+                if df.empty:
+                    continue
+
+                median_density = df['Computed Density'].median()
+                if sat_name == "GRACE-FO":
+                    df['Computed Density'] = df['Computed Density'].apply(lambda x: 1e-11 if x > 1.2e-11 else (median_density if x < -2e-11 else x))
+                else:
+                    df['Computed Density'] = df['Computed Density'].apply(lambda x: median_density if x > 10 * median_density or x < median_density / 10 else x)
+
+                specific_window = 23 if sat_name == "CHAMP" else 90
+                window_size = (specific_window * 60) // 15
+                df['Computed Density'] = df['Computed Density'].rolling(window=window_size, center=True).mean()
+
+                IQR = df['Computed Density'].quantile(0.75) - df['Computed Density'].quantile(0.25)
+                lower_bound, upper_bound = median_density - 5 * IQR, median_density + 5 * IQR
+                df['Computed Density'] = df['Computed Density'].apply(
+                    lambda x: median_density if x < lower_bound or x > upper_bound else x
+                )
+                df['Computed Density'] = savgol_filter(df['Computed Density'], 51, 3)
+
+                df['EDR Density'] = df['EDR Density'].rolling(window=45, center=True).mean()
+                df['EDR Density'] = savgol_filter(df['EDR Density'], 51, 3)
+
+                df["Satellite"] = sat_name
+                aggregated_data.append(df)
+
+        if not aggregated_data:
+            return pd.DataFrame()
+        return pd.concat(aggregated_data)
+
+    aggregated_df_list = []
+    for sat_name in sat_names:
+        storm_analysis_dir = os.path.join(base_dir, sat_name)
+        if not os.path.exists(storm_analysis_dir):
+            continue
+
+        aggregated_df = aggregate_density_data(storm_analysis_dir, sat_name)
+        if not aggregated_df.empty:
+            aggregated_df_list.append(aggregated_df)
+
+    if not aggregated_df_list:
+        print("No aggregated data available for any satellite.")
+        return
+
+    combined_df = pd.concat(aggregated_df_list)
+
+    comparisons = [
+        ("Computed Density", "AccelerometerDensity", "POD Density vs Accelerometer"),
+        ("EDR Density", "AccelerometerDensity", "EDR Density vs Accelerometer"),
+        ("JB08", "AccelerometerDensity", "JB08 vs Accelerometer"),
+        ("DTM2000", "AccelerometerDensity", "DTM2000 vs Accelerometer"),
+        ("NRLMSISE-00", "AccelerometerDensity", "NRLMSISE-00 vs Accelerometer"),
+    ]
+
+    x_min, x_max, y_min, y_max = 1e-14, 1e-10, 1e-14, 1e-10
+    f, axs = plt.subplots(len(comparisons), 2, figsize=(14, 4 * len(comparisons)), gridspec_kw={'width_ratios': [1, 1]}, sharex='col')
+
+    # Compute global min and max for heatmap data
+    global_min = float('inf')
+    global_max = float('-inf')
+    for x_col, y_col, _ in comparisons:
+        if x_col not in combined_df.columns or y_col not in combined_df.columns:
+            continue
+
+        plot_data = combined_df.dropna(subset=[x_col, y_col])
+        plot_data = plot_data[(plot_data[x_col] >= x_min) & (plot_data[x_col] <= x_max) &
+                              (plot_data[y_col] >= y_min) & (plot_data[y_col] <= y_max)]
+
+        heatmap_data, _, _ = np.histogram2d(
+            plot_data[x_col], plot_data[y_col],
+            bins=[np.logspace(np.log10(x_min), np.log10(x_max), 80),
+                  np.logspace(np.log10(y_min), np.log10(y_max), 80)]
+        )
+        heatmap_data /= np.sum(heatmap_data)
+        heatmap_data = np.where(heatmap_data > 0, np.log10(heatmap_data), np.nan)
+
+        global_min = min(global_min, np.nanmin(heatmap_data))
+        global_max = max(global_max, np.nanmax(heatmap_data))
+
+    # Subplot lettering
+    subplot_labels = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+    for i, ((x_col, y_col, title), ax_scatter, ax_heatmap) in enumerate(zip(comparisons, axs[:, 0], axs[:, 1])):
+        if x_col not in combined_df.columns or y_col not in combined_df.columns:
+            continue
+
+        plot_data = combined_df.dropna(subset=[x_col, y_col])
+        plot_data = plot_data[(plot_data[x_col] >= x_min) & (plot_data[x_col] <= x_max) &
+                              (plot_data[y_col] >= y_min) & (plot_data[y_col] <= y_max)]
+
+        sns.scatterplot(
+            data=plot_data,
+            x=x_col,
+            y=y_col,
+            hue="Satellite",
+            style="Satellite",
+            s=5,
+            ax=ax_scatter,
+            alpha=0.4,
+            palette={"CHAMP": "blue", "GRACE-FO": "red"}
+        )
+
+        handles, labels = ax_scatter.get_legend_handles_labels()
+        ax_scatter.legend(handles, labels, fontsize=14, markerscale=4)
+
+        X, y = plot_data[x_col].values.reshape(-1, 1), plot_data[y_col].values
+        if len(X) > 0 and len(y) > 0:
+            reg = LinearRegression().fit(X, y)
+            r2 = r2_score(y, reg.predict(X))
+        else:
+            r2 = np.nan
+
+        ax_scatter.set_xscale('log')
+        ax_scatter.set_yscale('log')
+        ax_scatter.set_title(f'{title} (R²={r2:.2f})', fontsize=14)
+        ax_scatter.set_xlabel(f'{x_col} (kg/m³)', fontsize=14)
+        ax_scatter.set_ylabel(f'{y_col} (kg/m³)', fontsize=14)
+        ax_scatter.tick_params(axis='both', which='major', labelsize=14)
+        ax_scatter.grid(color='black', linestyle='-', linewidth=0.5)
+
+        ax_scatter.set_xlim(x_min, x_max)
+        ax_scatter.set_ylim(y_min, y_max)
+
+        ax_scatter.plot([x_min, x_max], [x_min, x_max], 'k--', lw=1)
+
+        heatmap_data, xedges, yedges = np.histogram2d(
+            plot_data[x_col], plot_data[y_col],
+            bins=[np.logspace(np.log10(x_min), np.log10(x_max), 80),
+                  np.logspace(np.log10(y_min), np.log10(y_max), 80)]
+        )
+
+        heatmap_data /= np.sum(heatmap_data)
+        heatmap_data = np.where(heatmap_data > 0, np.log10(heatmap_data), np.nan)
+
+        im = ax_heatmap.pcolormesh(
+            xedges, yedges, heatmap_data.T,
+            cmap="rocket", shading='auto', vmin=global_min, vmax=global_max
+        )
+
+        cbar = f.colorbar(im, ax=ax_heatmap, orientation="vertical", pad=0.05)
+        cbar.ax.tick_params(labelsize=14)
+        cbar.set_ticks(np.linspace(global_min, global_max, 4))
+        cbar.set_ticklabels(["1", "10", "100", "1000"])
+        cbar.set_label('Number of Points', rotation=270, labelpad=15, fontsize=14)
+
+        ax_heatmap.set_xscale('log')
+        ax_heatmap.set_yscale('log')
+        ax_heatmap.set_xlabel(f'{x_col} (kg/m³)', fontsize=14)
+        ax_heatmap.set_ylabel(f'{y_col} (kg/m³)', fontsize=14)
+        ax_heatmap.tick_params(axis='both', which='major', labelsize=14)
+        ax_heatmap.grid(color='black', linestyle='-', linewidth=0.5)
+
+        ax_heatmap.set_xlim(x_min, x_max)
+        ax_heatmap.set_ylim(y_min, y_max)
+
+        ax_heatmap.plot([x_min, x_max], [x_min, x_max], 'k--', lw=1)
+
+        # Add subplot label
+        ax_scatter.text(0.95, 0.05, subplot_labels[i * 2], transform=ax_scatter.transAxes,
+                        fontsize=12, fontweight='bold', ha='right', va='bottom')
+        ax_heatmap.text(0.95, 0.05, subplot_labels[i * 2 + 1], transform=ax_heatmap.transAxes,
+                        fontsize=12, fontweight='bold', ha='right', va='bottom')
+
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.savefig(f'output/PODDensityInversion/Plots/multi_sat_density_models_scatter_heatmap.png', dpi=600, bbox_inches='tight')
+
 if __name__ == "__main__":
     
     # # Base directory for storm analysis
@@ -659,8 +840,9 @@ if __name__ == "__main__":
     #                 # density_compare_scatter(storm_df, 45, sat_name)
                     # plot_densities_and_indices([storm_df], 45, sat_name)
 
-    # base_dir = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis/"
-    # sat_names = ["GRACE-FO"] #TerraSAR-X,"GRACE-FO","CHAMP"
+    base_dir = "output/PODDensityInversion/Data/StormAnalysis/"
+    sat_names = ["CHAMP","GRACE-FO"] #TerraSAR-X,"GRACE-FO","CHAMP"
+    plot_density_scatter(base_dir, sat_names)
     # for sat_name in sat_names:
         # print(f"Plotting for {sat_name}")
         # plot_all_storms_scatter(base_dir, sat_name, moving_avg_minutes=45)
@@ -668,33 +850,6 @@ if __name__ == "__main__":
 
     #plot densities and indices for single storm:
     # storm_df = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO_storm_density_22.csv"
-    # plot_densities_and_indices([storm_df], 45, "GRACE-FO")
+    # storm_df = pd.read_csv("output/PODDensityInversion/Data/StormAnalysis/TerraSAR-X/TerraSAR-X_storm_density_2_1_20240511073231.csv")
+    # plot_densities_and_indices([storm_df], 45, "TerraSAR-X")
 
-    import matplotlib.pyplot as plt
-    sat_names_to_test = ["GRACE-FO","CHAMP"]
-    for sat_name in sat_names_to_test:
-        storm_folder = os.path.join("output/DensityInversion/PODDensityInversion/Data/StormAnalysis", sat_name)
-        for storm_csv_path in os.listdir(storm_folder)[2:]:
-            print(f"Processing {storm_csv_path} for {sat_name}")
-            ephem_df = pd.read_csv(os.path.join(storm_folder, storm_csv_path))
-            EDR_densities_df = pd.read_csv("output/DensityInversion/EDR/Data/StormAnalysis/GRACE-FOEDRDensity_2023-11-03 21:59:57.csv")
-            #plot the rho_eff values against the AccelerometeDensities that are in ephem_df
-            plt.figure(figsize=(12, 8))
-            plt.plot(EDR_densities_df['UTC'], EDR_densities_df['rho_eff']*25, label='rho_eff')
-            #calculate the MAPE between the rho_eff and the AccelerometerDensity
-            mape = np.mean(np.abs((EDR_densities_df['rho_eff'].rolling(window=2*90, center=True).median()*25 - ephem_df['AccelerometerDensity']) / ephem_df['AccelerometerDensity'])) * 100
-            plt.plot(ephem_df['UTC'], ephem_df['AccelerometerDensity'], label='AccelerometerDensity, mape = {:.2f}%'.format(mape))
-            plt.xlabel('rho_eff')
-            plt.ylabel('AccelerometerDensity')
-            #plot x-labels only every 3 hours
-            plt.xticks(EDR_densities_df['UTC'][::3*60*12])
-            plt.legend()
-            #log the y axis
-            plt.yscale('log')
-            plt.title(f"{sat_name} EDR vs AccelerometerDensity")
-            # Adjust layout and save the plot
-            plt.tight_layout()
-            output_path = os.path.join(f"output/DensityInversion/EDR/Data/StormAnalysis/{sat_name}/", f"EDR_vs_Acc_{storm_csv_path}.png")
-            # plt.savefig(output_path)
-            plt.show()
-            print(f"Finished processing {storm_csv_path} for {sat_name}")

@@ -22,7 +22,7 @@ def run_density_inversion(storm_file, satellite):
         
         # Define the save folder
         save_folder = f"/home/zcesccc/Scratch/EDR_in/output/{satellite}/"
-        os.makedirs(save_folder, exist_ok=True)  # Ensure the save folder exists
+        os.makedirs(save_folder, exist_ok=True)
 
         # Run the density inversion
         density_inversion_edr(

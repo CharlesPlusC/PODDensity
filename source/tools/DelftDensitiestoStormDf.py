@@ -73,11 +73,12 @@ def get_available_density_files(mission_folder):
         print(f"Checking file: {file}...")
         if file.endswith(".txt"):
             try:
-                # For GRACE-FO files in the format GC_DNS_ACC_YYYY_MM_v02c.txt
+                # For filenames like CH_DNS_ACC_2008-03_v02.txt
                 parts = file.split('_')
-                if len(parts) > 3:
-                    year = int(parts[3])
-                    month = int(parts[4][:2])  # Use the first two characters of the month part
+                if len(parts) >= 4:
+                    year_month = parts[3].split('-')
+                    year = int(year_month[0])  # Extract the year
+                    month = int(year_month[1])  # Extract the month
                     available_files[(year, month)] = os.path.join(mission_folder, file)
                     print(f"Added {(year, month)} -> {file}")
             except (IndexError, ValueError) as e:
@@ -98,9 +99,10 @@ def find_closest_density_file(available_files, target_year, target_month):
     print(f"Closest file found: {closest_file}")
     return closest_file
 
-# Step 5: Process density data and add to StormAnalysis CSVs
+# Step 5: Process density data and add to StormAnaly
+# sis CSVs
 def process_density_data(data_folder, storm_folder):
-    for mission in ["GRACE-FO"]: #CHAMP
+    for mission in ["GRACE-FO"]: 
         mission_folder = os.path.join(data_folder, f"version_02_{mission}_data")
         storm_csv_folder = os.path.join(storm_folder, mission)
         if not os.path.isdir(mission_folder) or not os.path.isdir(storm_csv_folder):
@@ -112,7 +114,7 @@ def process_density_data(data_folder, storm_folder):
             print(f"No files found for mission {mission} in {mission_folder}.")
 
         for storm_file in os.listdir(storm_csv_folder):
-            if storm_file.endswith(".csv"):
+            if storm_file.endswith("withEDR.csv"):
                 print(f"Processing {storm_file} for {mission}...")
                 storm_csv_path = os.path.join(storm_csv_folder, storm_file)
                 storm_csv = pd.read_csv(storm_csv_path, parse_dates=["UTC"])
@@ -201,7 +203,7 @@ from datetime import datetime
 
 def add_lat_lon_alt_density(csv_file, extracted_data_folder):
     data = pd.read_csv(csv_file, parse_dates=["UTC"])
-    print(f'head of data: {data.head()}')
+    print(f'Head of data: {data.head()}')
 
     data["latitude"] = None
     data["longitude"] = None
@@ -225,20 +227,33 @@ def add_lat_lon_alt_density(csv_file, extracted_data_folder):
     for root, _, files in os.walk(mission_folder):
         for file in files:
             if file.endswith(".txt"):
-                # Extract the date from the filename (e.g., GC_DNS_ACC_2019_01_v02c.txt)
+                # Extract the relevant parts of the filename
                 parts = file.split('_')
-                if len(parts) >= 4:
+                if len(parts) >= 4:  # Ensure the file has enough parts for both cases
                     try:
-                        year = int(parts[3])
-                        month = int(parts[4][:2])  # First two characters for the month
+                        if '-' in parts[3]:  # Case 1: Year and month in "2008-03" format
+                            year_month = parts[3].split('-')
+                            year = int(year_month[0])  # Extract the year
+                            month = int(year_month[1])  # Extract the month
+                        elif len(parts) >= 5:  # Case 2: Separate year and month
+                            year = int(parts[3])  # Extract year from parts[3]
+                            month = int(parts[4].split('.')[0])  # Extract month from parts[4]
+                        else:
+                            print(f"Skipping file due to unexpected structure: {file}")
+                            continue
+                        
+                        print(f"Year: {year}, Month: {month}")
                         file_date = datetime(year, month, 1)
+                        
                         # Calculate the difference in months
                         diff = abs((file_date.year - storm_start.year) * 12 + (file_date.month - storm_start.month))
                         if diff < min_diff:
                             min_diff = diff
                             nearest_file = os.path.join(root, file)
-                    except ValueError:
-                        print(f"Skipping file with unexpected format: {file}")
+                    except ValueError as e:
+                        print(f"Skipping file with unexpected date format in: {file}, error: {e}")
+                else:
+                    print(f"Skipping file due to unexpected structure: {file}")
 
     if not nearest_file:
         print("No suitable density file found.")
@@ -283,12 +298,13 @@ def add_lat_lon_alt_density(csv_file, extracted_data_folder):
     return data
 
 
+
 if __name__ == "__main__":
 
     # Main execution
     source_zip_folder = "external/TUDelft_Densities"
     extracted_data_folder = "external/TUDelft_Densities/extracted_density_data"
-    storm_folder = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis"
+    storm_folder = "output/PODDensityInversion/Data/StormAnalysis"
 
     # extract_zip_files(source_zip_folder, extracted_data_folder)
     # process_density_data(extracted_data_folder, storm_folder)
@@ -297,5 +313,5 @@ if __name__ == "__main__":
     # density_folder = "external/TUDelft_Densities/extracted_density_data/version_02_CHAMP_data"
     # process_density_folder_to_csv(density_folder, "2003-10-27", "2003-11-05", "CHAMP_density_2003.csv")
     # Add Lat, Lon, Alt, and AccelerometerDensity to storm data CSV
-    add_lat_lon_alt_density(csv_file="output/DensityInversion/PODDensityInversion/Data/OneStormAllMethods/ACT_vs_POD_2023_05_06_GRACE-FOA.csv",extracted_data_folder=extracted_data_folder)
+    add_lat_lon_alt_density(csv_file="output/EDR/Data/GRACE-FO-A/EDR_GRACE-FO-A_2023-05-06_density_inversion.csv",extracted_data_folder=extracted_data_folder)
 
