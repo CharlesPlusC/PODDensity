@@ -39,5 +39,14 @@
         "cross_section": 3.9,
         "cd": 2.2,
         "cr": 1.5
+    },
+    "Sentinel-2A": {
+        "norad_id": 40697,
+        "sp3-c_code": "L72",
+        "eof_header": "S2A",
+        "mass": 1140.0,
+        "cross_section": 3.4,
+        "cd": 2.2,
+        "cr": 1.5
     }
 }
