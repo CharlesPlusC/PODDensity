@@ -41,10 +41,10 @@ python -m source.DensityInversion.Plotting.AllMethods1Storm.py
 
 This repository allows the reproduction of all figures included in the paper, along with additional plots that provide further insights. Examples of the generated outputs are illustrated below:
 
-### Comparison of POD-Derived Densities to Model Densities Across All Available Storms
+### Comparison of POD-Accelerometry, EDR and Accelerometer Derived Densities Across All Available Storms
 
 <p align="center">
-  <img src="output/PODDensityInversion/Plots/CHAMP_allstorm_density_scatter_plots.png" width="80%" height="50%">
+  <img src="output/PODDensityInversion/Plots/multi_sat_density_models_scatter_heatmap.png" width="80%" height="50%">
 </p>
 
 ### Relative POD Density for Each Storm as a Function of Argument Latitude and Time
