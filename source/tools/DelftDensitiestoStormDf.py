@@ -136,12 +136,6 @@ def process_density_data(data_folder, storm_folder):
 
                 storm_csv.to_csv(storm_csv_path, index=False)
 
-import pandas as pd
-import datetime
-
-import os
-import pandas as pd
-import datetime
 
 def process_density_folder_to_csv(density_folder, start_date, end_date, csv_output_path):
     start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
@@ -155,8 +149,9 @@ def process_density_folder_to_csv(density_folder, start_date, end_date, csv_outp
         if file.endswith(".txt"):
             # Extract year and month from filename
             parts = file.split('_')
-            date_part = parts[3]  # Expected format: YYYY-MM
-            year, month = map(int, date_part.split('-'))
+            print(f"parts: {parts}")
+            year = int(parts[3])  # Expected format: YYYY-MM
+            month = int(parts[4])
             file_start_date = datetime.datetime(year, month, 1)
             file_end_date = (file_start_date + datetime.timedelta(days=31)).replace(day=1) - datetime.timedelta(days=1)
             
@@ -197,9 +192,6 @@ def process_density_folder_to_csv(density_folder, start_date, end_date, csv_outp
     else:
         print("No data found within the specified date range across all files.")
 
-import os
-import pandas as pd
-from datetime import datetime
 
 def add_lat_lon_alt_density(csv_file, extracted_data_folder):
     data = pd.read_csv(csv_file, parse_dates=["UTC"])
@@ -310,8 +302,8 @@ if __name__ == "__main__":
     # process_density_data(extracted_data_folder, storm_folder)
 
     # Get density for a specific date range and satellite and save to CSV
-    # density_folder = "external/TUDelft_Densities/extracted_density_data/version_02_CHAMP_data"
-    # process_density_folder_to_csv(density_folder, "2003-10-27", "2003-11-05", "CHAMP_density_2003.csv")
+    density_folder = "external/TUDelft_Densities/extracted_density_data/version_02_GRACE-FO_data"
+    process_density_folder_to_csv(density_folder, "2022-02-01", "2022-02-07", "GRACE_density_feb_2022.csv")
     # Add Lat, Lon, Alt, and AccelerometerDensity to storm data CSV
-    add_lat_lon_alt_density(csv_file="output/EDR/Data/GRACE-FO-A/EDR_GRACE-FO-A_2023-05-06_density_inversion.csv",extracted_data_folder=extracted_data_folder)
+    # add_lat_lon_alt_density(csv_file="output/EDR/Data/GRACE-FO-A/EDR_GRACE-FO-A_2023-05-06_density_inversion.csv",extracted_data_folder=extracted_data_folder)
 
