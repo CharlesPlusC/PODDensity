@@ -5,7 +5,7 @@
 <h1 align="center">Evaluating Near-Real Time Thermospheric Density Retrieval Methods from Precise Low Earth Orbit Spacecraft Ephemerides During Geomagnetic Storms</h1>
 
 <p align="center">
-    This repository contains the supporting code for the paper "<em>Near-Real Time Thermospheric Density Retrieval from Precise Low Earth Orbit Spacecraft Ephemerides During Geomagnetic Storms</em>" by Charles Constant, Santosh Bhattarai, Indigo Brownhall, Anasuya Aruliah, and Marek Zeibart (2024).
+    This repository contains the supporting code for the paper "<em>Evaluating Near-Real Time Thermospheric Density Retrieval Methods from Precise Low Earth Orbit Spacecraft Ephemerides During Geomagnetic Storms</em>" by Charles Constant, Santosh Bhattarai, Indigo Brownhall, Anasuya Aruliah, and Marek Zeibart (2024).
   <br />
   <a href="https://github.com/CharlesPlusC/PODDensity/issues">Report Issues</a>
   ·
