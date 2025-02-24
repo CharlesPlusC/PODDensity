@@ -56,7 +56,7 @@ This repository allows the reproduction of all figures included in the paper, al
 ### Time Series of POD-Derived Densities and Model Densities for a Single Storm
 
 <p align="center">
-  <img src="output/DensityInversion/PODDensityInversion/Plots/CHAMP/tseries_indices_7_5_2005.png" width="50%" height="50%">
+  <img src="output/PODDensityInversion/Plots/POD_vs_ACT/POD_vs_ACT_vs_EDR_vs_NRT_vs_Models_tseries.png" width="50%" height="50%">
 </p>
 
 ### Histogram Comparing MAPE of each method against accelerometer derived densities
