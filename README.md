@@ -44,13 +44,13 @@ This repository allows the reproduction of all figures included in the paper, al
 ### Comparison of POD-Derived Densities to Model Densities Across All Available Storms
 
 <p align="center">
-  <img src="output/PODDensityInversion/Plots/CHAMP_allstorm_density_scatter_plots.png" width="50%" height="50%">
+  <img src="output/PODDensityInversion/Plots/CHAMP_allstorm_density_scatter_plots.png" width="80%" height="50%">
 </p>
 
 ### Relative POD Density for Each Storm as a Function of Argument Latitude and Time
 
 <p align="center">
-  <img src="output/PODDensityInversion/Plots/GRACE-FO-A_computed_density_plots.png" width="50%" height="50%">
+  <img src="output/PODDensityInversion/Plots/GRACE-FO-A_computed_density_plots.png" width="70%" height="70%">
 </p>
 
 ### Time Series of POD-Derived Densities and Model Densities for a Single Storm
@@ -62,13 +62,13 @@ This repository allows the reproduction of all figures included in the paper, al
 ### Histogram Comparing MAPE of each method against accelerometer derived densities
 
 <p align="center">
-  <img src="output/PaperFigures/MAPE_histograms/Storms_MAPE_histogram.png" width="50%" height="50%">
+  <img src="output/PaperFigures/MAPE_histograms/Storms_MAPE_histogram.png" width="70%" height="70%">
 </p>
 
 ### Amplitude Spectral Density of Accelerometer Data for Each Method
 
 <p align="center">
-  <img src="output/PODDensityInversion/Plots/POD_vs_ACT/POD_vs_ACT_vs_EDR_vs_NRT_vs_Models_ASD.png" width="50%" height="50%">
+  <img src="output/PODDensityInversion/Plots/POD_vs_ACT/POD_vs_ACT_vs_EDR_vs_NRT_vs_Models_ASD.png" width="70%" height="70%">
 </p>
 
 ## System Overview
