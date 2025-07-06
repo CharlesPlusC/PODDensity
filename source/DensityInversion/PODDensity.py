@@ -123,16 +123,15 @@ def density_inversion(sat_name, ephemeris_df, x_acc_col, y_acc_col, z_acc_col, f
     return density_inversion_df
 
 if __name__ == "__main__":
-    # Example usage for a single storm (testing purposes with a small dataset)
-    sp3_ephem_gfo = sp3_ephem_to_df("Sentinel-2A", "2024-05-10")
-    sp3_ephem_gfo = sp3_ephem_gfo[(sp3_ephem_gfo['UTC'] >= "2024-05-10 00:00:00") & (sp3_ephem_gfo['UTC'] <= "2024-05-13 23:59:59")]
+    sp3_ephem_gfo = sp3_ephem_to_df("Sentinel-6A", "2024-05-08")
+    print(f"first 5 rows of sp3_ephem_gfo: {sp3_ephem_gfo.head()}")
+    sp3_ephem_gfo = sp3_ephem_gfo[(sp3_ephem_gfo['UTC'] >= "2024-05-07 00:00:00") & (sp3_ephem_gfo['UTC'] <= "2024-05-15 23:59:59")]
     print(f"first 5 rows of sp3_ephem_gfo: {sp3_ephem_gfo.head()}")
     print(f"last 5 rows of sp3_ephem_gfo: {sp3_ephem_gfo.tail()}")
 
-    # Force model configuration
     force_model_config_gfo = {
-        '90x90gravity': True, '3BP': True, 'solid_tides': True,
-        'ocean_tides': True, 'knocke_erp': True, 'relativity': True, 'SRP': True
+        '90x90gravity': True, '3BP': True, 'solid_tides': False,
+        'ocean_tides': False, 'knocke_erp': False, 'relativity': False, 'SRP': True
     }
 
     # Interpolate ephemeris data to desired resolution
@@ -142,4 +141,21 @@ if __name__ == "__main__":
     velacc_ephem_gfo = calculate_acceleration(interp_ephemeris_df_gfo, '0.01S', filter_window_length=21, filter_polyorder=7)
 
     # Perform density inversion
-    density_df_gfo = density_inversion("Sentinel-2A", velacc_ephem_gfo, 'accx', 'accy', 'accz', force_model_config_gfo, models_to_query=[None], density_freq='15S')
+    density_df_gfo = density_inversion("Sentinel-6A", velacc_ephem_gfo, 'accx', 'accy', 'accz', force_model_config_gfo, models_to_query=[None], density_freq='30S')
+
+    ####### QUICK PLOT #######
+    # storm_data_path = "/Users/charlesc/Documents/GitHub/POD-Density-Inversion/output/PODDensityInversion/Data/GRACE-FO-A/GRACE-FO-A_2025-05-27_density_inversion.csv"
+    # #open the storm data and pplot "UTC" vs "Computed Density"
+    # storm_data = pd.read_csv(storm_data_path)
+    # storm_data['UTC'] = pd.to_datetime(storm_data['UTC'])
+    # storm_data.set_index('UTC', inplace=True)
+    
+    # import matplotlib.pyplot as plt
+    # plt.figure(figsize=(12, 6))
+    # plt.plot(storm_data.index, storm_data['Computed Density'], label='Computed Density', color='blue')
+    # plt.title('Computed Density Over Time')
+    # plt.xlabel('UTC Time')
+    # plt.ylabel('Computed Density (kg/m^3)')
+    # plt.grid()
+    # plt.legend()
+    # plt.show()

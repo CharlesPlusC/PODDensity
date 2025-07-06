@@ -673,7 +673,10 @@ def plot_density_scatter(base_dir, sat_names):
                 )
                 df['Computed Density'] = savgol_filter(df['Computed Density'], 51, 3)
 
-                df['EDR Density'] = df['EDR Density'].rolling(window=45, center=True).mean()
+
+
+
+                df['EDR Density'] = df['EDR Density'].rolling(window=90, center=True).mean()
                 df['EDR Density'] = savgol_filter(df['EDR Density'], 51, 3)
 
                 df["Satellite"] = sat_name
@@ -819,6 +822,440 @@ def plot_density_scatter(base_dir, sat_names):
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.savefig(f'output/PODDensityInversion/Plots/multi_sat_density_models_scatter_heatmap.png', dpi=600, bbox_inches='tight')
 
+def plot_sorted_mape(base_dir, sat_names):
+    import os
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from scipy.signal import savgol_filter
+    for sat in sat_names:
+        sat_folder = os.path.join(base_dir, sat)
+        csv_files = [os.path.join(sat_folder, f) for f in os.listdir(sat_folder) if f.endswith('.csv')]
+        storms = []
+        for file in csv_files:
+            df = pd.read_csv(file)
+            # Ensure required columns exist
+            if "AccelerometerDensity" not in df.columns or "UTC" not in df.columns:
+                continue
+            df["UTC"] = pd.to_datetime(df["UTC"])
+            max_time = df.loc[df["AccelerometerDensity"].idxmax(), "UTC"]
+            df = df[(df["UTC"] >= max_time - pd.Timedelta(hours=12)) & (df["UTC"] <= max_time + pd.Timedelta(hours=12))]
+            if df.empty:
+                continue
+            # Process Computed Density column if available, else skip the storm (needed for sorting)
+            if "Computed Density" in df.columns:
+                median_density = df["Computed Density"].median()
+                df["Computed Density"] = df["Computed Density"].apply(
+                    lambda x: 1e-11 if x > 1.2e-11 else (median_density if x < -2e-11 else x)
+                )
+                specific_window = 90
+                window_size = (specific_window * 60) // 15
+                df["Computed Density"] = df["Computed Density"].rolling(window=window_size, center=True).mean()
+                IQR = df["Computed Density"].quantile(0.75) - df["Computed Density"].quantile(0.25)
+                lower_bound, upper_bound = median_density - 5 * IQR, median_density + 5 * IQR
+                df["Computed Density"] = df["Computed Density"].apply(
+                    lambda x: median_density if x < lower_bound or x > upper_bound else x
+                )
+                df["Computed Density"] = savgol_filter(df["Computed Density"], 51, 3)
+            else:
+                continue
+
+            # Compute MAPE values relative to AccelerometerDensity
+            ref = df["AccelerometerDensity"]
+            computed_mape = np.mean(np.abs((df["Computed Density"] - ref) / ref)) * 100
+
+            # For other methods, if the column is not available, assign NaN so that plotting still works
+            jb08_mape = (np.mean(np.abs((df["JB08"] - ref) / ref)) * 100) if "JB08" in df.columns else np.nan
+            dtm2000_mape = (np.mean(np.abs((df["DTM2000"] - ref) / ref)) * 100) if "DTM2000" in df.columns else np.nan
+            nrlmsise_mape = (np.mean(np.abs((df["NRLMSISE-00"] - ref) / ref)) * 100) if "NRLMSISE-00" in df.columns else np.nan
+
+            storms.append({
+                "file": os.path.basename(file),
+                "computed": computed_mape,
+                "JB08": jb08_mape,
+                "DTM2000": dtm2000_mape,
+                "NRLMSISE-00": nrlmsise_mape
+            })
+        if not storms:
+            print(f"No valid storms for satellite {sat}")
+            continue
+
+        # Sort storms in decreasing order by Computed Density MAPE so that the storm with the lowest error is last
+        storms_sorted = sorted(storms, key=lambda s: s["computed"], reverse=True)
+
+        # Prepare data for plotting
+        x_labels = [s["file"] for s in storms_sorted]
+        computed_vals = [s["computed"] for s in storms_sorted]
+        jb08_vals = [s["JB08"] for s in storms_sorted]
+        dtm2000_vals = [s["DTM2000"] for s in storms_sorted]
+        nrlmsise_vals = [s["NRLMSISE-00"] for s in storms_sorted]
+
+        # Plot the MAPE values on the same plot
+        plt.figure(figsize=(10, 6))
+        plt.plot(x_labels, computed_vals, marker='o', label="Computed Density")
+        plt.plot(x_labels, jb08_vals, marker='o', label="JB08")
+        plt.plot(x_labels, dtm2000_vals, marker='o', label="DTM2000")
+        plt.plot(x_labels, nrlmsise_vals, marker='o', label="NRLMSISE-00")
+        plt.xlabel("Storm (CSV file)")
+        plt.ylabel("MAPE (%)")
+        plt.title(f"MAPE Relative to AccelerometerDensity Sorted by Computed Density MAPE (Descending) - {sat}")
+        plt.xticks(rotation=45, ha="right")
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
+def plot_orbit_averaged_mape(base_dir, sat_names):
+    import os
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from scipy.signal import savgol_filter
+
+    for sat in sat_names:
+        sat_folder = os.path.join(base_dir, sat)
+        csv_files = [
+            os.path.join(sat_folder, f)
+            for f in os.listdir(sat_folder)
+            if f.endswith('.csv')
+        ]
+        storms = []
+
+        for file in csv_files:
+            df = pd.read_csv(file)
+            if not all(col in df.columns for col in
+                       ["AccelerometerDensity", "UTC", "Computed Density"]):
+                continue
+
+            df["UTC"] = pd.to_datetime(df["UTC"])
+            max_time = df.loc[
+                df["AccelerometerDensity"].idxmax(), "UTC"
+            ]
+            df = df[
+                (df["UTC"] >= max_time - pd.Timedelta(hours=12)) &
+                (df["UTC"] <= max_time + pd.Timedelta(hours=12))
+            ]
+            if df.empty:
+                continue
+
+            # filtering Computed Density
+            pod = df["Computed Density"]
+            moving_avg_minutes = 45
+            seconds_per_point   = 15
+            window_size         = (moving_avg_minutes * 60) // seconds_per_point
+
+            pod_series = pd.Series(pod.values, index=df.index)
+            pod_series = pod_series.rolling(window=window_size,
+                                            center=True,
+                                            min_periods=1).mean()
+            median_density = pod_series.median()
+            mask = ((pod_series > 10 * median_density) |
+                    (pod_series < median_density / 10))
+            pod_series[mask] = np.nan
+            pod_series = pod_series.ffill()
+            pod_series = pd.Series(
+                savgol_filter(pod_series, 51, 3),
+                index=df.index
+            )
+            pod_rolling_avg = pod_series.rolling(window=window_size,
+                                                center=True,
+                                                min_periods=1).mean()
+            df["Computed Density"] = pod_rolling_avg
+
+            # EDR processing
+            if "EDR Density" in df.columns:
+                df["EDR Density"] = df["EDR Density"]\
+                    .rolling(window=90, center=True, min_periods=1).mean()
+                df["EDR Density"] = savgol_filter(
+                    df["EDR Density"], 51, 3
+                )
+
+            df = df.reset_index(drop=True)
+            grouped = df.groupby(df.index // 360).mean()
+
+            try:
+                computed_mape = np.mean(
+                    np.abs((grouped["Computed Density"]
+                            - grouped["AccelerometerDensity"])
+                           / grouped["AccelerometerDensity"])
+                ) * 100
+            except KeyError:
+                continue
+
+            jb08_mape = np.nan
+            if "JB08" in grouped.columns:
+                jb08_mape = np.mean(
+                    np.abs((grouped["JB08"]
+                            - grouped["AccelerometerDensity"])
+                           / grouped["AccelerometerDensity"])
+                ) * 100
+
+            dtm2000_mape = np.nan
+            if "DTM2000" in grouped.columns:
+                dtm2000_mape = np.mean(
+                    np.abs((grouped["DTM2000"]
+                            - grouped["AccelerometerDensity"])
+                           / grouped["AccelerometerDensity"])
+                ) * 100
+
+            nrlmsise_mape = np.nan
+            if "NRLMSISE-00" in grouped.columns:
+                nrlmsise_mape = np.mean(
+                    np.abs((grouped["NRLMSISE-00"]
+                            - grouped["AccelerometerDensity"])
+                           / grouped["AccelerometerDensity"])
+                ) * 100
+
+            edr_mape = np.nan
+            if "EDR Density" in grouped.columns:
+                edr_mape = np.mean(
+                    np.abs((grouped["EDR Density"]
+                            - grouped["AccelerometerDensity"])
+                           / grouped["AccelerometerDensity"])
+                ) * 100
+
+            storms.append({
+                "file": os.path.basename(file),
+                "computed": computed_mape,
+                "JB08": jb08_mape,
+                "DTM2000": dtm2000_mape,
+                "NRLMSISE-00": nrlmsise_mape,
+                "EDR": edr_mape
+            })
+
+        if not storms:
+            print(f"No valid storms for satellite {sat}")
+            continue
+
+        storms_sorted = sorted(
+            storms, key=lambda s: s["computed"], reverse=True
+        )
+        x_labels       = [s["file"] for s in storms_sorted]
+        computed_vals  = [s["computed"] for s in storms_sorted]
+        jb08_vals      = [s["JB08"] for s in storms_sorted]
+        nrlmsise_vals  = [s["NRLMSISE-00"] for s in storms_sorted]
+        edr_vals       = [s["EDR"] for s in storms_sorted]
+
+        plt.figure(figsize=(10, 6))
+        plt.plot(x_labels, computed_vals,  marker='o', label="Computed Density")
+        plt.plot(x_labels, jb08_vals,      marker='o', label="JB08")
+        plt.plot(x_labels, nrlmsise_vals,  marker='o', label="NRLMSISE-00")
+        plt.plot(x_labels, edr_vals,       marker='o', label="EDR Density")
+        plt.xlabel("Storm (CSV file)")
+        plt.ylabel("Orbit-Averaged MAPE (%)")
+        plt.title(f"Orbit-Averaged MAPE Relative to AccelerometerDensity - {sat}")
+        plt.xticks(rotation=45, ha="right")
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
+def plot_rolling_orbit_mape(base_dir, sat_names):
+    import os
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from scipy.signal import savgol_filter
+
+    for sat in sat_names:
+        sat_folder = os.path.join(base_dir, sat)
+        csv_files = [os.path.join(sat_folder, f)
+                     for f in os.listdir(sat_folder) if f.endswith('.csv')]
+
+        improved_count = 0
+        total_count = 0
+
+        for file in csv_files:
+            df = pd.read_csv(file)
+            # require all columns
+            req = ["AccelerometerDensity", "UTC", "Computed Density", "JB08", "NRLMSISE-00", "EDR Density"]
+            if any(col not in df.columns for col in req):
+                continue
+
+            df["UTC"] = pd.to_datetime(df["UTC"])
+            max_time = df.loc[df["AccelerometerDensity"].idxmax(), "UTC"]
+            df = df[(df["UTC"] >= max_time - pd.Timedelta(hours=12)) &
+                    (df["UTC"] <= max_time + pd.Timedelta(hours=12))]
+            if df.empty:
+                continue
+
+            # clean computed density
+            median_density = df["Computed Density"].median()
+            df["Computed Density"] = df["Computed Density"].apply(
+                lambda x: 1e-11 if x > 1.2e-11 else (median_density if x < -2e-11 else x)
+            )
+            window_size = (45 * 60) // 15
+            df["Computed Density"] = df["Computed Density"].rolling(window=window_size, center=True).mean()
+            IQR = df["Computed Density"].quantile(0.75) - df["Computed Density"].quantile(0.25)
+            lb, ub = median_density - 5*IQR, median_density + 5*IQR
+            df["Computed Density"] = df["Computed Density"].apply(
+                lambda x: median_density if x < lb or x > ub else x
+            )
+            df["Computed Density"] = savgol_filter(df["Computed Density"], 51, 3)
+
+            # clean EDR
+            df["EDR Density"] = df["EDR Density"].rolling(window=90, center=True).mean()
+            df["EDR Density"] = savgol_filter(df["EDR Density"], 51, 3)
+            #divide EDR by 2
+            if sat == "GRACE-FO":
+                df["EDR Density"] = df["EDR Density"] / 2.5
+            else:
+                df["EDR Density"] = df["EDR Density"] / 3.0
+
+            # rolling orbit average (360 samples)
+            df = df.reset_index(drop=True)
+            for col in ["AccelerometerDensity", "Computed Density", "JB08", "NRLMSISE-00", "EDR Density"]:
+                df[f"{col}_RA"] = df[col].rolling(window=1, center=True).mean()
+
+            # drop NaN from edges
+            df_ra = df.dropna(subset=[c+"_RA" for c in ["AccelerometerDensity", "Computed Density", "JB08", "NRLMSISE-00", "EDR Density"]])
+
+            if df_ra.empty:
+                continue
+
+            # compute MAPE on rolling averages
+            ref = df_ra["AccelerometerDensity_RA"]
+            mape_comp = np.mean(np.abs((df_ra["Computed Density_RA"] - ref) / ref)) * 100
+            mape_jb08 = np.mean(np.abs((df_ra["JB08_RA"] - ref) / ref)) * 100
+            mape_nrl = np.mean(np.abs((df_ra["NRLMSISE-00_RA"] - ref) / ref)) * 100
+            mape_edr = np.mean(np.abs((df_ra["EDR Density_RA"] - ref) / ref)) * 100
+
+            total_count += 1
+            if mape_comp < mape_jb08 and mape_comp < mape_nrl:
+            # if mape_edr < mape_jb08 and mape_edr < mape_nrl:
+                improved_count += 1
+
+                # plt.figure(figsize=(10, 6))
+                # plt.plot(df_ra["UTC"], df_ra["AccelerometerDensity_RA"], label="Accelerometer (RA)")
+                # plt.plot(df_ra["UTC"], df_ra["Computed Density_RA"], label="Computed (RA)")
+                # plt.plot(df_ra["UTC"], df_ra["JB08_RA"], label="JB08 (RA)")
+                # plt.plot(df_ra["UTC"], df_ra["NRLMSISE-00_RA"], label="NRLMSISE-00 (RA)")
+                # plt.plot(df_ra["UTC"], df_ra["EDR Density_RA"], label="EDR (RA)")
+
+                # plt.xlabel("Time")
+                # plt.ylabel("Orbit-Averaged Density")
+                # plt.title(f"Rolling Orbit-Averaged Time Series - {os.path.basename(file)}")
+                # textstr = (
+                #     f"Computed MAPE: {mape_comp:.2f}%\n"
+                #     f"JB08 MAPE: {mape_jb08:.2f}%\n"
+                #     f"NRLMSISE-00 MAPE: {mape_nrl:.2f}%\n"
+                #     f"EDR MAPE: {mape_edr:.2f}%"
+                # )
+                # plt.gca().text(
+                #     0.05, 0.95, textstr,
+                #     transform=plt.gca().transAxes,
+                #     verticalalignment='top',
+                #     bbox=dict(facecolor='white', alpha=0.5)
+                # )
+                # plt.yscale('log')
+                # plt.legend()
+                # plt.tight_layout()
+                # plt.show()
+
+        print(
+            f"{improved_count} out of {total_count} storms where Computed RA MAPE "
+            f"is lower than both JB08 and NRLMSISE-00 for satellite {sat}."
+        )
+
+def plot_mape_histograms(base_dir, sat_names):
+    import os
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from scipy.signal import savgol_filter
+
+    # Containers for all MAPE values
+    mape_values = {
+        "Computed": [],
+        "JB08": [],
+        "NRLMSISE-00": [],
+        "EDR": []
+    }
+
+    for sat in sat_names:
+        sat_folder = os.path.join(base_dir, sat)
+        csv_files = [os.path.join(sat_folder, f)
+                     for f in os.listdir(sat_folder) if f.endswith('.csv')]
+
+        for file in csv_files:
+            df = pd.read_csv(file)
+            # require columns
+            req = ["AccelerometerDensity", "UTC", "Computed Density",
+                   "JB08", "NRLMSISE-00", "EDR Density"]
+            if any(col not in df.columns for col in req):
+                continue
+
+            df["UTC"] = pd.to_datetime(df["UTC"])
+            max_time = df.loc[df["AccelerometerDensity"].idxmax(), "UTC"]
+            df = df[(df["UTC"] >= max_time - pd.Timedelta(hours=12)) &
+                    (df["UTC"] <= max_time + pd.Timedelta(hours=12))]
+            if df.empty:
+                continue
+
+            # Clean and smooth Computed Density
+            median_density = df["Computed Density"].median()
+            df["Computed Density"] = df["Computed Density"].apply(
+                lambda x: 1e-11 if x > 1.2e-11 else
+                          (median_density if x < -2e-11 else x)
+            )
+            window_size = (45 * 60) // 15
+            df["Computed Density"] = df["Computed Density"].rolling(window=window_size, center=True).mean()
+            IQR = df["Computed Density"].quantile(0.75) - df["Computed Density"].quantile(0.25)
+            lb, ub = median_density - 5*IQR, median_density + 5*IQR
+            df["Computed Density"] = df["Computed Density"].apply(
+                lambda x: median_density if x < lb or x > ub else x
+            )
+            df["Computed Density"] = savgol_filter(df["Computed Density"], 51, 3)
+
+            # Smooth and scale EDR Density
+            df["EDR Density"] = df["EDR Density"].rolling(window=90, center=True).mean()
+            df["EDR Density"] = savgol_filter(df["EDR Density"], 51, 3)
+            if sat == "GRACE-FO":
+                df["EDR Density"] = df["EDR Density"] / 2.5
+            else:
+                df["EDR Density"] = df["EDR Density"] / 3.0
+
+            # Orbit-averaged rolling mean (360 samples)
+            df = df.reset_index(drop=True)
+            for col in ["AccelerometerDensity", "Computed Density",
+                        "JB08", "NRLMSISE-00", "EDR Density"]:
+                df[f"{col}_RA"] = df[col].rolling(window=1, center=True).mean()
+
+            df_ra = df.dropna(subset=[c+"_RA" for c in
+                        ["AccelerometerDensity", "Computed Density",
+                         "JB08", "NRLMSISE-00", "EDR Density"]])
+            if df_ra.empty:
+                continue
+
+            ref = df_ra["AccelerometerDensity_RA"]
+            # compute and collect MAPE for each method
+            mape_values["Computed"].append(
+                np.mean(np.abs((df_ra["Computed Density_RA"] - ref) / ref)) * 100
+            )
+            mape_values["JB08"].append(
+                np.mean(np.abs((df_ra["JB08_RA"] - ref) / ref)) * 100
+            )
+            mape_values["NRLMSISE-00"].append(
+                np.mean(np.abs((df_ra["NRLMSISE-00_RA"] - ref) / ref)) * 100
+            )
+            mape_values["EDR"].append(
+                np.mean(np.abs((df_ra["EDR Density_RA"] - ref) / ref)) * 100
+            )
+
+    # Plot histograms in stacked subplots with shared axes
+    methods = list(mape_values.keys())
+    fig, axes = plt.subplots(len(methods), 1, figsize=(8, 4*len(methods)), sharex=True, sharey=True)
+    max_val = max((max(vals) for vals in mape_values.values() if vals), default=0)
+    bins = np.linspace(0, max_val, 30)
+
+    for ax, method in zip(axes, methods):
+        vals = mape_values[method]
+        if vals:
+            ax.hist(vals, bins=bins)
+        ax.set_ylabel("Count")
+        ax.set_title(f"{method} MAPE Histogram")
+    axes[-1].set_xlabel("MAPE (%)")
+    plt.tight_layout()
+    plt.show()
+
 if __name__ == "__main__":
     
     # # Base directory for storm analysis
@@ -842,14 +1279,18 @@ if __name__ == "__main__":
 
     base_dir = "output/PODDensityInversion/Data/StormAnalysis/"
     sat_names = ["CHAMP","GRACE-FO"] #TerraSAR-X,"GRACE-FO","CHAMP"
-    plot_density_scatter(base_dir, sat_names)
+    # plot_density_scatter(base_dir, sat_names)
+    # plot_sorted_mape(base_dir, sat_names)
+    # plot_orbit_averaged_mape(base_dir, sat_names)
+    # plot_rolling_orbit_mape(base_dir, sat_names)
+    # plot_mape_histograms(base_dir, sat_names)
     # for sat_name in sat_names:
         # print(f"Plotting for {sat_name}")
         # plot_all_storms_scatter(base_dir, sat_name, moving_avg_minutes=45)
         # reldens_sat_megaplot(base_dir, sat_name, moving_avg_minutes=90)
 
     #plot densities and indices for single storm:
-    # storm_df = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO_storm_density_22.csv"
-    # storm_df = pd.read_csv("output/PODDensityInversion/Data/StormAnalysis/TerraSAR-X/TerraSAR-X_storm_density_2_1_20240511073231.csv")
-    # plot_densities_and_indices([storm_df], 45, "TerraSAR-X")
+    storm_df = "output/DensityInversion/PODDensityInversion/Data/StormAnalysis/GRACE-FO/GRACE-FO_storm_density_22.csv"
+    storm_df = pd.read_csv("output/PODDensityInversion/Data/StormAnalysis/TerraSAR-X/TerraSAR-X_storm_density_2_1_20240511073231.csv")
+    plot_densities_and_indices([storm_df], 45, "TerraSAR-X")
 

@@ -10,3 +10,4 @@ external/
 !external/jb08_inputs/
 !external/jb08_inputs/*
 *.log
+source/tools/tle_archive/tle_data_2024-05-01_to_2024-05-30.tle

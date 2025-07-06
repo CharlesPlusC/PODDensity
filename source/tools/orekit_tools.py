@@ -1,9 +1,13 @@
 import orekit
-from orekit.pyhelpers import setup_orekit_curdir, datetime_to_absolutedate,download_orekit_data_curdir
+from orekit.pyhelpers import setup_orekit_curdir, datetime_to_absolutedate, download_orekit_data_curdir
 
-download_orekit_data_curdir()
-setup_orekit_curdir()
+# download_orekit_data_curdir()
+# setup_orekit_curdir()
+# vm = orekit.initVM()
+
 vm = orekit.initVM()
+setup_orekit_curdir('/Users/charlesc/Documents/GitHub/POD-Density-Inversion/orekit-data.zip')
+
 
 from orekit.pyhelpers import datetime_to_absolutedate
 from org.hipparchus.geometry.euclidean.threed import Vector3D
@@ -17,12 +21,14 @@ from org.orekit.forces.radiation import SolarRadiationPressure, IsotropicRadiati
 from org.orekit.forces.drag import DragForce, IsotropicDrag
 from org.orekit.utils import Constants
 from org.orekit.models.earth.atmosphere.data import JB2008SpaceEnvironmentData, CssiSpaceWeatherData
-from org.orekit.models.earth.atmosphere import JB2008, DTM2000, NRLMSISE00
+from org.orekit.models.earth.atmosphere import JB2008, DTM2000, NRLMSISE00, DTM2000InputParameters, PythonDTM2000InputParameters
 from org.orekit.data import DataSource
 from org.orekit.time import TimeScalesFactory   
 from ..tools.utilities import extract_acceleration, download_file_url
 
 import numpy as np
+import pandas as pd
+from tqdm import tqdm
 
 # Download SOLFSMY and DTCFILE files for JB2008 model
 solfsmy_file = download_file_url("https://sol.spacenvironment.net/JB2008/indices/SOLFSMY.TXT", "external/jb08_inputs/SOLFSMY.TXT")
@@ -46,15 +52,17 @@ def query_jb08(position, datetime):
     density = atmosphere.getDensity(absolute_date, position_vector, frame)
     return density
 
+from org.orekit.models.earth.atmosphere import Atmosphere
+
 def query_dtm2000(position, datetime):
+    absolute_date = datetime_to_absolutedate(datetime)
     frame = FramesFactory.getEME2000()
     wgs84Ellipsoid = ReferenceEllipsoid.getWgs84(FramesFactory.getITRF(IERSConventions.IERS_2010, True))
-    cssi_sw_data = CssiSpaceWeatherData(CssiSpaceWeatherData.DEFAULT_SUPPORTED_NAMES)
     sun = CelestialBodyFactory.getSun()
-    atmosphere = DTM2000(cssi_sw_data, sun, wgs84Ellipsoid)
-    absolute_date = datetime_to_absolutedate(datetime)
+    utc = TimeScalesFactory.getUTC()
+    atmosphere = DTM2000(DTM2000InputParameters(), sun, wgs84Ellipsoid)
     position_vector = Vector3D(float(position[0]), float(position[1]), float(position[2]))
-    density = atmosphere.getDensity(absolute_date, position_vector, frame)
+    density = Atmosphere.cast_(atmosphere).getDensity(absolute_date, position_vector, frame)
     return density
 
 def query_nrlmsise00(position, datetime):

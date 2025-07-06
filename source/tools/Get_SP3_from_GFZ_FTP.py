@@ -109,9 +109,9 @@ def download_sp3(start_date, end_date, spacecraft_name, orbit_type="RSO", json_p
         current_date += timedelta(days=1)
 
 # If you want to download a specific SP3 file, you can call the download_sp3 function with the desired parameters
-# if __name__ == "__main__":
-#     print("running from main")
-#     start_date = datetime(2023, 4, 23)
-#     end_date = datetime(2023, 4, 27)
-#     spacecraft_name = "TanDEM-X"
-#     download_sp3(start_date, end_date, spacecraft_name)
+if __name__ == "__main__":
+    print("running from main")
+    start_date = datetime(2024, 5, 7)
+    end_date = datetime(2024, 5, 16)
+    spacecraft_name = "TerraSAR-X"
+    download_sp3(start_date, end_date, spacecraft_name)

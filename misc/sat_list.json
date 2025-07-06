@@ -48,5 +48,14 @@
         "cross_section": 3.4,
         "cd": 2.2,
         "cr": 1.5
+    },
+    "Sentinel-6A": {
+        "norad_id": 46984,
+        "sp3-c_code": "L40",
+        "eof_header": "S6A",
+        "mass": 1440.0,
+        "cross_section": 3.5,
+        "cd": 2.2,
+        "cr": 1.5
     }
 }

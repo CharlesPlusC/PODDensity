@@ -268,7 +268,7 @@ def process_satellite_for_date_range(satellite, start_date, end_date, sat_list_p
         print(f"Writing ephemeris file for {file_name}")
         write_ephemeris_file(file_name, df, sat_dict[satellite])  
 
-def main(satellite_list=None):
+def main(satellite_list=None, start_date=None, end_date=None):
     sat_list_path = "misc/sat_list.json"
     sp3_files_path = "external/sp3_files"
     
@@ -277,6 +277,11 @@ def main(satellite_list=None):
 
     if satellite_list:
         sat_dict = {k: v for k, v in sat_dict.items() if k in satellite_list}
+
+    if start_date and end_date and satellite_list:
+        for sat in satellite_list:
+            process_satellite_for_date_range(sat, start_date, end_date)
+        return
 
     sp3_dataframes = process_sp3_files(sp3_files_path, sat_dict)
 
@@ -306,4 +311,5 @@ def main(satellite_list=None):
             write_ephemeris_file(file_name, df, sat_dict[base_satellite_name])  
 
 if __name__ == "__main__":
-    main(satellite_list = ['GRACE-FO-A'])#, 'GRACE-FO-A'
+    # Specify satellites and optional date range here:
+    main(satellite_list=['GRACE-FO-A'], start_date='2024-05-07', end_date='2024-05-16')

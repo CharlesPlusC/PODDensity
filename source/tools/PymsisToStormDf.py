@@ -47,7 +47,8 @@ def process_storm_data(storm_folder, missions):
 
 # Specify the storm folder and missions
 storm_folder = "output/PODDensityInversion/Data/StormAnalysis/"
-missions = ["TerraSAR-X"] # "GRACE-FO","TerraSAR-X"
+# missions = ["TerraSAR-X"] # "GRACE-FO","TerraSAR-X"
+missions = ["CHAMP, GRACE-FO"]
 # Process the storm data
 # process_storm_data(storm_folder, missions)
 

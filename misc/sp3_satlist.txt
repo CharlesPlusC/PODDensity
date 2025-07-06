@@ -1,0 +1,885 @@
+Hello future me. I saved this becuase i saw the cddis is website was going down.
+You're welcome :---)
+
+
+| EARTHDATA
+Feedback
+Other DAACs▾
+USER ALERT: CDDIS is currently migrating our website from cddis.nasa.gov to earthdata.nasa.gov, which is scheduled to be complete in June 2025. CDDIS is also migrating our FAQ from cddis.nasa.gov to forum.earthdata.nasa.gov during the first week of May 2025. For more information, please see the following web page (https://cddis.nasa.gov/Web_Unification.html)
+
+close window
+CDDIS: NASA's Archive of Space Geodesy Data
+HomeAbout CDDIS
+About CDDIS
+Background
+Citing Our Data
+Meetings
+Links
+FAQ
+Acronyms
+Staff
+Contact Us
+Data and Products
+Data and Products
+GNSS
+SLR
+VLBI
+DORIS
+Archive search information
+Archive access information
+Reports
+Techniques
+Techniques
+GNSS
+SLR
+VLBI
+DORIS
+Programs
+Programs
+Current
+Historical
+Publications
+Publications
+Presentations
+Papers
+Citing our Data
+ 
+GNSS
+SLR
+VLBI
+DORIS
+Spacecraft ID Correspondence Table for Orbit Exchange Files (SP3c)
+International Association for Geodesy (IAG) Inter-Service Document
+
+Dec 4, 2024
+
+Mission
+Name
+SP3c Code
+ILRS ID
+Satellite
+Catalog
+(NORAD)
+Number
+Altitude [km]
+Inclination °
+Tracking
+Status
+General group
+TOPEX/Poseidon	
+L01
+9205201
+22076
+1350
+66
+Off
+GPS-MET	
+L02
+9501703
+23547
+740
+69.9
+Off
+GFO-1	
+L03
+9800701
+25157
+800
+108
+Off
+Ørsted	
+L04
+9900802
+25635
+630
+96.1
+Off
+SUNSAT	
+L05
+9900803
+25636
+400
+93
+Off
+CHAMP	
+L06
+0003902
+26405
+474
+87
+Off
+SAC-C	
+L07
+0007502
+26620
+682
+98.2
+Off
+Jason-1	
+L08
+0105501
+26997
+1336
+66
+Off
+GRACE-A	
+L09
+0201201
+27391
+485-500
+89
+Off
+GRACE-B	
+L10
+0201202
+27392
+485-500
+89
+Off
+ICESat	
+L11
+0300201
+27642
+600
+94
+Off
+CryoSat-2	
+L12
+1001301
+36508
+720
+92
+TerraSAR-X	
+L13
+0702601
+31698
+514
+97.44
+ 
+Metop-2	
+L14
+0604401
+29499
+817
+98.7
+Off
+GOCE	
+L15
+0901301	34602	
+250
+96.5
+Off
+Beacon-C	
+L16
+6503201
+1328
+927
+41
+ 
+DIADEME-1C	
+L17
+6701101
+2674
+545
+40
+Off
+DIADEME-1D	
+L18
+6701401
+2680
+585
+40
+Off
+IRS-P5
+(CARTOSAT-1)	
+L19
+0501701
+28649
+620
+97.9
+Off
+TanDEM-X	
+L20
+1003001
+36605
+514
+97.44
+ 
+COSMIC-1 (FM-1)	
+L21
+0601101
+29047
+815
+72.0
+Off
+COSMIC-1 (FM-2)	
+L22
+0601102
+29048
+815
+72.0
+Off
+COSMIC-1 (FM-3)	
+L23
+0601103
+29049
+815
+72.0
+Off
+COSMIC-1 (FM-4)	
+L24
+0601104
+29050
+815
+72.0
+Off
+COSMIC-1 (FM-5)	
+L25
+0601105
+29051
+815
+72.0
+Off
+COSMIC-1 (FM-6)	
+L26
+0601106
+29052
+815
+72.0
+Off
+Jason-2	
+L27
+0803201	33105	
+1336
+66
+Off
+GEOS-3	
+L28
+7502701
+7734
+841
+115
+Off
+Seasat	
+L29
+7806401
+10967
+805
+108
+Off
+GEOSAT	
+L30
+8502101
+15595
+760 x 817
+108.1
+Off
+ERS-1	
+L31
+9105001
+21574
+780
+99
+Off
+ERS-2	
+L32
+9502101
+23560
+800
+99
+Off
+Envisat	
+L33
+0200901
+27386
+800
+98
+Off
+Meteor-3M	
+L34
+0105601
+27001
+1000
+99.6
+Off
+ANDE-RR Active	
+L35
+0605506
+29664
+400
+51.6
+Off
+ANDE-RR Passive	
+L36
+0605510
+29667
+400
+51.6
+Off
+ETS-8	
+L37
+0605901
+29656
+36,000
+0
+Off
+PROBA-2	
+L38
+0905902
+36037
+757
+98.445
+Off
+Jason-3	
+L39
+1600201
+41240
+1336
+66
+ 
+Sentinel-6A/
+Jason-CS A	
+L40
+2008601
+46984
+1339.4-1355.9
+66.042
+ 
+Metop-B	
+L41
+1204901
+38771
+817
+98.7
+ 
+Metop-C	
+L42
+1808701
+43689
+817
+98.7
+ 
+ANDE Castor	
+L43
+0903806
+35694
+350
+51.6
+Off
+ANDE Pollux	
+L44
+0903805
+35693
+350
+51.6
+Off
+HY-2A	
+L45
+1104301
+37781
+971
+99.35
+SARAL	
+L46
+1300901
+39086
+814
+98.55
+Swarm-A	
+L47
+1306702
+39452
+460
+88.35
+Swarm-B	
+L48
+1306701
+39451
+460
+88.35
+Swarm-C	
+L49
+1306703
+39453
+530
+88.95
+Ajisai	
+L50
+8606101
+16908
+1485
+50
+ 
+LAGEOS-1	
+L51
+7603901
+8820
+5850
+110
+ 
+LAGEOS-2	
+L52
+9207002
+22195
+5625
+53
+ 
+Etalon-1	
+L53
+8900103
+19751
+19105
+65
+ 
+Etalon-2	
+L54
+8903903
+20026
+19135
+65
+ 
+Starlette	
+L55
+7501001
+7646
+815x1100
+50
+ 
+Stella	
+L56
+9306102
+22824
+815
+99
+ 
+GFZ-1	
+L57
+8601795
+23558
+385
+52
+Off
+WESTPAC	
+L58
+9804301
+25394
+835
+98
+Off
+Larets	
+L59
+0304206
+27944
+691
+98.2
+ 
+LARES	
+L60
+1200601
+38077
+1450
+69.5
+ 
+BLITS	
+L61
+0904907
+35871
+832
+98.77
+Off
+SpinSat	
+L62
+9806714
+40314
+425
+51.6
+Off
+CASSIOPE	
+L63
+1305501
+39265
+ 
+ 
+Off
+GRACE-FO -A	
+L64
+1804701
+43476 
+500
+89
+ 
+GRACE-FO -B	
+L65
+1804702
+43477 
+500
+89
+ 
+PAZ	
+L66
+ 1802001
+43215
+514
+97.44
+ 
+LARES-2	
+L67
+2208001
+53105
+5899 
+70.16 
+ 
+HY-2B	
+L68
+1808101
+43655
+971
+99.35
+ 
+HY-2C	
+L69
+2006601
+46469
+957
+66
+ 
+Sentinel-1A	
+L70
+1401601
+39634
+893
+98.18
+ 
+Sentinel-1B	
+L71
+1602501 
+41456
+893
+98.18
+Off
+Sentinel-2A	
+L72
+ 1502801
+ 40697
+786
+98.62
+ 
+Sentinel-2B	
+L73
+ 1701301
+ 42063
+786
+98.62
+ 
+Sentinel-3A	
+L74
+1601101
+41335
+814.5
+98.18
+ 
+Sentinel-3B	
+L75
+1803901
+43437
+814.5
+98.65
+ 
+SWOT	
+L76
+2217301
+54754 
+857 then 890 
+77.6 
+ 
+Sentinel-6B/
+Jason-CS B	
+L77
+ 
+ 
+ 
+ 
+ 
+HY-2D	
+L78
+2104301
+48621
+971
+66
+Sentinel-1C	
+L79
+ N/A
+ 
+693
+98.2
+ 
+Sentinel-2C	
+L80
+ 2415701
+60989
+786
+98.62
+On
+ 	
+L81-99
+ 
+ 
+ 
+ 
+ 
+Atmospheric & Remote Sensing group
+SPOT-2	
+A01
+9000501
+20436
+786
+98.7
+Off
+SPOT-3	
+A02
+9306101
+22823
+832
+98.7
+Off
+SPOT-4	
+A03
+9801701
+25260
+802
+98.7
+Off
+SPOT-5	
+A04
+0202101
+27421
+777
+98.7
+Off
+COSMIC-2-1	
+A05
+1903611
+44349
+559.5
+24
+ 
+COSMIC-2-2	
+A06
+1903613
+44351
+561.6
+24
+ 
+COSMIC-2-3	
+A07
+1903605
+44343
+558.5
+24
+ 
+COSMIC-2-4	
+A08
+1903612
+44350
+552.1
+24
+ 
+COSMIC-2-5	
+A09
+1903620
+44358
+731.0
+24
+ 
+COSMIC-2-6	
+ A10
+1903615
+44353
+730.2
+24
+ 
+Metop-SG A1	
+A11
+ 	 	 	 	 
+Metop-SG B1	
+A12
+ 	 	 	 	 
+GPS group*
+GPS-35	
+G05
+9305401
+22779
+20195
+54
+ 
+GPS-36	
+G06
+9401601
+23027
+20030
+55
+ 
+GLONASS group*
+GLONASS-87	
+R03
+0105302
+26988
+19140
+65
+Off
+GLONASS-86	
+R06
+0105303
+26989
+19140
+65
+Off
+GLONASS-95	
+R07
+0405302
+28509
+19140
+65
+Off
+GLONASS-89	
+R22
+0206001
+27617
+19140
+65
+Off
+GLONASS-99	
+R24
+0505002
+28916
+19140
+65
+Off
+GLONASS-100	
+R23
+0505001
+28915
+19140
+65
+ 
+GLONASS-102	
+R15
+0606201
+29670
+19140
+65
+ 
+GLONASS-109	
+R11
+0706503
+32395
+19140
+65
+ 
+GLONASS-115	
+R08
+0806702
+33467
+19140
+65
+ 
+GALILEO group*
+BeiDou group
+QZSS group
+QZS-1	
+J01
+1004501
+37158
+32000-40000
+45
+ 
+QZS-2	
+J02
+1702801
+42738
+32000-40000
+45
+ 
+QZS-3	
+J03
+1704801
+42917
+36,000
+0
+ 
+QZS-4	
+J04
+1706201
+42965
+32000-40000
+45
+ 
+IRNSS group
+IRNSS-1A	I01	1303401	39199	42293	29	 
+IRNSS-1B	I02	1401701	39635	42293	29	 
+IRNSS-1C	I03	1406101	40269	42293	1.9	 
+IRNSS-1D	I04	1501801	40547	42293	29	 
+IRNSS-1E	I05	1600301	41241	35786	29	 
+IRNSS-1F	I06	1601501	41384	35786	5	 
+IRNSS-1G	I07	1602701	41469	35786	5	 
+IRNSS-1H	I08	1705101	42928	35786	28.5	 
+IRNSS-1I	I09	1803501	43286	35600	29	 
+IRNSS-1J	I10	2307601	56759	35790	5	 
+LEGEND
+
+Codes in
+italicized boldNext available slots for assignment
+
+
+SP3c Code:
+A letter and a 2-digit number assigned by the list-keeper in consultation with the IERS Services
+LFor all non-GNSS s/cAFor Atmospheric & Remote Sensing s/cGFor GPS s/cRFor GLONASS s/cEFor Galileo s/cCFor BeiDou/Compass s/cJFor QZSS s/cIFor IRNSS s/c
+ILRS Satellite ID†:YYXXXAA where:
+
+YY:last two digits of launch-vehicle launch year XXX:launch vehicle number in year YY
+AA:payload sequence number for the specific launch XXX
+
+NORAD #:The ID number assigned to each item in orbit by NORAD
+
+NOTES:
+
+–The correct value for Sentinel-6A/Jason-CSA is L40; it was previously mislabeled as L76.*This list contains only GNSS satellites currently (May, 2018) and historically tracked by ILRS. The SP3c codes of all GNSS satellites are identical to the codes used in the RINEX data and navigation message files. For more information on all of these s/c, please visit the IGS Antex file.†COSPAR ID to ILRS Satellite Identification Algorithm
+
+COSPAR ID Format: (YYYY-XXXA)
+
+YYYYthe four digit year of when the launch vehicle was put in orbit XXXthe sequential launch vehicle number for that year A the alpha numeric sequence number within a launch
+
+
+Example: LAGEOS-1 COSPAR ID is 1976-039A
+Explanation: LAGEOS-1 launch vehicle was placed in orbit in 1976; was the 39th launch in that year; and LAGEOS-1 was the first object injected into orbit from this launch.
+
+Requesting assignment of a code for new s/c:
+
+New missions can obtain a code assigned to them by submitting a request via email to Claudia Carabajal (claudia.c.carabajal@nasa.gov) who is responsible for the maintenance of this list. The request will then be forwarded immediately to the Analysis coordinators of the three satellite services, IGS, ILRS, and IDS for approval. If there is no objection for a valid reason, the list-keeper assigns the code, posts the change on the web, notifies the requesting party and sends out an email to the three services' mailing lists announcing the new entry. The rules followed in assigning codes are very simple: "intelligent" satellites occupy the lowest entry numbers, cannonballs are above 50, and DORIS-only s/c in the 90s. GNSS s/c are, in all cases, handled separately and solely the responsibility of IGS.
+
+Related Links
+
+International Association of Geodesy (IAG)
+International GNSS Service (IGS)
+IGS MGEX
+GPS World almanac
+International Laser Ranging Service (ILRS)
+International DORIS Service (IDS)
+SP3C format description
+IGS orbit products
+ 
+
+
+CDDIS: NASA's Archive of Space Geodesy DataWorld Data System logo NASA Official: Rivers Lamb
+Web Curator: Ross Bagwell
+FAQ
+Earthdata Forum
+Contact Us
+Last updated: Dec 4, 2024
+Web Privacy Policy
+Data and Information Policy
+Communications Policy
+FOIA
+Accessibility
+USA.gov
+ 
