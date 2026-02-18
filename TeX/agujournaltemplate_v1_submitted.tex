@@ -1,0 +1,1075 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% AGUJournalTemplate.tex: this template file is for articles formatted with LaTeX
+%
+% This file includes commands and instructions
+% given in the order necessary to produce a final output that will
+% satisfy AGU requirements, including customized APA reference formatting.
+%
+% You may copy this file and give it your
+% article name, and enter your text.
+%
+% guidelines and troubleshooting are here: 
+
+%% To submit your paper:
+\documentclass[draft]{agujournal2019}
+\usepackage{url} %this package should fix any errors with URLs in refs.
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{lineno}
+\usepackage[inline]{trackchanges} %for better track changes. finalnew option will compile document with changes incorporated.
+\usepackage{soul}
+\linenumbers
+%%%%%%%
+% As of 2018 we recommend use of the TrackChanges package to mark revisions.
+% The trackchanges package adds five new LaTeX commands:
+%
+%  \note[editor]{The note}
+%  \annote[editor]{Text to annotate}{The note}
+%  \add[editor]{Text to add}
+%  \remove[editor]{Text to remove}
+%  \change[editor]{Text to remove}{Text to add}
+%
+% complete documentation is here: http://trackchanges.sourceforge.net/
+%%%%%%%
+
+\draftfalse
+
+%% Enter journal name below.
+%% Choose from this list of Journals:
+%
+% JGR: Atmospheres
+% JGR: Biogeosciences
+% JGR: Earth Surface
+% JGR: Oceans
+% JGR: Planets
+% JGR: Solid Earth
+% JGR: Space Physics
+% Global Biogeochemical Cycles
+% Geophysical Research Letters
+% Paleoceanography and Paleoclimatology
+% Radio Science
+% Reviews of Geophysics
+% Tectonics
+% Space Weather
+% Water Resources Research
+% Geochemistry, Geophysics, Geosystems
+% Journal of Advances in Modeling Earth Systems (JAMES)
+% Earth's Future
+% Earth and Space Science
+% Geohealth
+%
+% ie, \journalname{Water Resources Research}
+
+\journalname{Earth and Space Science}
+
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  TITLE
+%
+% (A title should be specific, informative, and brief. Use
+% abbreviations only if they are defined in the abstract. Titles that
+% start with general keywords then specific terms are optimized in
+% searches)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Example: \title{This is a test title}
+
+\title{Empirical Assessment of Storm-time Thermospheric Density Inversion Methods from LEO POD Data}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  AUTHORS AND AFFILIATIONS
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Authors are individuals who have significantly contributed to the
+% research and preparation of the article. Group authors are allowed, if
+% each author in the group is separately identified in an appendix.)
+
+% List authors by first name or initial followed by last name and
+% separated by commas. Use \affil{} to number affiliations, and
+% \thanks{} for author notes.
+% Additional author notes should be indicated with \thanks{} (for
+% example, for current addresses).
+
+% Example: \authors{A. B. Author\affil{1}\thanks{Current address, Antartica}, B. C. Author\affil{2,3}, and D. E.
+% Author\affil{3,4}\thanks{Also funded by Monsanto.}}
+
+\authors{Charles Constant \affil{1}, Indigo Brownhall \affil{1}, Anasuya Aruliah\affil{1}, Marek Ziebart\affil{1}, Santosh Bhattarai\affil{1}}
+% Author\affil{3,4}\thanks{Also funded by Monsanto.}}
+
+\affiliation{1}{University College London}
+% \affiliation{2}{Second Affiliation}
+% \affiliation{3}{Third Affiliation}
+% \affiliation{4}{Fourth Affiliation}
+
+% \affiliation{1}{Gower Street, WC1E 6BT, London}
+%(repeat as many times as is necessary)
+
+
+% Corresponding author mailing address and e-mail address:
+
+% (include name and email addresses of the corresponding author.  More
+% than one corresponding author is allowed in this LaTeX file and for
+% publication; but only one corresponding author is allowed in our
+% editorial system.)
+
+% Example: \correspondingauthor{First and Last Name}{email@address.edu}
+
+\correspondingauthor{Charles Constant}{zcesccc@ucl.ac.uk}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% KEY POINTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  List up to three key points (at least one is required)
+%  Key Points summarize the main points and conclusions of the article
+%  Each must be 140 characters or fewer with no special characters or punctuation and must be complete sentences
+
+% Example:
+% \begin{keypoints}
+% \item	List up to three key points (at least one is required)
+% \item	Key Points summarize the main points and conclusions of the article
+% \item	Each must be 140 characters or fewer with no special characters or punctuation and must be complete sentences
+% \end{keypoints}
+
+\begin{keypoints}
+\item POD-accelerometry achieves the highest accuracy and precision vs. accelerometer-derived densities across 1887 storm-time orbits.
+\item EDR performance degrades as the drag signal weakens, consistent with theoretical expectations tested here.  
+\item Results support using cooperative POD streams to improve storm-time density nowcasts in operational models.
+\end{keypoints}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  ABSTRACT and PLAIN LANGUAGE SUMMARY
+%
+% A good Abstract will begin with a short description of the problem
+% being addressed, briefly describe the new data or analyses, then
+% briefly states the main conclusion(s) and how they are supported and
+% uncertainties.
+
+% The Plain Language Summary should be written for a broad audience,
+% including journalists and the science-interested public, that will not have 
+% a background in your field.
+%
+% A Plain Language Summary is required in GRL, JGR: Planets, JGR: Biogeosciences,
+% JGR: Oceans, G-Cubed, Reviews of Geophysics, and JAMES.
+% see http://sharingscience.agu.org/creating-plain-language-summary/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% \begin{abstract} starts the second page
+
+\begin{abstract}
+Thermospheric mass density represents one of the largest sources of operational uncertainty for spacecraft operating in Low Earth Orbit (LEO). This uncertainty is particularly pronounced during geomagnetic storms. State-of-the-art thermospheric models such as the High Accuracy Satellite Drag Model rely on assimilative processes by which a base model is updated using observations of thermospheric density derived from uncooperative tracking data. The burgeoning spacecraft population in LEO presents a dataset of opportunity that could provide higher-fidelity, lower-latency observations than existing uncooperative methods. By using the Precise Orbit Determination (POD) data streams generated by these satellites, one can estimate the density along their paths. We benchmark the two main existing techniques used to estimate densities from cooperative data against accelerometer-derived densities: Energy Dissipation Rate (EDR) and POD accelerometry. To contextualise the performance of these methods relative to the kinds of observations currently assimilated into operational models, we also compare them against a Two-Line Element-based method. All methods are compared over 1887 storm-time orbits across two satellites: CHAMP and GRACE-FO-A. Relative to accelerometer-derived densities, POD accelerometry achieves the strongest correlation (r² = 0.96 for GRACE-FO-A, 0.94 for CHAMP) and the lowest root-mean-square error (5.8 \%), halving the error of EDR (10.98 \%) and the uncooperative approach (13.52 \%). Finally, our analysis empirically corroborates predictions made in the literature as to the performance of these methods across varying storm-time drag environments. The application of POD-accelerometry to the growing number of satellites stands to enhance the performance of next-generation assimilative models.
+\end{abstract}
+
+\section*{Plain Language Summary}
+During geomagnetic storms, Earth’s upper atmosphere ‘puffs up,’ increasing drag on satellites and making orbit predictions less reliable. We compared two ways to estimate air density from satellite tracking data that are routinely available: a method that uses changes in a satellite’s energy from orbit to orbit, and a method that derives acceleration directly from precise positions and velocities. Using independent accelerometer measurements from two science missions as the reference, we show that the acceleration-based method reproduces storm-time density changes most accurately and consistently. These findings suggest that sharing precise tracking data from today’s large satellite fleets could lead to faster, more reliable space-weather updates that improve collision avoidance and mission planning.
+
+\section{Introduction}
+
+The recent proliferation of satellites in Low Earth Orbit (LEO), combined with intensifying solar activity associated with the current peak of Solar Cycle 25, is heightening the operational risks posed by mischaracterisation of thermospheric behaviour. Of particular concern is the inability of current thermospheric models to accurately resolve density variations during geomagnetic storms, which remain a major source of operational uncertainty \cite{Mehta2017AAtmosphere}. This inadequacy leads to the degradation of orbital products used in space traffic management (e.g., probability of collision estimates, predicted ephemerides, state uncertainties) \cite{Bussy-Virat2018} and can occasionally culminate in uncontrolled spacecraft re-entries \cite{Fang2022Space2022}.
+
+At present, ``the most accurate thermospheric density nowcasting capability available'' \cite{Berger2023TheOperations} is provided by the High Accuracy Satellite Drag Model (HASDM) \cite{Storz2002HASDMRates, Picone2005ThermosphericSets}, a data-assimilative model proprietary to the U.S. Government \cite{Mutschler2023AOperations}. HASDM uses a variant of the Jacchia-Bowman 2008 atmospheric density model as its base model, and updates this periodically through an assimilative scheme. In \citeA{Storz2002HASDMRates}, the observations used to drive this scheme are so-called Energy Dissipation Rates (EDR), derived from 80+ uncooperatively-tracked objects in eccentric orbits \cite{Mutschler2023AOperations}. Note that while an operational version of HASDM is not publicly available, a limited database for the year 2019 is accessible at \url{https://spacewx.com/hasdm/}.
+
+The strong performance of HASDM and the absence of any operationally available alternative has motivated the development of new assimilative frameworks \cite{Sutton2018AThermosphere, Gondelach2020, Elvidge2019UsingModelling}. These models aim to leverage near-real-time observations of the thermosphere to improve upon existing empirical models. They assimilate a broad range of data sources beyond radar-tracking data, including incoherent scatter radar measurements, Fabry-Perot interferometer readings, accelerometer-derived densities (i.e. from CHAMP, GRACE, Swarm, GOCE) and, increasingly, Precise Orbit Determination (POD) data. Whilst work towards operationalisation of some of these is in progress \cite{Brown2024UsingSolutions}, many remain experimental in scope. Meanwhile, the margin for error in day-to-day orbit prediction is dropping with each new satellite launch, especially for conjunction analysis, making thermospheric density estimation an increasingly critical bottleneck for the space operations community \cite{Fang2022Space2022}.
+
+The bulk of non-assimilative, operationally available empirical models such as Jacchia-Bowman 2008 (JB2008) \cite{Bowman2008AIndices}, Naval Research Laboratory Mass Spectrometer and Incoherent Scatter Radar Extended Model (NRLMSISE-00) \cite{Picone2002NRLMSISE-00Issues}, and the Drag Temperature Model 2000 (DTM2000) \cite{Bruinsma2003TheProperties}, are built in part from parameterizations fitted to historical data \cite{Gondelach2020, Foster2016OrbitConstellations, Fang2022Space2022}. These empirical models are computationally efficient and widely used, with performance well characterized by the community. However, their resolution of thermospheric features is relatively coarse, and their physical fidelity remains relatively limited. For instance, only a few empirical models capture storm-driven density enhancements associated with Joule heating and neutral winds \cite{Brown2024UsingSolutions}. By contrast, more sophisticated physics-based models can represent these complexities more accurately but at a higher computational cost. Physics-based models (e.g., TIE-GCM, WAM-IPE) have also advanced significantly in recent years \cite{Brown2024UsingSolutions, Codrescu2012AModel, Bruinsma2023ThermosphereDrag}, although their computational intensity still limits widespread operational use \cite{Sutton2018AThermosphere,Mutschler2023AOperations,Elvidge2019UsingModelling,Mehta2018AModels}.
+
+Operationally, models (both physics and empirical) are driven by nowcast or forecasted geomagnetic indices (e.g., F10.7, Ap, Dst), which can themselves become unreliable during extreme events\cite{Shprits2019NowcastingObservations, Yamazaki2024AssessmentIndices, Matzka2021TheActivity}. Storm events are the periods during which the largest errors in these models occur resulting in increased error in orbit propagation and degradation of the quality of key operational metrics such as probability of collision estimates \cite{Parker2024InfluencesAssessment}.
+
+The flip side of the recent increase in the number of satellites in LEO has meant that GNSS data has emerged as a potentially globally scalable, high-resolution, near-real-time set of “signals of opportunity” for thermospheric density estimation. This opportunity is materialising through a rapid growth in the pool of available POD data from both scientific and commercial missions \cite{Arnold2023PreciseSatellites, Schreiner2022GFZProducts, Mutschler2023Physics-BasedData, Fitzpatrick2024ApplyingSatellite}. 
+If the uncooperatively-derived densities that drive HASDM can achieve such strong performance, it stands to reason that assimilative models using a greater number of cooperative observations should be able to see even greater improvements. In view of the mounting criticality of storm-time density retrieval, the latest International Space Weather Action Teams Working Meeting \cite{Mehta2022SatelliteOperations} explicitly called for the community to explore new high-quality density data streams and ways of achieving “high-resolution monitoring of geomagnetic storms”. 
+
+Despite the growing interest in POD-derived densities, little to no systematic observational characterization of their performance under geomagnetic storm conditions has been carried out. This gap in benchmarking limits the community’s ability to make informed decisions about how best to integrate POD-derived data into model development and operational workflows. Recent simulation-based work by \citeA{Ray2024ErrorMinimum} took an important step toward addressing this gap, concluding that a POD-accelerometry approach should outperform EDR-based approaches especially under lower drag scenarios (where drag acceleration $\lesssim 10^{-8}\,\mathrm{m\,s^{-2}}$). To date, however, no equivalent study exists using real observational data. This paper aims to fill that gap.
+
+%%%% Justification/Scope for this work %%%%%
+The results and analysis presented herein were developed with two overlapping communities in mind.
+First and foremost are developers of next-generation assimilative models. The statistics presented support the characterization of observation-error variances and will aid in setting adaptive quality-control thresholds for POD-derived densities, ensuring that each observation is weighted appropriately inside the assimilative pipeline. The same metrics also provide a quantitative benchmark which will aid in choosing the most suitable inversion method for any POD stream at hand.
+Secondly, agencies and researchers advocating greater transparency in data dissemination will gain a quantitative measure of the performance uplift that openly released POD streams may be able to deliver relative to the heritage datasets that currently drive most operational assimilative systems.
+
+%Mini-Conclusions
+We present the first storm-focused (n=43 storms) benchmark of POD-derived thermospheric densities, comparing the two main cooperative density inversion methods (Energy Dissipation Rate and POD-accelerometry) to two operational model outputs (JB2008 and NRLMSISE-00) and to one commonly used uncooperative density inversion method (TLE-based).
+
+Using accelerometer-derived densities as a ground-truth, our results indicate that across the 1887 orbits studied, POD-accelerometry most accurately and precisely represents the behaviour of the thermosphere. We also find that EDR-based density inversion drops in performance as a function of the drag signal-to-noise ratio within the POD data. We compare the degree to which this degradation occurs and corroborate the predictions made by \citeA{Ray2024ErrorMinimum} in an observational context. We further highlight the degradation in precision (as well as accuracy) associated with lower drag signal-to-noise ratio. We conclude that POD-accelerometry should be the method of choice for storm-time data assimilation.
+
+\section{Data and Methods}
+
+\subsection{Spacecraft and Orbit Source selection}
+
+\begin{table}
+    \centering
+    \label{tab:available-orbits}
+    \caption{Select List of Spacecraft Currently in Low Earth Orbit and Associated Data Sources}
+    \begin{tabular}{|p{2.5cm}|p{3.1cm}|p{1.3cm}|p{1.3cm}|p{1.6cm}|p{2cm}|}
+        \hline
+        \textbf{Spacecraft} & \textbf{Data Source} & \textbf{Number} & \textbf{Altitude (km)} & \textbf{Latency} & \textbf{Link} \\
+        \hline
+        GRACE-FO-A/B, TerraSAR/TanDEM & Potsdam GeoForschungsZentrum & 4 & $\simeq490$ & 30min or 2days & \url{ftp://isdcftp.gfz-potsdam.de} \\
+        \hline
+        Swarm A-B-C & ESA Swarm Data Access Portal & 3 & $\simeq460$ & Daily & \url{swarm-diss.eo.esa.int/} \\
+        \hline
+        Planet Labs Constellation & Planet Labs Public Orbital Ephemerides Website & 200+ & $\simeq475$ & Unspecified & \url{ephemerides.planet-labs.com/} \\
+        \hline
+        Spire & NASA Commercial SmallSat Data Acquisition Program (CSDAP) & 100+ & $\simeq500$ & N/A & \url{earthdata.nasa.gov/esds/csdap} \\
+        \hline
+        Airbus Paz X-band Satellite & NASA Commercial SmallSat Data Acquisition Program (CSDAP) & 1 & $\simeq514$ & N/A & \url{earthdata.nasa.gov/esds/csdap} \\
+        \hline
+        COSMIC (Constellation Observing System for Meteorology, Ionosphere, and Climate) & UCAR Website & 6 & $\simeq520-720$ & Daily & \url{data.cosmic.ucar.edu/gnss-ro} \\
+        \hline
+        Sentinel Series & Potsdam GeoForschungsZentrum & 7 & $\simeq700$ & 30min or 2days & \url{ftp://isdcftp.gfz-potsdam.de} \\
+        \hline
+    \end{tabular}
+\end{table}
+
+% \begin{table}
+% \centering
+% \caption{Selected Spacecraft for the Study}
+% \label{tab:selected-missions}
+% \begin{tabular}{|l|l|l|l|l|}
+% \hline
+% \textbf{Spacecraft} & \textbf{Launch Date} & \textbf{De-orbit Date} & \textbf{Altitude} & \textbf{Inclination} \\ \hline
+% GRACE-FO-A          & 22 May 2018          & -                     & 480-490km               & 89°                  \\ \hline
+% CHAMP               & 15 Jul 2000          & 19 Sep 2010           & 350-450km               & 87°                  \\ \hline
+% \end{tabular}
+% \end{table}
+
+The sources of precise orbits that were considered are outlined in Table\ref{tab:available-orbits}. The Rapid Science Orbits (RSO) were selected for this study \cite{Schreiner2022GFZProducts}. The RSOs exhibit latencies of up to 2 days. Satellite Laser Ranging (SLR) residuals are approximately 1-2 cm for RSOs in LEO \cite{Schreiner2022GFZProducts}. According to \citeA{Selvan2023PreciseReview}, this level of accuracy places the RSOs within the top 20-35\% of POD literature over the past two decades. This accuracy level is considered above average yet achievable, ensuring applicability and replicability of the following results across various satellites.
+
+\subsection{Selection of Storms}
+Geomagnetic storms are notoriously poorly characterized by empirical density models 
+\cite{Oliveira2021TheStorms, Oliveira2017ThermosphereEjections, Mutschler2023AOperations}, yet they represent periods of significant stress on satellite operations. Increasing the pool and quality of data pertaining to thermospheric behaviour during storm events is crucial for improving existing thermospheric models in two main areas \cite{Fang2022Space2022, Berger2023TheOperations}: as a source of data to be assimilated within nowcast models and as a source of scientific observations to enhance understanding of thermospheric behaviour.
+
+The existing literature provides limited information on the performance of POD-based inversion during geomagnetic storms. Recognising the criticality of these periods for satellite operations, we identified storm-time as a key phase to evaluate the applicability and potential of POD-density inversion.
+
+Different categories of geomagnetic storms (G1-G5) \cite{NOAASWPC2024NOAAScales} trigger distinct physical phenomena in the magnetosphere-ionosphere-thermosphere system and exhibit varying signatures in density fluctuations
+\cite{Knipp2021TimelinesStorms, Astafyeva2017GlobalModeling, Laskar2023ThermosphericStorm, Oliveira2017ThermosphereEjections}. To evaluate our method across the spectrum of storm behaviours, we identified all periods corresponding to each storm category during the operational lifetime of each satellite. For each category, we selected a minimum of 5 storms, if available, resulting in approximately 21 storms per satellite since only one G5 storm was available for each satellite.
+
+The determination of the time window for storm analysis was guided by prior findings from \citeA{Oliveira2021TheStorms}, which noted that the thermosphere typically peaks in density approximately 12 hours following Sudden Storm Commencement (SSC) and reverts to baseline levels within about 72 hours. SSC is traditionally defined by a sharp increase in the horizontal magnetic field, usually associated with a southward turning of the IMF Bz component.
+
+Our method diverged from that of \citeA{Oliveira2021TheStorms} in two key aspects. First, our analysis window spanned from 24 hours before to 32 hours after the storm's maximum Kp index. Although the reduced post-storm window did not always capture the complete return to calm conditions, it sufficed for our analysis needs. This time frame provided sufficient pre-storm data to quantify relative density increases while maintaining a manageable computational load. 
+
+Secondly, our analysis centred on the time of the maximum Kp value rather than the southward turning of the Bz component. This decision was motivated by two considerations: the inherent noisiness of the Bz signal, which often requires manual annotation to identify the southward turn, and the robustness of the Kp index as a common indicator of geomagnetic activity across empirical atmospheric density models. Focusing on the Kp maximum allowed us to capture the principal phases of geomagnetic storms, providing a reliable framework for analysing density fluctuations across different storm categories and models.
+
+It is important to note that the indices used in the models throughout this paper are the ``definitive" or ``post-processed" variants, not predicted. In practice, the discrepancy between forecasted and actual indices can contribute error on par with that of the models themselves \cite{Mutschler2023AOperations}. This discrepancy worsens during heightened solar activity: for instance, \citeA{Licata2020BenchmarkingDrivers} report that planetary a-index (``ap") forecasts are still highly uncertain even on the scale of a day or two, while predictions of Kp have been known to degrade significantly around solar maximum \cite{Shprits2019NowcastingObservations, Parker2024InfluencesAssessment}, which coincides with periods of heightened geomagnetic activity. Moreover, the three-hour cadence of Kp can mask rapid geophysical transitions, further complicating storm-time modelling \cite{Yamazaki2022GeomagneticHpo}. Such inaccuracies not only degrade thermospheric density estimates but also hamper satellite collision risk assessments \cite{Bussy-Virat2018EffectsObjects}. Further challenge arises from the current lack of a universal benchmarking framework for assessing predictive skill across different indices and forecast horizons \cite{Parker2024InfluencesAssessment, Liemohn2018ModelPredictions}. As such, the model results presented herein represent a best-case scenario for the models. The gap between GNSS-derived densities and real-time or forecast densities is likely to be larger.
+
+\subsection{Density Retrieval Methods}
+
+All densities in this study are computed on an orbit-averaged basis i.e. one value averaged between successive perigee passages.  
+This orbit-effective cadence is widely used in storm-time thermosphere studies \cite{Fitzpatrick2024ApplyingSatellite, Chen2014Storm-timePropagation, Bruinsma2018SpaceOrbit, Li2017ThermosphericMethod} and matches the resolution most commonly assimilated by many contemporary physics-based filters \cite{Matsuo2012DataDensity,Sutton2018AThermosphere,Sutton2021TowardSatellites}.  
+Adopting a single value per orbit also simplifies comparison across methods which may have different time resolutions whilst keeping the analysis aligned with the kinds of inputs typically required by thermospheric data-assimilation systems.
+
+The following methods are considered as part of this study:
+\begin{enumerate}
+  \item \textbf{POD-Accelerometry:}  
+        Starting from precise orbit ephemerides (position and velocity), we obtain a time-series of satellite accelerations via numerical differentiation.  
+        All conservative and major non-conservative forces—gravity, solar and Earth radiation pressure-are modelled and subtracted, leaving a residual drag acceleration. Given a known spacecraft mass $m$, cross-sectional area $A$, and drag coefficient $C_D$, we solve for density and take the mean over each orbit.
+
+  \item \textbf{Energy Dissipation Rate:}  
+        Also using the precise orbit ephemerides as a data source, the EDR approach integrates the specific orbital energy between consecutive perigees. The change in total mechanical energy is equated to work done by drag, yielding an orbit-averaged density for each revolution \cite{Fitzpatrick2024ApplyingSatellite, Mutschler2023Physics-BasedData, Sutton2018AThermosphere}.
+
+  \item \textbf{TLE-derived densities:}  
+        Successive Two-Line Elements are converted to orbit-averaged densities using the \citeA{Picone2005ThermosphericSets} method.  
+        This method is studied in order to provide a representation of what can be achieved by using uncooperative tracking data. This is important as it belongs to the same family of methods which are inputs into operational assimilative models such as HASDM.
+
+  \item \textbf{Empirical-model densities:}  
+        Orbit-mean densities are sampled from the Jacchia-Bowman 2008 \cite{Bowman2008AIndices} and the Naval Research Laboratory Mass Spectrometer and Incoherent Scatter Radar Exosphere (NRLMSISE-00) \cite{Picone2002NRLMSISE-00Issues} models. Both are driven by definitive variants of their respective space weather drivers. These provide a best-case “operational baseline” for comparison.
+
+  \item \textbf{Accelerometer reference:}  
+        Orbit-averaged accelerometer densities provided by TU Delft \cite{Siemes2023NewGRACE-FO} serve as the truth dataset against which all methods are evaluated. These data are widely recognized as a robust and reliable reference truth dataset \cite{March2021, Mehta2017, Gondelach2020, Kuang2014MeasuringData, Emmert2015ThermosphericReview}. 
+\end{enumerate}
+
+Note that for each storm, the orbit-averaged time series from every retrieval method is debiased against the accelerometer-derived densities:
+
+\begin{linenomath*}
+\begin{equation}
+\rho_{\text{method}}^{\ast}(t)
+=
+\rho_{\text{method}}(t)
+-
+\bigl\langle \rho_{\text{method}}(t) - \rho_{\text{ACC}}(t) \bigr\rangle_{\text{storm}}
+\end{equation}
+\end{linenomath*}
+
+where $\langle\cdot\rangle_{\text{storm}}$ denotes the mean over all orbits during that storm.  
+This compensates for any constant offset arising from uncertainties in the drag coefficient ($C_D$) or the projected area of the satellite into the direction in which the atmosphere is moving relative to the spacecraft ($A$). In operational processes, such biases are typically estimated through an orbit determination routine, and removing them allows us to focus on the relative storm-time variability which is the primary quality of interest for data-assimilation and forecasting applications.
+
+To reduce clutter and facilitate interpretation, the shorthands in Table \ref{tab:method_acronyms} are used throughout the figures.
+
+\begin{table}[h]
+\centering
+\caption{Acronyms and corresponding density-retrieval methods used in this study.}
+\label{tab:method_acronyms}
+\begin{tabular}{ll}
+\hline
+\textbf{Acronym} & \textbf{Method} \\
+\hline
+ACC  & Accelerometer Derived Densities \\
+POD  & POD-Accelerometry \\
+EDR  & Energy Dissipation Rate \\
+TLE  & TLE-Derived Densities \\
+MSIS & NRLMSISE-00 \\
+JB08 & JB2008 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{POD-accelerometry density inversion}
+\label{sec:pod-density-inversion}
+The POD-accelerometry method utilized for density estimation from the RSOs is aligned with the approaches detailed in \citeA{Calabia2015ASignal, Calabia2017ThermosphericOrbits, Calabia2021ThermosphericOrbits}. The core premise involves numerically differentiating the POD velocities to derive accelerations, yielding a time-series of accelerations experienced by the spacecraft \cite{Bezdek2010CalibrationAccelerations}. By modelling all conservative and non-conservative forces, except for drag, the residual along-track component of the acceleration can be inverted to estimate density.
+
+Given a time series of velocity measurements from the POD process, \(V(t)\) sampled at discrete times \(t_0, t_1, t_2, \ldots, t_n\), the acceleration \(a(t)\) at time \(t_i\) can be approximated using numerical differentiation:
+
+For \(i = 1, 2, \ldots, n-1\):
+\begin{equation}
+    a(t_i) \approx \frac{V(t_{i}) - V(t_{i-1})}{2 \Delta t}
+\end{equation}
+
+State vectors (positions and velocities) in the RSOs are available at 30-second intervals. Numerical differentiation at this resolution yielded erroneously high acceleration values due to approximation errors. To mitigate this, velocities were interpolated using a cubic spline interpolator as per the method outlined in \citeA{Calabia2015ASignal}. In our case, we found that interpolating the solution beyond a 0.01-second resolution yielded negligible improvements.
+
+Even with interpolation, the resulting acceleration time series exhibited noise, contaminating the estimated densities if unaddressed. Following approaches in \citeA{Oliveira2017ThermosphereEjections, Bezdek2010CalibrationAccelerations}, a Savitzky-Golay filter \cite{SavitzkyA.Golay1964SmoothingData} with a window length of 21 and a polynomial order of 7 was applied to reduce noise \cite{Calabia2015ASignal}. In addition, removal of negative density values was found to improve the resolved densities greatly.
+
+To reduce the computational burden of subsequent steps, the acceleration time series was down-sampled from a 0.01-second resolution to a 15-second resolution.
+
+For each numerically derived acceleration in the time series, accelerations were also computed analytically using the force model described in Table \ref{table:detailed_force_model}.
+
+Satellite motion is guided by the total acceleration experienced by the spacecraft \(\mathbf{a}_{\text{tot}}\), which can be decomposed into the sum of conservative \(\mathbf{a}_{\text{con}}\) and non-conservative accelerations \(\mathbf{a}_{\text{non-con}}\)
+\begin{equation}
+\mathbf{a}_{\text{tot}} = \mathbf{a}_{\text{con}} + \mathbf{a}_{\text{non-con}}
+\end{equation}
+
+where \(\mathbf{a}_{\text{non-con}}\) can be decomposed into effects of atmospheric drag, solar radiation pressure (srp), earth optical and thermal radiation pressure (er), thermal re-radiation (trr) and antenna thrust (at):
+\begin{equation}
+\mathbf{a}_{\text{non-con}} = \mathbf{a}_{\text{drag}} + \mathbf{a}_{\text{srp}} + \mathbf{a}_{\text{erp}} + \mathbf{a}_{\text{trr}} + \mathbf{a}_{\text{at}}
+\end{equation}
+
+In the following method, we compute \(\mathbf{a}_{\text{con}}, \mathbf{a}_{\text{srp}},\) and \(\mathbf{a}_{\text{erp}}\), and set \(\mathbf{a}_{\text{trr}}\) and \(\mathbf{a}_{\text{at}}\) to zero in order to solve for \(\mathbf{a}_{\text{drag}}\). 
+
+The underlying principle is that under a perfect model of the non-conservative forces, the discrepancy between computed and observed accelerations is entirely attributable to changes in atmospheric density. In practice, all errors in the along-track component of the force model affect the estimated density.
+Some simplifying assumptions are made in the name of computational expedience and in order to broaden the applicability of the method.
+We allow ourselves to ignore \(\mathbf{a}_{\text{trr}}\) and \(\mathbf{a}_{\text{at}}\) and any lift component imparted by the atmosphere as their relative contributions are relatively weak particularly under storm conditions, and the technical and computational cost of calculating these are high \cite{Bhattarai2022High-precisionSpacecraft, March2019CHAMPModelling, Doornbos2010NeutralSatellites}.
+In addition, the spacecraft drag coefficient and cross-sectional area are kept constant. This was done not only to expedite the computational processing of the density estimates, but also to ensure applicability of this method to the majority of orbiting spacecraft (for which these variables are generally not well characterized).
+
+\citeA{Bezdek2010CalibrationAccelerations, Ray2020GravitationalPrediction} demonstrated the value of modelling gravitational acceleration from the Earth to high degree and order to ensure that the drag signal does not become contaminated by gravitational signal errors. In line with this work, we model the Earth's gravity field to degree and order 90.
+
+By subtracting the modelled accelerations from the measured accelerations, we obtain a time series of drag accelerations, \(\mathbf{a}_{\text{drag}}\). These accelerations are then computed using the classical drag equation (\ref{drag_eqn}):
+\begin{equation}
+\label{drag_eqn}
+\mathbf{a}_{\text{drag}} = -\frac{1}{2} C_D \rho \frac{A}{m}  v_{\text{rel}}^2 \hat{\mathbf{v}}_{\text{rel}}
+\end{equation}
+
+\begin{equation}
+\label{v_rel_eqn}
+\mathbf{v}_{\text{rel}} = \mathbf{v} - \left( \boldsymbol{\omega}_{\text{earth}} \times \mathbf{r} \right)
+\end{equation}
+
+\begin{tabular}{r l}
+\(\mathbf{a}_{\text{drag}}\)        : & Acceleration due to drag (vector) \\
+\(a_{\text{drag}}\)                 : & Acceleration due to drag (scalar) \\
+\(\hat{\mathbf{v}}_{\text{drag}}\)  : & Unit vector in the direction of the drag acceleration \\
+\(\mathbf{v}_{\text{rel}}\)         : & Vector of satellite velocity relative to the co‐rotating atmosphere \\
+\(v_{\text{rel}}\)                  : & Scalar of satellite velocity relative to the co‐rotating atmosphere \\
+\(\mathbf{v}\)                      : & Velocity vector of the satellite in inertial space \\
+\(\boldsymbol{\omega}_{\text{earth}}\) : & Angular rotation-rate vector of the Earth \\
+\(\mathbf{A}\)                      : & Cross-sectional area of the satellite exposed to the ram direction \\
+\(\rho\)                            : & Atmospheric density \\
+\(C_{D}\)                           : & Drag coefficient \\
+\(m\)                               : & Satellite mass \\
+\end{tabular}
+
+Projecting \(\mathbf{a}_{\text{drag}}\) into the unit direction of \(\mathbf{v}_{\text{rel}}\) (computed assuming a co-rotating atmosphere), the density is estimated as follows:
+
+\begin{equation}
+\label{rho_eqn}
+\rho = \frac{2a_{\text{drag}} \, m}{C_D A {{v}}_{\text{rel}}^2}
+\end{equation}
+
+The resulting accelerations exhibited some noise and occasional non-physical (i.e. negative) values. However, applying a rolling average to the estimated density mitigated these issues. A rolling-average time window of 45 minutes was used ( corresponding to roughly $\simeq$1/2 orbit). This window length was determined empirically, and based on evidence suggesting a proportional relationship between the minimal viable window length and the strength of the drag signal \cite{Ray2023ACorp, Siemes2024UncertaintyData, Ray2024ErrorMinimum}.
+
+\begin{table}
+\centering
+\caption{Force modelling parameters and spacecraft characteristics used in this study.}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|p{4cm}|p{6cm}|p{5cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value / Description} & \textbf{Reference} \\
+\hline
+Third Body Effects & Moon and Sun point mass model. DE421 Ephemerides & \cite{Folkner2009The421, Montenbruck2000} \\
+Gravity Field & EIGEN-6S4 90x90 & \cite{Forste2016EIGEN-6S4Toulouse} \\
+Solid Tides & IERS 2014 & \cite{Bizouard2019The2014} \\
+Ocean Tides & FES 2004 & \cite{Lyard2006ModellingFES2004} \\
+Relativistic Correction & Equation 3.146 & \cite{Montenbruck2000} \\
+Earth Radiation Pressure & Knocke 1x1 degree & \cite{Knocke1988EarthSatellites} \\
+Solar Radiation Pressure & Cannonball ($C_r$) + cone shadow model & \cite{Montenbruck2000} \\
+Aerodynamic Drag Force & Cannonball ($C_d$), density inverted-for & \cite{Montenbruck2000} \\
+Atmospheric Winds & Co-rotating atmosphere (no winds) & \cite{Montenbruck2000} \\
+Reference Frame & EME2000 & \cite{McCarthy1996IERSConventions} \\
+Precession/Nutation & IERS 2014 Conventions & \cite{McCarthy1996IERSConventions} \\
+Polar Motion and UT1 & IERS C04 14 & \cite{Brzezinski2009SeasonalObservations} \\
+\hline
+\textbf{Spacecraft} & \textbf{Mass (kg), Area (m$^2$), $C_D$, $C_r$} & \textbf{Reference} \\
+\hline
+GRACE-FO-A & 600.2, 1.04, 3.2, 1.5 & \cite{Mehta2013} \\
+CHAMP & 522.0, 1.0, 2.2, 1.0 & \cite{Mehta2017} \\
+\hline
+\end{tabular}}
+\label{table:detailed_force_model}
+\end{table}
+
+The method runs at 1.3 density estimates per second on a 10-core CPU laptop. For a 24 hour ephemeris sampled at 30-second intervals this results in a total run time of 36 minutes. Wall-clock time scales approximately inversely with the number of processing cores.
+
+\subsubsection{Accelerometer-Derived Densities}
+
+The latest version of the TU Delft accelerometer-derived atmospheric densities were obtained for CHAMP and GRACE-FO-A \cite{Siemes2023NewGRACE-FO}.
+
+While accelerometer-derived densities are frequently regarded as a robust benchmark \cite{Sutton2021TowardSatellites, Mehta2022SatelliteOperations, Mutschler2023Physics-BasedData}, it is imperative to recognize that even these measurements are not devoid of errors. These errors persist despite the application of advanced correction techniques and high-fidelity models. For example, \citeA{Aruliah2019ComparingMeasurements} found that average zonal winds between 2001-2007 derived from the CHAMP satellite accelerometer were 1.5 to 2.0 times larger than those calculated from Doppler shifts observed by ground-based Fabry-Perot Interferometers at two high-latitude sites (auroral oval and polar cap). For this to be true, they demonstrated it would provide a challenge to the assumption,  held by all theoretical models, that the upper thermosphere has a high viscosity. One key argument against the size of the CHAMP winds is their similar magnitude to average plasma drifts observed by the EISCAT radar. Auroral zone plasma speeds are driven by strong electric fields generated by the solar wind magnetospheric dynamo. Through collisions between neutral particles and ions, the neutral winds can be accelerated, but there is an inertia, so the neutral winds rarely reach plasma speeds before the dynamic electric field changes. \citeA{Aruliah1996TheCycle} compared the seasonal and solar cycle average wind and plasma velocities at high latitudes, and  also monitored a common volume using 3 FPIs and 3 EISCAT radars \cite{Aruliah2004FirstRadar} which showed that auroral zone neutral winds are on average only 50\% of the magnitude of plasma velocities.
+
+More recently, \citeA{Siemes2023NewGRACE-FO} also show a systematic offset between CHAMP crosswind and TIE-GCM model winds. The consequences on empirical and theoretical models of the global coverage and vast data output of satellite drag measurements compared with sparse ground-based independent measurements needs serious consideration for the future of modelling the LEO altitude regions. Additionally, \citeA{Doornbos2010NeutralSatellites} highlighted that the choice of wind models used in the density inversion process can alter the derived densities by up to 20\%. Thus, while accelerometer data serves as the best available benchmark in many studies, one should keep in mind its potential limitations.
+
+\subsubsection{Energy Dissipation Rate Method}
+The Energy Dissipation Rate (EDR) method leverages the principle that, under two-body dynamics, the sum of the kinetic and potential energy of a satellite remains conserved. Assuming atmospheric drag primarily drives changes in this conserved quantity \cite{Picone2005ThermosphericSets}, a time series of orbital energy can be used to infer atmospheric density between each point in the time series.
+
+EDR methods underpin some of the most effective operational density models to date \cite{Storz2002HASDMRates, Bowman2003HighReview} and have been foundational for many years \cite{King-Hele1987TheLifetimes}. Benchmarking against this method provides valuable context by comparison with well-known works in recent literature \cite{Hejduk2013ASolutions, Pilinski2016ImprovedSpecification, Bowman2005DragSpheres, Sutton2021TowardSatellites}.
+
+This study follows the EDR methods outlined in \citeA{Sutton2021TowardSatellites} and \citeA{Ray2024ErrorMinimum}.
+
+Using positions and velocities from the RSOs, as in \citeA{Ray2024ErrorMinimum} we interpolate the ephemeris to 1-second intervals using a cubic spline interpolator and compute the kinetic and potential energy of the satellite at each ephemeris time step:
+
+\begin{equation}
+\xi = \frac{v^2}{2} - \omega_{\text{Earth}}^2 \frac{x^2 + y^2}{2} - \frac{\mu}{r} - U_{\text{nonSpherical}}
+\end{equation}
+where \(\frac{v^2}{2}\) represents the kinetic energy, \(\omega_{\text{Earth}}\) is the Earth's rotational rate, \(\frac{\mu}{r}\) is the monopole term of the gravitational potential, and \(U_{\text{nonSpherical}}\) represents the potential due to Earth's asphericity modelled by spherical harmonic expansion. The Eigen-6S4 gravity field model was employed up to degree and order 90.
+
+The effects of the luni-solar gravitational potential were considered using the following equation \cite{Sutton2021TowardSatellites}:
+
+\begin{equation}
+\xi_{3BP} = \int_{t_0}^{t_1} \bar{a}_{3B} (\vec{r}, t) \cdot \vec{v} \, dt
+\end{equation}
+
+Solar Radiation Pressure (SRP) and Earth Radiation Pressure (ERP) were included in the same way, following evidence presented in \citeA{Ray2024ErrorMinimum} that these were worth considering, particularly at lower density regimes. Solving for \(\xi\) at each time step results in a time series of orbital energy, which can be converted into an EDR time series:
+
+\begin{equation}
+EDR_{i+1} = \xi_{i+1} - \xi_i
+\end{equation}
+
+Given the EDR, velocity vector, positions, drag coefficient (\(C_D\)), cross sectional area (\(A\)), mass, and time interval (\(dt\)), we can compute the effective density (\(\rho_{\text{eff}}\)).
+
+Based on the methodology in \citeA{Sutton2021TowardSatellites}, the effective density \(\rho_{\text{eff}}\) at the \(i+1\)-th time step is determined from the EDR:
+
+\begin{equation}
+EDR_{i+1} = \xi_{i+1} - \xi_i = -\frac{1}{2m} \int_{t_i}^{t_{i+1}} C_D A\rho V^3 \, dt = -\frac{1}{2m} \rho_{\text{eff}} \int_{t_i}^{t_{i+1}} C_D A V^3 \, dt
+\end{equation}
+
+Numerically, this can be solved for \(\rho_{\text{eff}}\) as follows:
+
+\begin{equation}
+\rho_{\text{eff}} = \frac{2m (\xi_{i+1} - \xi_i)}{-\int_{t_i}^{t_{i+1}} C_D A V^3 \, dt}
+\end{equation}
+
+\subsubsection{TLE-Derived Densities}\label{sec:TLEdensities}
+
+Deriving density estimates from TLEs is a powerful and popular method which was originally presented in \citeA{Picone2005ThermosphericSets}. This technique extracts information that is implicitly contained in the secular change of a satellite’s mean–mean motion $n_M$.  
+Under drag-only dynamics, the differential equation governing $n_M$ is given by equation 5 of \citeA{Picone2005ThermosphericSets}.
+
+\begin{equation}
+\frac{\mathrm d n_M}{\mathrm d t}= \frac{3}{2}\,n_M^{1/3}\,\mu^{2/3}\,\rho\,B\,V^{3}\,F 
+\label{eq:dndt}
+\end{equation}
+
+where $\mu$ is Earth’s gravitational parameter, $B=C_DA/m$ is the inverse ballistic coefficient, $V$ is the velocity of the satellite, and $F$ is the wind–alignment factor (Eq.(7) of \citeA{Picone2005ThermosphericSets}).  
+For near-circular low-Earth orbits the wind term can be approximated by $F\simeq1$, and $V^3$ can be written $\mu n_M$.
+
+Each TLE provides the mean motion $n$ and its first derivative $\dot n$.
+Kepler’s third law yields the semi-major axis and orbital velocity
+\begin{equation}
+a = \left(\frac{\mu}{n^{2}}\right)^{1/3}, \quad 
+V = \sqrt{\mu/a}
+\label{eq:aV}
+\end{equation}
+ 
+Substituting Eq.\eqref{eq:aV} into Eq.~\eqref{eq:dndt} and solving for $\rho$ gives the TLE-derived density
+
+\begin{equation}
+\rho_{\text{TLE}}= \frac{2\,m\,\dot n}{3\,C_D\,A\,n\,V}
+\label{eq:rho_TLE}
+\end{equation}
+
+This algebraic form is the short-interval limit of the integral solution (Eq.~(10) in \citeA{Picone2005ThermosphericSets}), assuming $B$ and $F$ are constant over the TLE fit span.
+
+Because $\dot n$ represents an average over the interval between consecutive element sets, the density in Eq.~\eqref{eq:rho_TLE} is referenced to the midpoint epoch  
+$t_{k-1/2}= \tfrac12\!\left(t_{k-1}+t_{k}\right)$.  These mid-span timestamps are used without further smoothing.
+
+In order to meet the once-per-orbit resolution required, $\rho_{\text{TLE}}(t_{k-1/2})$ is linearly interpolated onto the mid-times of each orbit arc. No temporal filtering or rolling mean is applied to the TLE series itself.
+
+The method requires only algebraic evaluation per element; it is therefore two orders of magnitude faster than orbit-integrated drag inversions.
+
+\subsubsection{Operational Density Models}
+
+We benchmark our retrievals against two empirical thermospheric models that form the backbone of many routine operational products:
+
+\begin{itemize}
+  \item \textbf{JB2008} \cite{Bowman2008AIndices}, implemented via the Orekit Python wrapper and driven by the SOLFSMY and DTCFILE coefficient files obtained from the Space Environment Technologies portal (\url{https://sol.spacenvironment.net/jb2008/}).  
+  \item \textbf{NRLMSISE–00} \cite{Picone2002NRLMSISE-00Issues}, accessed through the \texttt{pymsis} Python module \cite{Lucas2024PymsisModel}. The $F_{10.7}$ and $K_p$ values used to drive the model are the definitive indices provided by NOAA SWPC (obtained through \url{https://www.swpc.noaa.gov}).  
+\end{itemize}
+
+We selected JB2008 and NRLMSISE-00 due to their operational relevance. Whilst newer models such as HASDM or NRLMSISE-2.0 do exist, these are restricted in their operational and commercial applications by various licences. JB2008 and NRLMSISE-00 are commonly used in many operational settings. Evaluating their storm-time performance provides results that are immediately relevant to the current state of operations and provides results which are more easily contextualized by operators as well as thermosphere scientists.
+
+\subsection{Selection of Evaluation Metrics}
+
+To assess the performance of multiple density‐retrieval techniques against the accelerometer reference, we employ two complementary metrics: the root‐mean‐square percentage error (RMS \%) and the coefficient of determination ($r^{2}$).  
+
+RMS\% error quantifies the average relative deviation of each method’s retrieved densities from the accelerometer‐derived “truth” in percentage terms. Explicitly, for $N$ orbit‐averaged density pairs $(\rho_{\textrm{model},i},\,\rho_{\textrm{ACC},i})$,  
+\[
+\text{RMS\%} \;=\; 100 \times \sqrt{\frac{1}{N}\sum_{i=1}^{N}\!\biggl(\frac{\rho_{\textrm{model},i}-\rho_{\textrm{ACC},i}}{\rho_{\textrm{ACC},i}}\biggr)^{2}}
+\]
+
+This metric was adopted in \citeA{Ray2024ErrorMinimum} to evaluate density‐retrieval accuracy; by using the same metric here, we ensure direct comparability with their results. In addition, RMS\% error expresses error magnitude in familiar relative terms and also penalizes large outliers thus highlighting situations where a retrieval method may occasionally break down.
+
+Second, we use the coefficient of determination ($r^{2}$) to quantify the fraction of variance in the accelerometer‐derived densities that each method explains. Formally,
+\[
+r^{2} \;=\; 1 \;-\; 
+\frac{\sum_{i=1}^{N}(\rho_{\textrm{ACC},i}-\rho_{\textrm{model},i})^{2}}
+     {\sum_{i=1}^{N}(\rho_{\textrm{ACC},i}-\overline{\rho_{\textrm{ACC}}})^{2}}
+\]
+where $\overline{\rho_{\textrm{ACC}}}$ is the mean accelerometer density over the same set of orbits. The $r^{2}$ statistic is widely used in the density‐retrieval literature because it responds to how faithfully a method reproduces the timing and relative magnitudes of density variations (e.g.\citeA{Sutton2018AThermosphere, Oliveira2017ThermosphereEjections, Forootan2022ForecastingMeasurements}).   
+
+\section{Results and Discussion}
+First, we benchmark each density inversion technique by regressing per-orbit effective densities against the accelerometer-derived reference across all orbits studied; the resulting \(r^{2}\) scores and RMS-error histograms establish a quantitative hierarchy of method performance. Next, we probe the relationship between drag strength and method performance, revealing the drag regimes in which cooperative-based methods diverge in performance. Finally, we compare computational runtimes.
+
+\subsection{Multi-Storm Analysis: Comparison to Accelerometer Data}
+\begin{figure}[H]
+\noindent\includegraphics[width=\textwidth]{champ+gfo_heatmaps.png}
+\caption{Correlation heat-maps between orbit-effective accelerometer-derived densities and orbit-effective densities derived from the methods studied for GRACE-FO-A (panels a-e) and CHAMP (panels f-j). The thin green line represents perfect correlation (1:1). Points lying near the 1:1 line indicate accurate retrievals; systematic offsets appear as coherent deviations from this line. Larger $r^2$ indicates stronger agreement with accelerometer-derived densities; values near 1 denote excellent performance. Note the x- and y-axes are identical.}
+\label{corr_heatmaps}
+\end{figure}
+
+Figure~\ref{corr_heatmaps} condenses the evaluation of each density–recovery technique into a $2\times5$ panel of Pearson-$r^{2}$ heat maps.
+
+POD-accelerometry recovers accelerometer-derived orbit-averaged densities with $r^{2}=0.96$ for GRACE-FO-A and $0.94$ for CHAMP, outperforming every other method for both spacecraft. The result is consistent with recent demonstrations that, when high-quality orbits are available, the accelerometry approach delivers the most faithful representation of thermospheric variability \cite{Ray2023ACorp}.
+  
+For CHAMP, which operated $\sim100$\,km lower than GRACE-FO and therefore experienced stronger drag, EDR nearly matches POD in terms of correlation to the accelerometer-derived orbit-effective densities ($r^{2}=0.94$). By contrast, the same method yields a markedly lower $r^{2}$ for GRACE-FO-A and is further penalised by the exclusion of \mbox{$\sim21.5$\,\%} of orbits whose inversion produced negative (i.e.\ non-physical) densities. This pattern reinforces \citeA{Ray2024ErrorMinimum} findings that the application of the EDR method is most effective when the drag signal-to-noise ratio is larger.
+
+For GRACE-FO-A, the semi-empirical models rank immediately behind POD-accelerometry: JB08 achieves $r^{2}=0.87$ and MSIS $0.88$. Their skill is similar for CHAMP ($r^{2}=0.87$ for JB08 and for MSIS), reflecting the scale of the limitations inherent to these models in capturing storm-time surges.
+
+\begin{figure}[H]
+\centering\includegraphics[width=0.7\textwidth]{TLE_intervals_histogram.png}
+\caption{Distribution of time gaps between TLEs for each satellite over the entire set of storms considered.}
+\label{tle_hist}
+\end{figure}
+
+The TLE-derived densities correlate reasonably with the accelerometer truth on GRACE-FO-A ($r^{2}=0.83$) but degrade sharply on CHAMP ($r^{2}=0.58$). One might expect the opposite ordering given the lower altitude of CHAMP and thus the stronger drag signal. In much the same way the POD and EDR methods are sensitive to signal-to-noise ratio, the TLE method is also likely to be. We ascribe the lower scores on CHAMP to the sparser cadence of its catalogue maintenance: the median interval between successive TLE epochs is $15.01$\,h for CHAMP versus $9.17$\,h for GRACE-FO-A (see figure \ref{tle_hist}), and potentially the worse hardware available to observe it at the time (it is over two decades older than GRACE-FO-A).
+
+We further evaluate each density-inversion method by quantifying the distribution of orbit-wise RMS percentage errors against accelerometer-derived densities. Figure~\ref{histo_orbits} shows histograms of RMS percentage error, separated by spacecraft (CHAMP and GRACE-FO-A) and inversion method (POD, EDR, TLE, JB08, and MSIS).
+
+\begin{figure}[H]
+\noindent\includegraphics[width=\textwidth]{rms_histograms_orbitwise.png}
+\caption{Histogram of RMS percentage error of each orbit compared to accelerometer-derived densities. More data to the left indicates lower error. Note that whilst a handful of data points exceed 100\% RMS \%Error the axis is set to 0-100 for clarity.}
+\label{histo_orbits}
+\end{figure}
+
+For both CHAMP and GRACE-FO-A, POD-accelerometry clearly outperforms all other methods. The POD-accelerometry histograms display the largest peaks of any method in the lowest error bin (0–5\%), accompanied by short tails, indicating consistently accurate retrieval across most orbits.
+
+For CHAMP, after POD-accelerometry, MSIS emerges as the second-best method, showing a relatively compact distribution centred towards low RMS errors. JB2008 and EDR exhibit similar performance, with slightly wider distributions, suggesting increased variability. TLE inversion consistently performs worst among methods for CHAMP, characterized by a broader spread- likely due to the low cadence at which TLEs are made available compared to the other methods.
+
+The GRACE-FO-A results illustrate the advantages of POD-accelerometry under lower-drag scenarios, with a higher fraction of orbits concentrated in the 0–5\% error bin relative to other methods. MSIS remains the next best performer, followed closely by JB08. Notably, for GRACE-FO-A, TLE-derived densities rank fourth overall, as EDR becomes the poorest-performing method, with a high variance and a significant number of invalid densities. According to this metric, the uncooperative TLE method of \citeA{Picone2005ThermosphericSets} is more favourable than the application of the EDR method to GNSS data under a lower-drag scenario.
+
+This result underscores that cooperative data are not automatically superior; POD noise, force model fidelity, and processing method all matter. Commercial-grade POD solutions in the literature typically exhibit an order-of-magnitude larger position noise than the science-grade data analysed here \cite{Arnold2023PreciseSatellites}, and this uncertainty propagates directly into the density retrieval. POD-accelerometry therefore stands out as the more robust alternative, albeit at increased computational cost.
+
+Furthermore, the empirical models studied show comparatively favourable statistics, but those scores must be interpreted in light of two facts: they were driven by definitive rather than predicted geomagnetic and solar indices, and, for JB2008, the original model calibration relied heavily on CHAMP and GRACE (not GRACE-FO-A) accelerometer data used here for validation \cite{ Bowman2008AIndices}. As such, the results provided for the models here are a lower bound on the error these can provide, and one should expect greater error in an operational context.
+
+\begin{table}[h]
+\centering
+\caption{Orbit-wise statistics across all orbits for each method.}
+\label{tab:rms_stats}
+\begin{tabular}{lccc}
+\hline
+\textbf{Method} & \textbf{Mean RMS\%} & \textbf{Median RMS\%} & \textbf{Variance of RMS\%} \\
+\hline
+POD  & \textbf{8.91} & \textbf{5.75} & 177.11 \\
+EDR  & 17.01 & 10.98 & 442.16 \\
+TLE  & 20.27 & 13.52 & 638.79 \\
+JB08 & 13.24 & 9.76  & \textbf{159.65} \\
+MSIS & 11.61 & 7.90  & 160.68 \\
+\hline
+\end{tabular}
+\end{table}
+
+Table \ref{tab:rms_stats} further highlights method-specific performance. POD achieves the lowest mean RMS percentage error (8.91\%), followed by MSIS (11.61\%) and JB08 (13.24\%). EDR (17.01\%) and TLE (20.27\%) show significantly higher mean errors. Median RMS values mirror this ranking.
+
+Variance provides additional insight into method stability. Empirical models (JB08: 159.65; MSIS: 160.68) yield the lowest variances, reflecting their smooth nature and thus relatively stable performance. POD closely matches these low variances (177.11), confirming that it couples high accuracy with high precision. Conversely, the EDR (442.16) and TLE (638.79) variances are notably 2.5 to 3.5 times higher, highlighting their greater susceptibility to sporadic errors and instability. In the case of the EDR this may be attributed to the higher sensitivity to noise, whereas in the case of the TLE-based method, this is attributable to a lower temporal resolution.
+
+Although POD-accelerometry outperforms other inversion techniques in a one-to-one sense, EDR and TLE-based methods retain operational value thanks to their modest computational cost and the increasing pool of data these methods can be applied to.
+First, it is possible that their accuracy—while poorer than POD-accelerometry in controlled comparisons—still exceeds that of models run with nowcast/forecast indices.
+Second, in an assimilative setting, the ingestion of tens to hundreds of objects ($\simeq80$ in the case of HASDM) naturally damps random noise and stabilises errors which may appear unacceptable at the single-satellite level.
+
+\subsection{Relationship Between Error and Drag Acceleration}
+\label{sec:err_drag}
+
+Prior to analysing the data we wish to highlight the heterogeneous distribution of the dataset at hand as this will impact any conclusions that may be drawn from it.
+Firstly, as the dataset comprises orbits drawn only during geomagnetic storms, lower‐density orbits are relatively undersampled- in particular, drag regimes $\lesssim 10^{-8}\,\mathrm{m\,s^{-2}}$.
+
+CHAMP orbits follow a relatively skewed normal distribution ranging between $10^{-7}\,\mathrm{m\,s^{-2}}$ and $ 10^{-6}\,\mathrm{m\,s^{-2}}$
+with a mode near $5\times10^{-7}\,\mathrm{m\,s^{-2}}$. GRACE‐FO-A orbits follow a more normal distribution, extending the lower bound to $2\times10^{-9}\,\mathrm{m\,s^{-2}}$ and with a mode around $\sim4.5\times10^{-8}\,\mathrm{m\,s^{-2}}$. The distribution is presented in figure \ref{dragacc_hist}, where the number of orbits per bin varies by up to a factor of 7; this heterogeneity limits the quality of statistics derived for low‐population regions and frames our comparison with the theoretical predictions made in \citeA{Ray2024ErrorMinimum} as qualitative rather than strictly quantitative.
+
+The comparison with predictions presented in \citeA{Ray2024ErrorMinimum} is visible in figure \ref{raycompare}. This figure relates the orbit‐effective RMS percentage error (relative to accelerometer-derived orbit-effective densities) of the retrieved densities to the mean along‐track drag acceleration experienced during each orbit. 
+
+To visualise the overall tendency among the highly scattered results, we partition the drag acceleration \(\bar a_{\mathrm{D}}\) into six equal-width intervals in \(\log_{10}\)-space.  Each interval spans
+\begin{equation}
+  \Delta\log_{10} a_{\mathrm{D}}
+  = \frac{\log_{10}(1.5\times10^{-6}) - \log_{10}(2\times10^{-9})}{6}
+  \approx 0.41\ \mathrm{dex}
+\end{equation}
+where dex (decadic exponent) is the customary unit for base-10 logarithmic differences: a step of \(1\) dex corresponds to a factor of \(10\) in the linear quantity, so \(0.41\) dex implies a factor of \(10^{0.41}\simeq2.6\). Logarithmic binning therefore ensures roughly uniform sampling across the four-decade drag range and prevents the statistics from being dominated by the extremes. Within each bin we compute the median RMS percentage error because the median is robust to outliers.  Bins containing fewer than twenty orbits are excluded from the moving-median curve; in practice this affects only the lowest-drag bin in the EDR panel. The choice of six bins is empirical: narrower bins allow sampling noise to dominate, whereas wider bins smear out structure in the error–drag relationship. The resulting moving median, drawn as a fuchsia line, is directly comparable to the resolution used by \citeA{Ray2024ErrorMinimum} (their figure ~13).
+
+Dotted green curves correspond to the theoretical predictions of \citeA{Ray2024ErrorMinimum} (figure 13 in \citeA{Ray2024ErrorMinimum}) for retrievals based on centimetre‐level orbit accuracy (1–2 cm 3-D RMS; \citeA{Schreiner2022GFZProducts}). Between $\sim 3\times10^{-8}\,\mathrm{m\,s^{-2}}$ and $\sim 8\times10^{-7}\,\mathrm{m\,s^{-2}}$, the region commanding the highest data density, the empirical medians for both EDR and POD-accelerometry shadow the theoretical expectations closely.
+
+Towards the lower end of the drag-acceleration space ($\sim \leq2\times10^{-8}\,\mathrm{m\,s^{-2}}$ the empirical and theoretical curves diverge. We believe it is likely that beyond this point undersampling becomes a dominant factor, but a physical increase in retrieval difficulty under very weak cannot yet be ruled out. Because the sampling is uneven, our treatment of the discrepancy remains qualitative; a definitive assessment will require denser and more even coverage across the full drag‐acceleration range.
+
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.8\textwidth]{drag_acc_histogram.png}
+\caption{Distribution of orbit-effective drag accelerations sampled in this study. Coloured by satellite. Higher is better. Flat distribution is better. n is the total number of orbits for each satellite.}
+\label{dragacc_hist}
+\end{figure}
+
+\begin{figure}[H]
+\noindent\includegraphics[width=\textwidth]{RayCompare.png}
+\caption{Heat map of RMS\% error of each orbit compared to the mean drag acceleration along that orbit. Lower is better. The fuchsia line represents the moving median error. The dotted green line represents the values from figure 13 in \citeA{Ray2024ErrorMinimum}. Note the y-axis upper limit is +80\% for ease of viewing the plots, but a handful of points are present beyond this range.}
+\label{raycompare}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\noindent\includegraphics[width=0.8\textwidth]{DragAccVsVariance.png}
+\caption{Moving variance of the results returned as compared to the mean drag acceleration of the orbit in which those results were returned. The points plotted correspond to the variance of the same data bins plotted in figures \ref{raycompare} and \ref{dragacc_hist}. Lower is better.}
+\label{drag_v_variance}
+\end{figure}
+
+Figure \ref{drag_v_variance} provides a view on the precision of the two cooperative density inversion methods, represented as the one-sigma (1-$\sigma$) standard deviation of orbit-effective RMS percentage errors as a function of mean drag acceleration along each orbit within each of the 6 aforementioned bins. While previous works such as \citeA{Ray2024ErrorMinimum} have characterized retrieval accuracy of these methods systematically, their precision has not been explicitly addressed before.
+
+At higher drag accelerations (nearer $10^{-6}$\,m/s$^{2}$), both POD and EDR demonstrate similarly low variances (1-$\sigma$ $\leq 10$\%), further supporting the fact that a stronger drag signal facilitates density retrieval, irrespective of the method employed. As the drag signal decreases however, both methods exhibit increasing variance, reflecting greater retrieval uncertainty. Notably, this increase is substantially more pronounced for EDR, rising sharply up to approximately 64\%, while the POD variance peaks at roughly 23\%.
+
+The consistently lower variance demonstrated by the POD accelerometry method across varying drag conditions points towards a greater precision as well as accuracy when compared to the EDR method. Nevertheless, caution is advised when interpreting results due to the uneven sampling of different drag environments.
+
+Figure \ref{raycompare} corroborates the evidence of superior accuracy of POD-accelerometry described by \cite{Ray2024ErrorMinimum}. Figure \ref{drag_v_variance} contributes an additional layer of information by suggesting a similar trend exists in terms of precision of the methods.
+
+It should be noted that both uncooperative methods offer levers to trade latency for accuracy (and potentially precision).
+For instance, lengthening the fit span used in the EDR approach can improve accuracy at the expense of timeliness \cite{Picone2005ThermosphericSets}.
+Such compromises may be attractive when large volumes of lower-quality data are available and rapid turnaround is not as important.
+
+% \subsection{Case–Study: May 2024}
+
+% To assess performance under the strongest storm in recent years (strongest since October 2003 storm) and has gained much coverage in both the scientific and broader literature [ref, ref, ref], we inspect the orbit–effective density time series provided by each method for a the particularly intense and long G5 “Gannon” event of May 2024 using data from GRACE-FO-A \cite{Elvidge2024TheSuperstorm}. Figure \ref{fig:may2024_storm} shows the orbit-effective densities derived from each method studied alongside the correlation ($r^{2}$) and RMS percentage error for each method over the course of the storm relative to the GRACE-FO-A accelerometer benchmark.
+
+% The POD-accelerometry data tracks the accelerometer-derived densities most closely throughout all phases of the storm. It slightly over-estimates the magnitude of the peak of the storm density but captures the rate of density increase and decrease in all storm phases well when compared to the ACC. EDR also reproduces the overall shape well but peaks far too high during the peak of the storm ($\sim$03:00 May 11th 2024) and exhibits more noise than than the ACC method. This difference in noise may be attributable to the fact that the POD acc method is less sensitive than EDR to single outliers thanks to the use of smoothing and time-averaging (as outlined in section \ref{sec:pod-density-inversion}).
+% The TLE solution displays a clear temporal lag: in terms of absolute value, its peak approaches the ACC curve but this arrives almost 12 hours too late. Similarly, the TLE curve fails to capture the timing of the onset of the post-storm cooling phase, though the rate (slope) seems consistent with the ACC/POD/EDR curves. This overall time-lagged behaviour may be attributed to the fact that TLEs are generated as a fit over many hours (sometimes days), meaning that the parameters used to derive the density estimates will have been averaged over many orbits and thus will take time to reflect the effect of the storm.
+
+% Both empirical models underestimate the magnitude of the peak: JB08 returns to baseline around 12 hours too early whilst MSIS peaks about 10 hours too late and then also decays slowly. Neither empirical model captures the cooling time onset and rate convincingly. 
+
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=\textwidth]{figs/may_storm_benchmark.png}
+% \caption{Orbit-effective densities along the GRACE-FO-A orbit during the May 2024 G5 “Gannon” geomagnetic storm. The black line is the accelerometer reference; closer proximity is better.}
+% \label{fig:may2024_storm}
+% \end{figure}
+
+% % Specific illustration of the stakes
+% The May 2024 G5 “Gannon” storm illustrates the practical stakes vividly. More than XXX objects were temporarily lost from public custody lists [REF Dan Oltrogge Pres] for a period of X-time, while major mega-constellation operators such as Starlink reported along-track errors exceeding 20 km over a 24-hour propagation period [Ref Will Parker Pres].
+% Errors of that magnitude effectively invalidate any conjunction assessment, regardless of downstream filtering or screening strategy.
+% Although a true storm-time forecast of thermospheric behaviour remains the “holy grail,” accurate and frequent updates to now-casts may already offer a powerful way to keep predicted orbits from veering too far from reality; empirical models such as JB2008 or NRLMSISE-00, when driven even by definitive variants of the space-weather indices, cannot presently provide that safeguard.
+
+\subsection{Computational Run-time}
+Run-time tests were performed under Python 3.11 on an Apple M1 (10-core) processor equipped with 32 GB of unified memory.
+For each retrieval technique we bracketed the execution of a single-orbit inversion routine with the high-resolution wall-clock timer \texttt{time.perf\_counter()} from Python’s \texttt{time} module, after all requisite input files (SP3 ephemerides, TLEs, space-weather indices, etc.) had been pre-loaded into memory.  
+The timing block was repeated for 100 orbits. The mean execution time per orbit was 186.1 s for POD, 12.4 s for EDR, and $\leq$0.1 s for TLE. I/O operations and plotting calls were excluded so that the reported figures reflect only the computational cost of the retrieval algorithms themselves. Tests were executed serially (single OS thread).
+
+\section{Conclusions and Implications}
+
+When cooperative tracking data is available, POD‐accelerometry emerges as the benchmark for storm-time thermospheric density inversion. Across 1887 orbits spanning 43 geomagnetic storms and two spacecraft (GRACE-FO-A and CHAMP), orbit-effective densities obtained from POD‐accelerometry correlated most strongly with accelerometer references (\(r^{2}=0.96\) for GRACE-FO-A, \(0.94\) for CHAMP) and achieved the lowest orbit-median RMS error (5.8\%). Models performed next best (median RMS$=7.9$\% for MSIS and 9.8\% for JB08), while GNSS‐based EDR densities lagged behind (10.98\%). Densities estimated without cooperative data were least accurate (13.5\%) and exhibited roughly five times the variance of the POD‐accelerometry results. Although POD‐accelerometry demands an order‐of‐magnitude more computation, it delivers roughly twice the accuracy and 2.5-fold greater precision than EDR.
+
+Real GNSS-derived densities corroborate the signal-to-noise degradation of the POD and EDR techniques predicted by \citeA{Ray2023ACorp}. As drag acceleration weakens, EDR median RMS\% errors grow in lockstep. We also find this holds for the variance, a behaviour not reported in the literature. By contrast, POD‐accelerometry remains relatively insensitive to drag strength, with a notable rise in error only as accelerations fall below \(10^{-8}\,\mathrm{m\,s^{-2}}\). These findings reinforce the view of \citeA{Ray2024ErrorMinimum} that, under conditions of reduced aerodynamic forcing (\(\lesssim 2\times10^{-7}\,\mathrm{m\,s^{-2}}\)), POD‐accelerometry offers greater robustness than EDR in retrieving densities.
+
+Taken together, the evidence positions POD‐accelerometry as the more accurate source of storm‐time density observations for data‐assimilation systems which have access to cooperative tracking data. Harnessing cooperative measurements from even a fraction of today’s \(>\!11,000\) LEO satellites could supply a dense, relatively high-accuracy data layer that could inform thermospheric modelling precisely when density errors become most degraded: during geomagnetic storms \cite{Parker2024SatelliteGannon, Parker2024InfluencesAssessment, Berger2023TheOperations, Berger2020}.
+
+% Broad importance of the work
+It is likely that the next generation of high-fidelity thermosphere models- much like their terrestrial weather counterparts- will ultimately rely on data assimilation, in which a numerical forecast is continuously corrected by incoming observations \cite{Montzka2012MultivariateReview}.
+Thermospheric modelling is still at a comparatively early stage in its development as a science, and the observational bottleneck is acute. Cooperative tracking data may provide a unique opportunity to tie models back to reality precisely within the regions where thermospheric modelling is of highest operational value (i.e. where the current and planned satellite constellations are being launched) and with a lower latency than current uncooperative-based methods.
+This study helps to quantify the information content of cooperatively-derived neutral-density estimates under those disturbed conditions that challenge empirical and physics-based models most severely \cite{Oliveira2021TheStorms, Mutschler2023AOperations, Berger2023TheOperations}.
+
+% Implications for model developers
+For assimilative‐model developers, the takeaway is not simply that POD‐accelerometry is the “best” method, but that its precision and accuracy scale systematically with the strength of the drag signal. Across the broader field of space situational awareness, one of the foremost challenges is quantifying measurement error and precision in a realistic manner \cite{Poore2016CovarianceTracking}; assimilative modelling is no exception. When POD data are ingested into a filter or variational scheme, absence of well‐characterized error covariances will lead to mis‐weighted observations, suboptimal Kalman gains (or equivalent), and ultimately degraded state estimates. The statistics reported here empirically support the framework proposed in \citeA{Ray2023ACorp}, which offers a strong basis for determining realistic thresholds for tuning observation operators and localization schemes.
+
+% Broader context
+Thermospheric density modelling potentially stands on the cusp of a data-rich era analogous to the revolution that transformed terrestrial weather prediction half a century ago. GNSS tracking already delivers globally distributed, information-dense measurements, but significant organisational hurdles remain: securing broad, timely access to those data; establishing low-latency pipelines into assimilation systems; and codifying open standards for testing, benchmarking, and refining density products. While initiatives like the Traffic Coordination System for Space \cite{Holzrichter2024RecommendationsTraCSS} demonstrate growing transparency and collaboration, the sensitive nature of spacecraft-related data means that achieving the level of openness seen in the terrestrial weather community is likely to be a more arduous journey for the thermosphere community than it was for the terrestrial weather community.
+
+The performance gap between cooperatively- and uncooperatively-derived densities quantified here argues strongly for making low-latency cooperative tracking data openly available, perhaps in a manner analogous to the way in which the International GNSS Service shares precise orbit data to the positioning community \cite{Dach2014InternationalReport}.
+Agencies and commercial entities operating large LEO constellations could release near-real-time data streams and create a virtuous cycle: better density estimates would yield safer conjunction screening, while the research community would gain the data needed to improve and further develop thermospheric density models. Perhaps a more ideal scenario would be the deployment of a dedicated science constellation (e.g. the proposed Generalized Dynamics Constellation \cite{Rowland2023NASAsResponses}) that could be flown to provide science-grade data and circumventing potential data quality and data sharing constraints that often complicate scientific-commercial partnerships.
+
+\section{Future Work}
+The present analysis draws exclusively on data from two near-polar, near-circular spacecraft orbits.
+A logical next step is to extend this analysis to a broader range of orbital configurations.
+Firstly in terms of orbit geometry: satellites spanning orbital geometries that more closely mirror contemporary mega-constellation configurations (in terms of inclinations, altitude, local-time precession rates, and spacecraft geometries).
+Secondly in terms of data quality: if the use of POD data from commercial satellites constellations is to materialise, studies should be extended to use POD data that is of a comparable quality (around an order of magnitude worse than scientific quality POD data \cite{Arnold2023PreciseSatellites}). 
+A non-exhaustive list of commercial and scientific candidate missions is provided in Table 1. Note that an important caveat in the extension of this work to more satellites will be that these platforms lack independent validation mechanisms such as accelerometers or laser retro-reflectors.
+
+The current analyses contain relatively few samples below the $ 10^{-8}\,\mathrm{m\,s^{-2}}$ drag-acceleration regime where EDR performance deteriorates and variance grows. Extending the study to include a higher number of lower-drag arcs will fill this sparsely sampled corner of parameter space and clarify the drag-signal dependence of both EDR and POD-accelerometry approaches at higher altitudes or during more quiet times. 
+
+%Text here ===>>>
+%%
+%  Numbered lines in equations:
+%  To add line numbers to lines in equations,
+%  \begin{linenomath*}
+%  \begin{equation}
+%  \end{equation}
+%  \end{linenomath*}
+
+
+
+%% Enter Figures and Tables near as possible to where they are first mentioned:
+%
+% DO NOT USE \psfrag or \subfigure commands.
+%
+% Figure captions go below the figure.
+% Acronyms used in figure captions will be spelled out in the final, published version.
+
+% Table titles go above tables;  other caption information
+%  should be placed in last line of the table, using
+% \multicolumn2l{$^a$ This is a table note.}
+% NOTE that there is no difference between table caption and table heading in the final, published version
+%
+%----------------
+% EXAMPLE FIGURES
+%
+% \begin{figure}
+% \includegraphics{example.png}
+% \caption{caption}
+% \end{figure}
+%
+% Giving latex a width will help it to scale the figure properly. A simple trick is to use \textwidth. Try this if large figures run off the side of the page.
+% \begin{figure}
+% \noindent\includegraphics[width=\textwidth]{anothersample.png}
+% \caption{caption}
+% \label{pngfiguresample}
+% \end{figure}
+%
+%
+% If you get an error about an unknown bounding box, try specifying the width and height of the figure with the natwidth and natheight options. This is common when trying to add a PDF figure without pdflatex.
+% \begin{figure}
+% \noindent\includegraphics[natwidth=800px,natheight=600px]{samplefigure.pdf}
+%\caption{caption}
+%\label{pdffiguresample}
+%\end{figure}
+%
+%
+% PDFLatex does not seem to be able to process EPS figures. You may want to try the epstopdf package.
+%
+
+%
+% ---------------
+% EXAMPLE TABLE
+%
+% \begin{table}
+% \caption{Time of the Transition Between Phase 1 and Phase 2$^{a}$}
+% \centering
+% \begin{tabular}{l c}
+% \hline
+%  Run  & Time (min)  \\
+% \hline
+%   $l1$  & 260   \\
+%   $l2$  & 300   \\
+%   $l3$  & 340   \\
+%   $h1$  & 270   \\
+%   $h2$  & 250   \\
+%   $h3$  & 380   \\
+%   $r1$  & 370   \\
+%   $r2$  & 390   \\
+% \hline
+% \multicolumn{2}{l}{$^{a}$Footnote text here.}
+% \end{tabular}
+% \end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SIDEWAYS FIGURES and TABLES
+% AGU prefers the use of {sidewaystable} over {landscapetable} as it causes fewer problems.
+%
+% \begin{sidewaysfigure}
+% \includegraphics[width=20pc]{figsamp}
+% \caption{caption here}
+% \label{newfig}
+% \end{sidewaysfigure}
+%
+%  \begin{sidewaystable}
+%  \caption{Caption here}
+% \label{tab:signif_gap_clos}
+%  \begin{tabular}{ccc}
+% one&two&three\\
+% four&five&six
+%  \end{tabular}
+%  \end{sidewaystable}
+
+%% If using numbered lines, please surround equations with \begin{linenomath*}...\end{linenomath*}
+%\begin{linenomath*}
+%\begin{equation}
+%y|{f} \sim g(m, \sigma),
+%\end{equation}
+%\end{linenomath*}
+
+%%% End of body of article
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Optional Appendices go here
+%
+% The \appendix command resets counters and redefines section heads
+%
+% After typing \appendix
+%
+%\section{Here Is Appendix Title}
+% will show
+% A: Here Is Appendix Title
+%
+%\appendix
+%\section{Here is a sample appendix}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Optional Glossary, Notation or Acronym section goes here:
+%
+% Glossary is only allowed in Reviews of Geophysics
+%  \begin{glossary}
+%  \term{Term}
+%   Term Definition here
+%  \term{Term}
+%   Term Definition here
+%  \term{Term}
+%   Term Definition here
+%  \end{glossary}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Acronyms
+%% NOTE that acronyms in the final published version will be spelled out when used in figure captions.
+%   \begin{acronyms}
+%   \acro{Acronym}
+%   Definition here
+%   \acro{EMOS}
+%   Ensemble model output statistics
+%   \acro{ECMWF}
+%   Centre for Medium-Range Weather Forecasts
+%   \end{acronyms}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Notation
+%   \begin{notation}
+%   \notation{$a+b$} Notation Definition here
+%   \notation{$e=mc^2$}
+%   Equation in German-born physicist Albert Einstein's theory of special
+%  relativity that showed that the increased relativistic mass ($m$) of a
+%  body comes from the energy of motion of the body—that is, its kinetic
+%  energy ($E$)—divided by the speed of light squared ($c^2$).
+%   \end{notation}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% DATA SECTION and ACKNOWLEDGMENTS
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{Open Research Section}
+Accelerometer‐derived thermospheric densities for CHAMP and GRACE‐FO are openly available from the TU Delft database \cite{Siemes2023NewGRACE-FO} at \url{https://thermosphere.tudelft.nl/}. 
+Precise orbit ephemerides for GRACE‐FO and CHAMP were obtained from the GFZ ISDC archive \cite{Schreiner2022GFZProducts} at \url{ftp://isdcftp.gfz-potsdam.de/}. 
+TLEs are accessible via the public Space‐Track portal (\url{https://www.space-track.org/}). 
+Geomagnetic and solar drivers were obtained from NOAA SWPC (\url{https://www.swpc.noaa.gov/})
+and the Space Environment Technologies portal (\url{https://sol.spacenvironment.net/jb2008/}). 
+NRLMSISE–00 densities were generated using the open‐source \texttt{pymsis} Python package \cite{Lucas2024PymsisModel}. 
+JB2008 densities were computed using the Orekit \cite{Maisonobe2010OrekitApplications} (Python wrapper) JB2008 implementation, driven by the SOLFSMY and DTCFILE coefficient files obtained from Space Environment Technologies (\url{https://sol.spacenvironment.net/jb2008/}).
+
+\acknowledgments
+Enter acknowledgments here. This section is to acknowledge funding, thank colleagues, enter any secondary affiliations, and so on.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% REFERENCES and BIBLIOGRAPHY
+%
+% Added explicit bibliography style
+\bibliographystyle{apacite}
+\bibliography{references}
+% don't specify bibliographystyle
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\bibliography{ enter your bibtex bibliography filename here }
+
+%Reference citation instructions and examples:
+%
+% Please use ONLY \cite and \citeA for reference citations.
+% \cite for parenthetical references
+% ...as shown in recent studies (Simpson et al., 2019)
+% \citeA for in-text citations
+% ...Simpson et al. (2019) have shown...
+%
+%
+%...as shown by \citeA{jskilby}.
+%...as shown by \citeA{lewin76}, \citeA{carson86}, \citeA{bartoldy02}, and \citeA{rinaldi03}.
+%...has been shown \cite{jskilbye}.
+%...has been shown \cite{lewin76,carson86,bartoldy02,rinaldi03}.
+%... \cite <i.e.>[]{lewin76,carson86,bartoldy02,rinaldi03}.
+%...has been shown by \cite <e.g.,>[and others]{lewin76}.
+%
+% apacite uses < > for prenotes and [ ] for postnotes
+% DO NOT use other cite commands (e.g., \citet, \citep, \citeyear, \nocite, \citealp, etc.).
+%
+
+
+
+\end{document}
+
+
+
+More Information and Advice:
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  SECTION HEADS
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Capitalize the first letter of each word (except for
+% prepositions, conjunctions, and articles that are
+% three or fewer letters).
+
+% AGU follows standard outline style; therefore, there cannot be a section 1 without
+% a section 2, or a section 2.3.1 without a section 2.3.2.
+% Please make sure your section numbers are balanced.
+% ---------------
+% Level 1 head
+%
+% Use the \section{} command to identify level 1 heads;
+% type the appropriate head wording between the curly
+% brackets, as shown below.
+%
+%An example:
+%\section{Level 1 Head: Introduction}
+%
+% ---------------
+% Level 2 head
+%
+% Use the \subsection{} command to identify level 2 heads.
+%An example:
+%\subsection{Level 2 Head}
+%
+% ---------------
+% Level 3 head
+%
+% Use the \subsubsection{} command to identify level 3 heads
+%An example:
+%\subsubsection{Level 3 Head}
+%
+%---------------
+% Level 4 head
+%
+% Use the \subsubsubsection{} command to identify level 3 heads
+% An example:
+%\subsubsubsection{Level 4 Head} An example.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  IN-TEXT LISTS
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Do not use bulleted lists; enumerated lists are okay.
+% \begin{enumerate}
+% \item
+% \item
+% \item
+% \end{enumerate}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  EQUATIONS
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Single-line equations are centered.
+% Equation arrays will appear left-aligned.
+
+Math coded inside display math mode \[ ...\]
+ will not be numbered, e.g.,:
+ \[ x^2=y^2 + z^2\]
+
+ Math coded inside \begin{equation} and \end{equation} will
+ be automatically numbered, e.g.,:
+ \begin{equation}
+ x^2=y^2 + z^2
+ \end{equation}
+
+
+% To create multiline equations, use the
+% \begin{eqnarray} and \end{eqnarray} environment
+% as demonstrated below.
+\begin{eqnarray}
+  x_{1} & = & (x - x_{0}) \cos \Theta \nonumber \\
+        && + (y - y_{0}) \sin \Theta  \nonumber \\
+  y_{1} & = & -(x - x_{0}) \sin \Theta \nonumber \\
+        && + (y - y_{0}) \cos \Theta.
+\end{eqnarray}
+
+%If you don't want an equation number, use the star form:
+%\begin{eqnarray*}...\end{eqnarray*}
+
+% Break each line at a sign of operation
+% (+, -, etc.) if possible, with the sign of operation
+% on the new line.
+
+% Indent second and subsequent lines to align with
+% the first character following the equal sign on the
+% first line.
+
+% Use an \hspace{} command to insert horizontal space
+% into your equation if necessary. Place an appropriate
+% unit of measure between the curly braces, e.g.
+% \hspace{1in}; you may have to experiment to achieve
+% the correct amount of space.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  EQUATION NUMBERING: COUNTER
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% You may change equation numbering by resetting
+% the equation counter or by explicitly numbering
+% an equation.
+
+% To explicitly number an equation, type \eqnum{}
+% (with the desired number between the brackets)
+% after the \begin{equation} or \begin{eqnarray}
+% command.  The \eqnum{} command will affect only
+% the equation it appears with; LaTeX will number
+% any equations appearing later in the manuscript
+% according to the equation counter.
+%
+
+% If you have a multiline equation that needs only
+% one equation number, use a \nonumber command in
+% front of the double backslashes (\\) as shown in
+% the multiline equation above.
+
+% If you are using line numbers, remember to surround
+% equations with \begin{linenomath*}...\end{linenomath*}
+
+%  To add line numbers to lines in equations:
+%  \begin{linenomath*}
+%  \begin{equation}
+%  \end{equation}
+%  \end{linenomath*}
+
+
+
