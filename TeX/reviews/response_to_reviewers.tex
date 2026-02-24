@@ -1,0 +1,543 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{parskip}
+\usepackage{booktabs}
+\usepackage{fancyhdr}
+
+% Colours
+\definecolor{reviewblue}{RGB}{0,51,102}
+\definecolor{responseblack}{RGB}{0,0,0}
+\definecolor{quotegreen}{RGB}{0,80,0}
+\definecolor{quotegray}{RGB}{80,80,80}
+
+% Reviewer comment styling
+\newcommand{\reviewercomment}[1]{%
+  \medskip
+  \noindent\textit{\color{reviewblue}#1}%
+  \medskip
+}
+
+% Old/New quote blocks
+\newcommand{\oldtext}[1]{%
+  \smallskip
+  \noindent\hspace{1em}\begin{minipage}{0.92\textwidth}%
+  \color{quotegray}\textbf{OLD:}\\[2pt]``#1''%
+  \end{minipage}%
+  \smallskip
+}
+
+\newcommand{\newtext}[1]{%
+  \smallskip
+  \noindent\hspace{1em}\begin{minipage}{0.92\textwidth}%
+  \color{quotegreen}\textbf{NEW:}\\[2pt]``#1''%
+  \end{minipage}%
+  \smallskip
+}
+
+% Section formatting
+\titleformat{\section}{\Large\bfseries}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\large\bfseries}{}{0em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\thepage}
+\lhead{Response to Reviewers}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Response to Reviewers}\\[12pt]
+{\large Manuscript: ``Empirical Assessment of Storm-time Thermospheric Density\\
+Inversion Methods from LEO POD Data''}\\[8pt]
+{\normalsize Date: February 2026}
+\end{center}
+
+\bigskip
+
+We thank the Editor and both Reviewers for their thorough and constructive reviews. We apologise for the time taken to respond; the reviewers' comments prompted major methodological revisions that required us to re-implement all density inversion methods from scratch and re-run the entire analysis. We believe the feedback has led to a substantially improved manuscript. The scope has been narrowed to focus exclusively on the two cooperative POD-based methods (EDR and POD-accelerometry), which we hope provides a clearer and more focused set of results. At the same time, we increased the size of the dataset: the storm catalogue grew from 43 to 49 events, and the per-storm analysis window was extended from $-$24\,h\,/\,+32\,h around maximum Kp (56\,h total) to $-$48\,h\,/\,+72\,h around minimum Dst (120\,h total), more than doubling the number of orbits analysed (1,887 to 3,828). Below we address each comment point by point, quoting the original reviewer text and describing the changes made. Where applicable, we reproduce the relevant old and new manuscript text to demonstrate the specific revisions.
+
+Throughout this response:
+\begin{itemize}[nosep]
+  \item ``OLD'' refers to the original submitted manuscript.
+  \item ``NEW'' refers to the revised manuscript.
+  \item Line numbers refer to the \LaTeX\ source files.
+\end{itemize}
+
+%==============================================================================
+\section{Editor Comments}
+%==============================================================================
+
+\subsection{Comment E1}
+
+\reviewercomment{%
+``I am sorry to inform you that based on the reviews of your manuscript, I have decided to decline it for publication in Earth and Space Science. While the manuscript is not acceptable now, with additional work, as outlined in the comments, I believe that you will be able to turn this into a very suitable paper. I am rejecting it now so as not to put a time constraint on your revision and allow you ample time to complete the additional work. This reject is to give the authors more time to address reviewer \#2 major comments. There is good methodology and analysis represented in this work. However, the paper conclusions, the specific metrics chosen seem inappropriate given the results. The scope of the analysis is incongruous. For example, the authors compare three density retrieval techniques, one of which is very different and represents a vastly different measurement bandwidth.''}
+
+\textbf{Response:}
+We thank the Editor for the encouraging assessment of the methodology and for the opportunity to revise. We have addressed each of the Editor's concerns as follows:
+
+\textbf{(a) Scope and bandwidth mismatch:} The paper has been completely refocused. The TLE-based analysis and the empirical model comparisons (JB2008, NRLMSISE-00) have been removed entirely. The revised manuscript compares only EDR and POD-accelerometry (POD-A), two cooperative methods that use the same POD data source and identical force models, against accelerometer-derived effective densities. This eliminates the bandwidth mismatch that was the central concern.
+
+\textbf{(b) Inappropriate metrics:} We have added log-normal metrics ($\sigma$, SD\%) as the primary evaluation measures, following Fitzpatrick et al.\ (2025) and the recommendations of Reviewer 2. The coefficient of determination ($r^2$) is retained, and the root-mean-square relative error ($\tilde{\rho}_\mathrm{RMS}$) is reported for direct comparability with Ray et al.\ (2024). Section 2.4 now provides a formal justification for each metric. All methods have been re-implemented from scratch and results have been recomputed using effective densities (Picone, 2005).
+
+\textbf{(c) Conclusions:} The conclusions have been completely rewritten to reflect the new scope, metrics, and findings. In particular, the blanket claim of POD-accelerometry superiority has been reversed: with the corrected methodology, EDR outperforms POD-A on every metric and at every fit-span, although both methods perform very similarly.
+
+\textbf{(d) Framing and research questions:} To sharpen the paper's focus, the introduction now poses three explicit research questions: (Q1) How accurately do EDR and POD-A recover orbit-effective density, and does either method hold a systematic advantage? (Q2) What is the trade-off between temporal resolution and retrieval accuracy as arc length is varied? (Q3) What is the relationship between retrieval accuracy and drag-acceleration magnitude? The conclusions are structured around these three questions, which we hope provides clearer and more testable claims than the original submission.
+
+
+%==============================================================================
+\section{Reviewer 1 Comments}
+%==============================================================================
+
+\subsection{Comment R1-1}
+
+\reviewercomment{%
+``This paper compares POD density inversion performance during geomagnetic storms across multiple spacecraft using multiple approaches. It compares POD methods (POD and EDR) with TLE and model-derived neutral density. The paper is very well structured, well written, and the results are convincing and useful to the community. This work will surely become the definitive reference for neutral density inversion efforts in LEO moving forward.''}
+
+\textbf{Response:}
+We thank Reviewer~1 for this generous assessment and for their careful reading of the manuscript. We hope the revised version, with its expanded scope and improved methodology, further strengthens the contribution.
+
+
+\subsection{Comment R1-2}
+
+\reviewercomment{%
+``L102 -- `geomagnetic indices (F10.7, Ap, Dst)' F10.7 is a solar activity proxy, not a geomagnetic index. Perhaps `space weather drivers' is better.''}
+
+\textbf{Response:}
+We agree that F10.7 is a solar radio flux proxy and not a geomagnetic index. The revised text now correctly distinguishes between solar and geomagnetic indices.
+
+\oldtext{driven by nowcast or forecasted geomagnetic indices (e.g., F10.7, Ap, Dst)}
+
+\newtext{driven by nowcast or forecast space weather indices (e.g.\ the F10.7 solar radio flux, the geomagnetic indices Ap and Dst)}
+
+
+\subsection{Comment R1-3}
+
+\reviewercomment{%
+``L106 -- During storms, it's not just that the models are poor. The forecasts are also generally poorer then, which has significant implications for satellite propagation/conjunction assessment.''}
+
+\textbf{Response:}
+We have expanded this passage to address both points: model errors and forecast degradation.
+
+\oldtext{which can themselves become unreliable during extreme events. Storm events are the periods during which the largest errors in these models occur\ldots}
+
+\newtext{Storm events are precisely the periods during which model errors are largest; moreover, the space weather index forecasts that drive these models are themselves less reliable during storms, compounding the degradation in orbit propagation and conjunction assessment (Parker, 2024).}
+
+
+\subsection{Comment R1-4}
+
+\reviewercomment{``Table 1 -- Great table with useful links!''}
+
+\textbf{Response:}
+We thank the reviewer. The table has been retained and updated with improved formatting. Data-access URLs are now provided in the table caption rather than inline, improving readability while maintaining all links.
+
+
+\subsection{Comment R1-5}
+
+\reviewercomment{%
+``L195 -- Kp comes out at a 3-hour cadence. Why not use Dst? Might be worth at least discussing this as an option. What happens for storms with a double-peak (i.e.\ Gannon)? Kp/ap was maxed-out, but Dst was not.''}
+
+\textbf{Response:}
+This is an excellent suggestion. We have switched entirely from Kp to Dst for storm selection and analysis windowing, with explicit justification. The revised text addresses both the saturation issue and the cadence advantage.
+
+\oldtext{our analysis centred on the time of the maximum Kp value rather than the southward turning of the Bz component. This decision was motivated by two considerations: the inherent noisiness of the Bz signal, which often requires manual annotation to identify the southward turn, and the robustness of the Kp index as a common indicator of geomagnetic activity across empirical atmospheric density models.}
+
+\newtext{Each storm analysis window is centred on the time of minimum Dst and extends from 48 hours before to 72 hours after this epoch, capturing the pre-storm baseline, the main phase, and the recovery. Dst was preferred over Kp because Kp saturates at 9 and is reported at 3-hour cadence, whereas Dst does not saturate and is available at 1-hour resolution (Yamazaki, 2024).}
+
+This change directly addresses the double-peak storm concern (e.g., the Gannon storm of May 2024): Dst resolves the double dip that Kp, being capped at 9, cannot distinguish.
+
+
+\subsection{Comment R1-6}
+
+\reviewercomment{%
+``L209 -- ap is just the linearly-rescaled Kp. Might be worth making that relationship clear as you're discussing them.''}
+
+\textbf{Response:}
+The switch from Kp/ap to Dst for storm selection renders this comment moot. The terms ``ap'' and ``Kp'' no longer appear in the storm-selection context. The passage that previously discussed ap forecasting uncertainty (OLD L216--224) has been removed as part of the scope narrowing.
+
+
+\subsection{Comment R1-7}
+
+\reviewercomment{%
+``L240 -- You should make clear at some point in the paper that TLE-derived densities come from mean orbit elements using the SGP4 propagator, while the POD densities are derived from higher-fidelity osculating elements.''}
+
+\textbf{Response:}
+The entire TLE analysis has been removed from the revised manuscript, so there is no longer any risk of conflating mean-element (GP/SGP4) and osculating-element (SP) approaches. The revised paper deals exclusively with POD-derived densities from SP3 precise orbits.
+
+
+\subsection{Comment R1-8}
+
+\reviewercomment{%
+``L257 -- It might be interesting to show the bias across the different approaches separately. I'm curious how large these biases are and if they are persistent.''}
+
+\textbf{Response:}
+The multiplicative de-biasing procedure is described in Eq.~2 (NEW L367--380). After de-biasing, the per-storm median-log-ratio correction effectively removes systematic offsets.
+\newtext{$\rho^*_\mathrm{method}(t) = \rho_\mathrm{method}(t) \cdot \exp(-\hat{\beta})$, where $\hat{\beta} = \mathrm{median}\{ \ln \rho_\mathrm{method}(t_i) - \ln \rho_\mathrm{ACC}(t_i) \}$}
+
+
+\subsection{Comment R1-9}
+
+\reviewercomment{%
+``L399 -- Call out here the frequency of TLE updates. It's not mentioned specifically until figure~2, but it is useful to know the measurement update frequency of the different approaches (i.e.\ $\sim$10\,s for POD and $\sim$10\,h for TLE?). It is also worth pointing out that every object in the public catalog, including debris, produces TLEs. The TLE approach has the benefit of great coverage and immediate implementation without new spacecraft/sensors/data sharing.''}
+
+\textbf{Response:}
+Since the TLE analysis has been removed, sub-items (a) and (c) are no longer applicable. Regarding the update cadence of the cooperative methods: Table~1 now reports the SP3 delivery latency for each data source (ranging from 30\,min to 2\,days), and the revised text (NEW L249) states:
+
+\newtext{The RSOs exhibit latencies ranging from as little as 45 minutes to up to 2 days; this delivery latency determines how quickly retrieved densities become available operationally.}
+
+
+\subsection{Comment R1-10}
+
+\reviewercomment{%
+``Figure 1. Consider linear scaling, particularly for CHAMP. Add labels to x-axis. Make the colorbar more legible (show more than one label). What periods were used for each spacecraft? Perhaps an additional plot showing when these data were collected could be useful (also for showing the time difference between data collection).''}
+
+\textbf{Response:}
+The figures have been completely redesigned. The old Figure~1 ($2\times5$ panel of correlation heatmaps) has been replaced. The new Figure~1 presents a timeline of when the analyzed storms occured overlaid on the F10.7 solar-flux record, directly implementing the reviewer's suggestion of a data-collection timeline. This figure clearly shows the time periods for each spacecraft (CHAMP: 2001--2005, Solar Cycle~23; GRACE-FO-A: 2019--2025, Solar Cycle~25) and the gap between datasets. The correlation scatter plots are now presented in a new Figure~2 with improved formatting.
+
+
+\subsection{Comment R1-11}
+
+\reviewercomment{%
+``L532 -- Make it clear that you're talking about orbit-effective drag acceleration. Not sure what `drag regimes' means when you bring it up the first time.''}
+
+\textbf{Response:}
+The term ``drag regimes'' has been removed from the paper. The revised text refers instead to ``drag-acceleration levels'' or ``per-orbit mean drag acceleration,'' which are precisely defined quantities. Section~2.3.1 (NEW L275--326) now provides rigorous definitions of ``orbit-effective density'' and ``arc-effective density.'' The drag acceleration variable used for binning is explicitly defined as the ``per-orbit arithmetic-mean drag acceleration, computed from the ACC data'' (Figure~4 caption, NEW L860--861).
+
+
+\subsection{Comment R1-12}
+
+\reviewercomment{%
+``L686 -- You mention a few times that performance gets worse when the drag acceleration is smaller. It should be noted that drag knowledge is less important at higher altitudes anyway, so while the reconstruction might not be as good, the need for the data product is also less. At the regime where POD-density inversion becomes worse, is drag still the dominant perturbing force on the satellite?''}
+
+\textbf{Response:}
+This is an important point. The revised manuscript now explicitly discusses the force budget at low drag-acceleration levels (NEW L824--829):
+
+\newtext{At these lower drag-acceleration levels, non-conservative forces such as SRP and Earth radiation pressure become comparable in magnitude to drag (Montenbruck \& Gill, 2000); however, drag remains one of the most difficult perturbations to model owing to its highly variable nature, whereas SRP and ERP are often reasonably approximated by relatively simple models (e.g.\ once-per-revolution empirical corrections).}
+
+This addresses the reviewer's question: drag is not always the dominant non-gravitational perturbation at higher altitudes, but it remains one of the most operationally consequential because of its higher variability.
+
+
+%==============================================================================
+\section{Reviewer 2 Comments}
+%==============================================================================
+
+\subsection*{Major Comments}
+
+\subsection{Comment R2-Major-1}
+
+\reviewercomment{%
+``The authors compare orbit-average methods with TLE's that are inherently multi-orbit or, in many cases, multi-day averages. In some cases, a TLE-associated effective density may almost miss or smooth out a storm response in density. Any interpolation to higher cadence will naturally result in large errors. A major recommendation is to re-focus the paper on the EDR and POD, accelerometry, and model comparison with the accelerometer truth but to expand the comparison over a broader range of orbital fit-spans, or at least two different options.''}
+
+\textbf{Response:}
+We fully agree with this recommendation and have implemented it as the central change in the revision. The paper has been completely refocused:
+
+\begin{enumerate}[nosep]
+  \item TLE analysis removed entirely. All TLE methodology (old Section~2.3.4), TLE results, and TLE-related discussion have been excised.
+  \item Empirical model comparisons (JB2008, NRLMSISE-00) also removed to further sharpen the scope.
+  \item Multiple fit-spans added: the revised manuscript analyses 1-, 2-, and 3-orbit effective densities (approximately 90, 180, and 270\,min), plus sub-orbital arcs at 20 different arc lengths ranging from 2 to 270\,minutes (NEW Section~3.2, L749--797 and Section~3.3, L864--965).
+  \item New Table~3 (NEW L757--788) provides a comprehensive breakdown of performance metrics across all five comparison configurations.
+\end{enumerate}
+
+\oldtext{We present the first storm-focused ($n=43$ storms) benchmark of POD-derived thermospheric densities, comparing the two main cooperative density inversion methods (Energy Dissipation Rate and POD-accelerometry) to two operational model outputs (JB2008 and NRLMSISE-00) and to one commonly used uncooperative density inversion method (TLE-based).}
+
+\newtext{We present a multi-timescale, storm-focused ($n=49$ storms) benchmark of POD-derived thermospheric densities, comparing EDR and POD-A against accelerometer-derived effective densities from CHAMP and GRACE-FO-A.}
+
+
+\subsection{Comment R2-Major-2}
+
+\reviewercomment{%
+``While the paper repeatedly concludes that POD-accelerometry is the superior method, the results indicate that even at single orbit spans, the methods are essentially equivalent at higher drag levels with the EDR method being far less computationally intensive. This equivalence may be extended if one considers 2--4 orbit fitspans. It therefore seems appropriate to qualify the conclusions accordingly.''}
+
+\textbf{Response:}
+The conclusions have been reversed. With the corrected methodology, EDR outperforms POD-A on every metric and at every fit-span (Table~3). The previous POD-A superiority was an artifact of the arithmetic averaging and choice of metrics used in the original submission.
+
+\oldtext{POD-accelerometry emerges as the benchmark for storm-time thermospheric density inversion. [\ldots] POD-accelerometry achieves [\ldots] the lowest orbit-median RMS error (5.8\%). [\ldots] GNSS-based EDR densities lagged behind (10.98\%). [\ldots] Although POD-accelerometry demands an order-of-magnitude more computation, it delivers roughly twice the accuracy.}
+
+\newtext{EDR outperforms POD-A on every metric and at every fit-span (Table~3) and is roughly 6$\times$ cheaper to compute, making it the preferred method at orbit-effective cadence and for scaling to large populations of tracked objects.}
+
+Additionally, the multi-orbit analysis (2- and 3-orbit fit-spans) confirms the reviewer's prediction: precision improves with fit-span, with SD\% dropping to approximately 10\% at 3-orbit cadence.
+
+
+\subsection{Comment R2-Major-3}
+
+\reviewercomment{%
+``It is also not clear: if the same assumptions are made when computing EDR's as POD-accel results (same gravity field expansion for example)''}
+
+\textbf{Response:}
+Both methods now use identical force models, and this is explicitly stated (NEW L617--620):
+
+\newtext{Both EDR and POD-A use the identical force model (Table~2): EIGEN-6S4 gravity truncated at degree and order 100, Sun and Moon third-body perturbations, cannonball SRP with conical shadow, and Knocke Earth radiation pressure.}
+
+We note that in the original submission, the gravity field was truncated at degree and order~90 (OLD Table~2); this has been increased to $100\times100$ in the revised analysis.
+
+
+\subsection{Comment R2-Major-4}
+
+\reviewercomment{%
+``what is the effect of assuming a constant $C_D$ in the EDR integral''}
+
+\textbf{Response:}
+A new discussion of the constant-$C_D$ assumption has been added (NEW L461--474):
+
+\newtext{In reality, $C_D$ varies with thermospheric temperature, composition, and gas-surface interaction physics: the energy accommodation coefficient depends on atomic-oxygen abundance and incident kinetic energy, producing orbit-level $C_D$ excursions of ${\sim}$10--15\% (Pilinski, 2013; Mehta, 2014), with larger departures possible during geomagnetic storms when temperature and composition change sharply. Holding $C_D A$ constant introduces a proportional scaling error in the retrieved density, which is largely absorbed by the multiplicative de-biasing of Eq.~2.}
+
+
+\subsection{Comment R2-Major-5}
+
+\reviewercomment{%
+``what is the effect of using arithmetic-mean vs.\ effective densities in the metric comparisons. What about log-normal metrics?''}
+
+\textbf{Response:}
+We have:
+
+\begin{enumerate}[nosep]
+  \item Adopted the Picone (2005) effective density formulation throughout. A new Section~2.3.1 (NEW L275--335) introduces the velocity-weighted effective density (Eq.~1) and distinguishes it from arithmetic means:
+
+  \newtext{The weighting kernel $v_\mathrm{rel}^2 |v|$ is proportional to the instantaneous drag power; it emphasizes perigee---where the satellite is fastest and the atmosphere densest---rather than treating all epochs equally as an arithmetic mean would.}
+
+  \item Adopted log-normal metrics ($\sigma$, SD\%) as the primary evaluation measures (NEW Section~2.4, L641--702), following Fitzpatrick et al.\ (2025).
+
+  \item Recomputed all comparisons. The conclusion reversed: EDR now outperforms POD-A, suggesting the old POD-A superiority was partly an artifact of the arithmetic averaging and the choice of metrics.
+\end{enumerate}
+
+
+\subsection{Comment R2-Major-6}
+
+\reviewercomment{%
+``what are some other reasons that someone might choose (or have to) use the EDR technique over POD-accelerometry? What if one is processing information from 100's or 1000's of RSO's?''}
+
+\textbf{Response:}
+The revised manuscript now explicitly addresses EDR's scalability advantage. In the EDR method description (NEW L599--602):
+
+\newtext{This makes the EDR method substantially cheaper per arc than POD-accelerometry, an advantage that becomes significant when scaling to the hundreds or thousands of tracked objects in LEO envisaged for next-generation density assimilation.}
+
+And in the conclusions (NEW L1002--1004):
+
+\newtext{EDR outperforms POD-A on every metric and at every fit-span (Table~3) and is roughly 6$\times$ cheaper to compute, making it the preferred method at orbit-effective cadence and for scaling to large populations of tracked objects.}
+
+
+\subsection{Comment R2-Major-7}
+
+\reviewercomment{%
+``If effective-densities (as described by Picone for example) are not used, then this could be a major weakness in the intercomparison. The density that results from both EDR's and TLE's can only be accurately compared with an integral quantity over the same observational time period. The terms orbit-effective and orbit-wise are used in the paper but their exact meaning, though critical, is not explained further adding to the confusion.''}
+
+\textbf{Response:}
+Effective densities are now used throughout, and all terminology is precisely defined. New Section~2.3.1 (NEW L275--335) provides:
+
+\newtext{Both density retrieval methods in this study produce effective densities in the sense of Picone (2005): the velocity-weighted average that, when held constant over a given arc, reproduces the observed drag-induced energy loss.}
+
+\newtext{When the arc spans one full revolution (perigee to perigee) we refer to the result as an orbit-effective density; when a shorter arc is used we refer to it as an arc-effective density. In both cases the physical quantity is the same Picone effective density of Eq.~1---only the integration interval differs.}
+
+The accelerometer reference densities are also computed as effective densities over the same arc (NEW L327--334):
+
+\newtext{To ensure a like-for-like comparison, we compute effective densities from the accelerometer time series by applying Eq.~1 over the same arc used by the retrieval method under evaluation. This guarantees that all quantities being compared represent the same physical average over the same time interval.}
+
+
+\subsection{Comment R2-Major-8}
+
+\reviewercomment{%
+``It is already represented in literature that orbit-effective retrievals are challenging in low signal (low drag) environments. It would have been helpful to perform the study at both orbit-effective and multi-orbit effective time scales. In practice, this is the approach taken in assimilation, especially with non-cooperative tracking objects. Computing 3--6 hour effective densities using the various techniques would help compare the lower-drag data in a more realistic manner.''}
+
+\textbf{Response:}
+The revised manuscript now includes multi-orbit effective densities at 2- and 3-orbit cadence (approximately 180 and 270\,minutes, i.e., 3 and 4.5\,hours), directly addressing this recommendation. Table~3 (NEW L757--788) shows that precision improves with fit-span: SD\% decreases from approximately 13--17\% at 1-orbit to approximately 10\% at 3-orbit cadence. This confirms the reviewer's expectation that multi-orbit spans would help in low-drag environments.
+
+
+\subsection*{Specific Comments}
+
+\subsection{Comment R2-S1}
+
+\reviewercomment{%
+``Pg~2, line~19: `un-cooperative tracking data', the tracking objects are uncooperative, not the data''}
+
+\textbf{Response:}
+Corrected. The abstract has been entirely rewritten (the TLE comparison and model baselines have been removed), so the original phrase no longer appears there. The concept of uncooperative tracking now appears only in the introduction, where the wording has been corrected:
+
+\oldtext{observations of thermospheric density derived from uncooperative tracking data}
+
+\newtext{uncooperatively-tracked objects}
+
+
+\subsection{Comment R2-S2}
+
+\reviewercomment{%
+``Pg~2, line~25: `To contextualise the performance of these methods relative to the kinds of observations currently assimilated into operational models, we also compare them against a Two-Line Element-based method.' This statement needs to be modified as it implies that methods like HASDM assimilate TLE data, which is not correct. The data used by HASDM is derived from SP methods that have much lower noise and systematic errors than those associated with TLE-derived-EDR's.''}
+
+\textbf{Response:}
+The offending statement has been removed entirely (the TLE comparison has been removed from the paper). The revised introduction correctly describes HASDM's data sources without implying TLE assimilation (NEW L185):
+
+\newtext{HASDM uses a variant of JB2008 as its base model, calibrated and validated against Energy Dissipation Rates (EDR) derived from 80+ uncooperatively-tracked objects in eccentric orbits (Storz, 2002).}
+
+We note that we have changed the description from ``assimilates'' to ``calibrated and validated against'' to reflect the reviewer's clarification that current operational versions of HASDM use EDRs for validation rather than direct assimilation.
+
+
+\subsection{Comment R2-S3}
+
+\reviewercomment{%
+``Pg~3, line~68: `the observations used to drive this scheme are so-called Energy Dissipation Rates (EDR),' This is no longer correct. EDR's are derived as a means of validating HASDM, not as a source of assimilated data. Current versions don't assimilate EDR's.''}
+
+\textbf{Response:}
+This sentence has been rewritten. The revised text (NEW L185) now reads:
+
+\newtext{calibrated and validated against Energy Dissipation Rates (EDR) derived from 80+ uncooperatively-tracked objects in eccentric orbits (Storz, 2002).}
+
+We use ``calibrated and validated against'' rather than ``assimilates'' to reflect the reviewer's clarification about the current operational HASDM architecture.
+
+
+\subsection{Comment R2-S4}
+
+\reviewercomment{%
+``Pg.~3, line~76: `existing empirical models' to `existing empirical and global-circulation models'\,''}
+
+\textbf{Response:}
+The revised introduction now names all three model families in a single compressed paragraph (NEW L179), citing representative examples of each (e.g.\ NRLMSISE-00 and JB2008 for semi-empirical; TIE-GCM and WAM-IPE for GCMs; HASDM and AENeAS for assimilative models).
+
+
+\subsection{Comment R2-S5}
+
+\reviewercomment{``Pg~3, line~93: change `capture' to `accurately capture'\,''}
+
+\textbf{Response:}
+Corrected (NEW L181):
+
+\oldtext{only a few empirical models capture storm-driven density enhancements associated with Joule heating and neutral winds}
+
+\newtext{few accurately capture storm-driven density enhancements associated with Joule heating and neutral winds}
+
+
+\subsection{Comment R2-S6}
+
+\reviewercomment{%
+``Pg~3. Line~99: Mutschler and Kent Tobiska et al.\ 2023 appears in a few places. Change to `Mutschler et al., 2023'\,''}
+
+\textbf{Response:}
+The Bib\TeX\ entry has been corrected.
+
+
+\subsection{Comment R2-S7}
+
+\reviewercomment{%
+``Pg~7. Line~235: Note that EDR method can also incorporate conservative and non-conservative forces, see Fitzpatrick et al.\ 2024. This raises a concern that EDR results and POD-accelerometry results were not computed using the same set of force models and yet, are compared as if they were apples to apples afterwards. You later clarify this in section~2.3.3 but it is worth repeating here.''}
+
+\textbf{Response:}
+Fitzpatrick et al.\ (2024/2025) is now cited in the EDR method section (NEW L352--353). The force-model consistency between the two methods is now explicitly confirmed (NEW L617--620):
+
+\newtext{Both EDR and POD-A use the identical force model (see Table~2).}
+
+\subsection{Comment R2-S8}
+
+\reviewercomment{%
+``Pg~7. Line~243: `belongs to the same family of methods' this is not correct. HASDM uses an SP process that is directly integrated with the DCA. TLE's are intended for a GP method. Furthermore, a large source of uncertainty with TLE's lies in the fact that the exact start and stop of the observation period (and hence the EDR) integral is unknown. It is therefore not possible to come up with a forward model to be used in assimilation without making large assumptions about the TLE observation length. None of this applies to the HASDM process. Remove the last two sentences in item \#3.''}
+
+\textbf{Response:}
+The entire TLE methodology section (old Section~2.3.4) has been removed, along with the erroneous claim that the TLE method ``belongs to the same family'' as HASDM. This eliminates the GP/SP conflation entirely.
+
+
+\subsection{Comment R2-S9}
+
+\reviewercomment{%
+``Pg~11, line~362: Again, there is a casual connection between HASDM and the EDR method for both historical development and validation reasons. The current hasdm approach does not assimilate EDR's. Remove the first part of the sentence.''}
+
+\textbf{Response:}
+The offending sentence at old L362 (``EDR methods underpin some of the most effective operational density models to date'') has been removed. The revised EDR section (NEW L574--579) instead describes the broader historical role of EDR approaches without making incorrect claims about current HASDM operations:
+
+\newtext{EDR-based approaches underpin several operational density models (Storz, 2002; Bowman, 2003) and have been employed extensively in recent literature (Hejduk, 2013; Pilinski, 2016; Sutton, 2021).}
+
+
+\subsection{Comment R2-S10}
+
+\reviewercomment{%
+``Pg~12, line~396: This comment refers to equation~15 and subsequent discussion. $\dot{n}$ is not used in the TLE density derivation, $\Delta n$ is. $\Delta n$ and $\dot{n}$ are not the same quantity. Furthermore $\Delta n$ often needs to be evaluated based on non-consecutive TLE's to obtain reasonable noise levels. Using consecutive TLE's can result in higher noise levels. This was demonstrated by Bernstein 2021 (Assessing Thermospheric Densities Derived from Orbital Data) and should be referenced here.''}
+
+\textbf{Response:}
+The TLE methodology has been removed entirely, resolving the $\dot{n}$ vs.\ $\Delta n$ issue. The Bernstein (2021) reference has been added in a new context (NEW L937--941), where we compare our results against their TLE-derived effective-density analysis:
+
+\newtext{Bernstein et al.\ (2021) report the same effective density quantity to assess Two-Line Element (TLE)-derived densities from CHAMP and GRACE against accelerometer effective densities.}
+
+
+\subsection{Comment R2-S11}
+
+\reviewercomment{%
+``Pg~12, line~402: The interpolation of what are essentially daily-average densities (TLE-derived) to an orbit-average data product that is then compared with data of much higher bandwidth is inappropriate. The process described here most likely results in information more related to the interpolation errors than it does about the inherent quality of TLE density retrievals.''}
+
+\textbf{Response:}
+We agree completely. The TLE interpolation and all associated analysis have been removed from the paper. Only the two cooperative methods (EDR, POD-A) are retained, both of which produce densities at the same cadence as the accelerometer reference.
+
+
+\subsection{Comment R2-S12}
+
+\reviewercomment{``Pg~13, section~2.3.5: Explain if you will use effective densities or not here.''}
+
+\textbf{Response:}
+The revised manuscript uses effective densities throughout. This is stated unambiguously at the beginning of Section~2.3.1 (NEW L278--280):
+
+\newtext{Both density retrieval methods in this study produce effective densities in the sense of Picone (2005): the velocity-weighted average that, when held constant over a given arc, reproduces the observed drag-induced energy loss.}
+
+
+\subsection{Comment R2-S13}
+
+\reviewercomment{%
+``Pg~13, section~2.4: the use of average density is concerning. The EDR method, in particular, results in an equivalent density that is the result of an integral that results in a weighted average referred to an effective density. This is not the same as an arithmetic average and comparing the two will result in discrepancies. `Orbit-effective' densities are mentioned several times in the manuscript but the term is not explained. If orbit-scale quantities are to be used, they need to be effective densities as defined by Picone, Fitzpatrick, and several others. Furthermore, the use of log-normal metrics is highly recommended and consistent with recent literature on thermospheric data model comparisons.''}
+
+\textbf{Response:}
+
+\begin{enumerate}[nosep]
+  \item \textbf{Effective densities:} A new Section~2.3.1 (NEW L275--335) defines the Picone velocity-weighted effective density (Eq.~1) and uses it throughout. All terminology (``orbit-effective'', ``arc-effective'') is precisely defined. The accelerometer reference is also computed as an effective density over the same arc to ensure a like-for-like comparison.
+
+  \item \textbf{Log-normal metrics:} Section~2.4 (NEW L641--702) introduces $\sigma$ (standard deviation of log-ratio) and SD\% as primary metrics, following Fitzpatrick et al.\ (2025).
+
+  \item \textbf{All results recomputed.} The switch from arithmetic to effective densities and verification of the method implementation led to a reversal of the main finding: EDR now outperforms POD-A, suggesting that the previous POD-A superiority was partly an artifact of the inappropriate averaging and implementation.
+\end{enumerate}
+
+
+\subsection{Comment R2-S14}
+
+\reviewercomment{%
+``Pg~14, line~450: Elaborate on why it is that accelerometry results in better density retrievals than EDR when high quality orbits are available.''}
+
+\textbf{Response:}
+With the revised methodology, this finding has reversed: EDR outperforms POD-A. The revised text (NEW L834--840) explains this reversal in the context of Ray et al.\ (2024):
+
+\newtext{EDR consistently outperforms POD-A at these drag levels, the opposite of the Ray et al.\ (2024) prediction in which their filter-based POD-A slightly outperforms EDR at high drag. This reversal is consistent with the difference in POD-accelerometry implementations: the Kalman-smoother approach of Ray et al.\ (2024) likely provides a more refined acceleration estimate than the one used here (Section~2.3.2), narrowing the gap with EDR at high signal-to-noise ratios.}
+
+
+\subsection{Comment R2-S15}
+
+\reviewercomment{%
+``Pg~14, line~453: I am concerned that some of the difference between EDR and POD-accel observed at GRACE-FO altitudes is due to not using effective density in the comparison with the reference dataset. Please address this by using effective densities as in the metric comparisons.''}
+
+\textbf{Response:}
+This concern was well-founded. With effective densities now used throughout (Section~2.3.1, Eq.~1), the previously reported difference between EDR and POD-A at GRACE-FO altitudes has disappeared; EDR outperforms POD-A on every metric at orbit-effective cadence ($r^2 \geq 0.98$ for both, with EDR achieving $r^2 = 0.988$ vs POD-A's $r^2 = 0.980$), confirming that the earlier apparent POD-A superiority was indeed an artifact.
+
+
+\subsection{Comment R2-S16}
+
+\reviewercomment{%
+``Pg~14, line~460: this statement implies that using an empirical model confers lower errors than using an EDR method based on good POD. This is a bold conclusion that needs to be qualified. It is more likely that either the orbit-effective windows are not supported by the SNR at this height and A/m combination for the EDR technique to work, and/or there is an error made in the EDR computation or interpretation.''}
+
+\textbf{Response:}
+The empirical-model comparison has been removed entirely from the paper (JB2008 and NRLMSISE-00 results are no longer presented), so the offending conclusion no longer exists. The revised conclusions focus exclusively on the EDR vs.\ POD-A comparison, which we hope is now appropriately nuanced and qualified.
+
+\subsection{Comment R2-S17}
+
+\reviewercomment{%
+``Figure~5: It is not clear from the text how the two dimensional binning was performed. This should be the first thing explained about the figure in the text. If RMS is based on a collection of orbits (as defined in your methodology section), how can there be multiple RMS bins represented by the Y axis? Also, consider moving this figure and associated discussion earlier and before the table~4. This will help justify the use of RMS variance in a way that is much clearer.''}
+
+\textbf{Response:}
+All figures have been completely redesigned. The old Figure~5 and its binning methodology have been replaced by:
+\textbf{Figure~3} : Shows $\tilde{\rho}_\mathrm{RMS}$ versus per-orbit mean drag acceleration, with 95\% confidence interval error bars and comparison against Ray et al.\ (2024) predictions. The binning methodology is explained in the caption text.
+
+The binning methodology is now documented in the caption, addressing the reviewer's concern about clarity.
+
+\subsection{Comment R2-S18}
+
+\reviewercomment{%
+``Pg~20, line~569: `While previous works\ldots', The statement about precision is confusing. Are the previous results referenced in Figure~5 not an indicator of precision?''}
+
+\textbf{Response:}
+The confusing precision statement has been removed. The revised discussion (Section~3.1--3.3) use $\sigma$ (precision/scatter) and $r^2$ (pattern fidelity), without the misleading distinction that appeared in the original text.
+
+\end{document}
