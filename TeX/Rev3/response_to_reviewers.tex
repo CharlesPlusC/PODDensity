@@ -99,4 +99,28 @@ To strengthen the supporting reference at the cited sentence we add Fitzpatrick 
 
 \newtext{Thermospheric densities are approximately log-normally distributed at a given altitude (Emmert, 2015; Fitzpatrick et al., 2025); the variance of $\ln \rho$ is also far more uniform than that of $\rho$ across solar cycle and storm states (Emmert and Picone, 2010, \S2.2). The natural variable for assessing retrieval accuracy is therefore $\ln \rho$ rather than $\rho$.}
 
+
+\subsection{Comment R2-64 / R2-82: Significance of the EDR advantage}
+
+\reviewercomment{%
+``Yes, but the effect seems to be small. Is this significant?''
+\;(Section~3.2: ``EDR outperforms POD-A on every metric'')}
+
+\textbf{Response:}
+We agree that, with the EDR vs POD-A differences being modest, the reader is right to ask whether they are statistically meaningful. We have added 95\,\% confidence intervals on the matched-reference metrics in Table~3 directly into the manuscript text in \S3.2. The interval methods are chosen to be exact under the log-normality of the residuals already established in \S2.4. Specifically: a chi-squared interval on $\sigma$, because the sample variance of normally distributed log-residuals follows the chi-squared distribution with $n-1$ degrees of freedom; a chi-squared interval on $\tilde{\rho}_{\mathrm{RMS}}^{2}$, by the same argument applied to the squared \%-error sum; and a Fisher $z$-transform interval on $r^{2}$, the standard inferential interval for a Pearson correlation under bivariate normality of the (log-)data.
+
+\medskip
+\noindent The intervals reveal that the answer depends on the metric. At 1-orbit cadence, $\sigma_{\mathrm{POD-A}} = 0.115$ [0.112, 0.118] and $\sigma_{\mathrm{EDR}} = 0.116$ [0.113, 0.119] (the intervals overlap, so the methods are statistically indistinguishable in typical-orbit scatter), whereas $r^{2}$ ($0.985$ [0.984, 0.986] vs $0.992$ [0.991, 0.992]) and $\tilde{\rho}_{\mathrm{RMS}}$ ($13.5\,\%$ [13.2, 13.8] vs $12.0\,\%$ [11.8, 12.3]) differ significantly (the intervals do not overlap).
+
+\medskip
+\noindent The qualitative interpretation is that EDR and POD-A produce similarly-scattered errors on a typical orbit (so $\sigma$ does not distinguish them), but EDR tracks the time-variation of the accelerometer truth more faithfully (so $r^{2}$ is higher) and produces fewer catastrophic-failure orbits ($\tilde{\rho}_{\mathrm{RMS}}$ squares the per-orbit \%-error, so worst-case orbits dominate the pooled statistic). This is consistent with the robustness advantage discussed elsewhere in \S3.3.
+
+\medskip
+\noindent Manuscript change in \S3.2 (inserted between the existing ``EDR outperforms POD-A\ldots'' sentence and the ``matched-to-native jump\ldots'' sentence):
+
+\newtext{95\,\% confidence intervals on the matched-reference metrics are exact under the log-normality of the residuals (\S2.4): the sample variance of normally distributed log-residuals follows a chi-squared distribution with $n-1$ degrees of freedom (used here to interval-bound $\sigma$ and $\tilde{\rho}_{\mathrm{RMS}}^{2}$), and the Fisher $z$-transform provides the corresponding inferential interval for the Pearson correlation underlying $r^{2}$. Applying these to the matched 1-orbit row, $\sigma$ is indistinguishable between methods ($\sigma_{\mathrm{POD-A}} = 0.115$ [0.112, 0.118] vs $\sigma_{\mathrm{EDR}} = 0.116$ [0.113, 0.119]), whereas $r^{2}$ and $\tilde{\rho}_{\mathrm{RMS}}$ differ significantly ($r^{2} = 0.985$ [0.984, 0.986] vs $0.992$ [0.991, 0.992]; $\tilde{\rho}_{\mathrm{RMS}} = 13.5\,\%$ [13.2, 13.8] vs $12.0\,\%$ [11.8, 12.3]). At single-orbit cadence the two methods produce similarly-scattered errors on a typical orbit (equivalent $\sigma$), but EDR follows the time-variation of the accelerometer truth more faithfully (higher $r^{2}$) and produces fewer catastrophic-error orbits (lower $\tilde{\rho}_{\mathrm{RMS}}$, since $\tilde{\rho}_{\mathrm{RMS}}$ squares the \%-error and is dominated by the worst orbits).}
+
+\medskip
+\noindent Comment R2-82 is the conclusions-section companion to R2-64. We have softened the wording in the Q3 paragraph of the Conclusions correspondingly, replacing ``outperforms POD-A on every metric'' with language that distinguishes between metrics where the EDR advantage is significant ($r^{2}$, $\tilde{\rho}_{\mathrm{RMS}}$) and those where the methods are statistically indistinguishable ($\sigma$ at 1- and 2-orbit cadence).
+
 \end{document}

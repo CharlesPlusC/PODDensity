@@ -787,7 +787,25 @@ Sub-orbital (best)           & native  & 45.5 & \textbf{41.8} & 0.930 & \textbf{
 This improvement is expected: longer integration intervals average over more
 of the stochastic noise in both the retrieval and the reference.
 EDR outperforms POD-A on nearly all metrics and fit-spans, though the gap
-narrows at longer integration intervals. The jump from matched to native
+narrows at longer integration intervals. 95\,\% confidence intervals on the
+matched-reference metrics are exact under the log-normality of the residuals
+established in Section~\ref{sec:metrics}: the sample variance of normally
+distributed log-residuals follows a chi-squared distribution with $n-1$
+degrees of freedom (used here to interval-bound $\sigma$ and
+$\tilde{\rho}_{\mathrm{RMS}}^{2}$), and the Fisher $z$-transform provides the
+corresponding inferential interval for the Pearson correlation underlying
+$r^{2}$. Applying these to the matched 1-orbit row, $\sigma$ is indistinguishable
+between methods ($\sigma_{\mathrm{POD-A}} = 0.115$ [0.112, 0.118] vs
+$\sigma_{\mathrm{EDR}} = 0.116$ [0.113, 0.119]), whereas $r^{2}$ and
+$\tilde{\rho}_{\mathrm{RMS}}$ differ significantly ($r^{2} = 0.985$ [0.984, 0.986]
+vs $0.992$ [0.991, 0.992]; $\tilde{\rho}_{\mathrm{RMS}} = 13.5\,\%$ [13.2, 13.8]
+vs $12.0\,\%$ [11.8, 12.3]). At single-orbit cadence the two methods produce
+similarly-scattered errors on a typical orbit (equivalent $\sigma$), but EDR
+follows the time-variation of the accelerometer truth more faithfully (higher
+$r^{2}$) and produces fewer catastrophic-error orbits (lower
+$\tilde{\rho}_{\mathrm{RMS}}$, since $\tilde{\rho}_{\mathrm{RMS}}$ squares the
+\%-error and is dominated by the worst orbits).
+The jump from matched to native
 reference at 1-orbit cadence (rows~3--4) is substantial, quantifying
 the information lost to orbit averaging and motivating the sub-orbital
 analysis in Section~\ref{sec:suborb-tradeoff}. The sub-orbital row recovers $\sim$77\% of the
