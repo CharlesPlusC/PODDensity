@@ -1,0 +1,32 @@
+R2-#47 — log-normality justification: quotes for the response letter
+=====================================================================
+
+R2's comment (Round 2):
+    "Is there a reference to back this statement? Can you show the PDF of the
+    'Thermospheric densities' to justify this statement?"
+Linked text in §2.4: "Thermospheric densities are approximately log-normally
+distributed (Emmert, 2015; Picone et al., 2005)"
+
+
+VERBATIM (Reviewer 1, Round 1) — the original request that drove the adoption
+of log-normal metrics:
+    "the use of log-normal metrics is highly recommended and consistent with
+    recent literature on thermospheric data model comparisons."
+    (Reviews_v1.rtf, page 13 §2.4 comment)
+
+
+VERBATIM (Fitzpatrick et al., 2025) — explicit log-normality statement we can
+cite to justify §2.4 phrasing:
+    "The use of logarithms also ties into the nature of TMD, which displays
+    an approximately log-normal distribution at a fixed altitude. Applying
+    the logarithm to the ratio of two log-normally distributed positive-
+    definite variables transforms the result into a normal distribution,
+    streamlining both statistical analysis and interpretation."
+
+
+Plan for the response paragraph:
+- Note that the log-normal evaluation framework was adopted in Round 1 at R1's
+  explicit recommendation (quote above).
+- Add Fitzpatrick et al. (2025) inline at the §2.4 log-normal sentence as the
+  on-target reference demonstrating log-normality of TMD.
+- No new analysis or PDF figure needed.

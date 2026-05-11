@@ -1,0 +1,102 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{parskip}
+\usepackage{booktabs}
+\usepackage{fancyhdr}
+
+% Colours
+\definecolor{reviewblue}{RGB}{0,51,102}
+\definecolor{responseblack}{RGB}{0,0,0}
+\definecolor{quotegreen}{RGB}{0,80,0}
+\definecolor{quotegray}{RGB}{80,80,80}
+
+% Reviewer comment styling
+\newcommand{\reviewercomment}[1]{%
+  \medskip
+  \noindent\textit{\color{reviewblue}#1}%
+  \medskip
+}
+
+% Old/New quote blocks
+\newcommand{\oldtext}[1]{%
+  \smallskip
+  \noindent\hspace{1em}\begin{minipage}{0.92\textwidth}%
+  \color{quotegray}\textbf{OLD:}\\[2pt]``#1''%
+  \end{minipage}%
+  \smallskip
+}
+
+\newcommand{\newtext}[1]{%
+  \smallskip
+  \noindent\hspace{1em}\begin{minipage}{0.92\textwidth}%
+  \color{quotegreen}\textbf{NEW:}\\[2pt]``#1''%
+  \end{minipage}%
+  \smallskip
+}
+
+% Section formatting
+\titleformat{\section}{\Large\bfseries}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\large\bfseries}{}{0em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\thepage}
+\lhead{Response to Reviewers}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Response to Reviewers}\\[12pt]
+{\large Manuscript: ``Empirical Assessment of Storm-time Thermospheric Density\\
+Inversion Methods from LEO POD Data''}\\[8pt]
+{\normalsize Date: May 2026}
+\end{center}
+
+\bigskip
+
+We thank the Editor and both Reviewers for the continued careful re-review of the revised manuscript. Below we address each comment in turn, quoting the original reviewer text and describing the change made. Where applicable, we reproduce the relevant old and new manuscript text to demonstrate the specific revisions.
+
+Throughout this response:
+\begin{itemize}[nosep]
+  \item ``OLD'' refers to the previously submitted (Round 1 revised) manuscript.
+  \item ``NEW'' refers to the manuscript as resubmitted in this revision.
+  \item Section, equation, table, and figure numbers refer to the revised manuscript.
+\end{itemize}
+
+
+%==============================================================================
+\section{Reviewer 2 Comments}
+%==============================================================================
+
+\subsection{Comment R2-47}
+
+\reviewercomment{%
+``Is there a reference to back this statement? Can you show the PDF of the
+\emph{Thermospheric densities} to justify this statement?''
+\;(Section~2.4: ``Thermospheric densities are approximately log-normally
+distributed (Emmert, 2015; Picone et al., 2005)'')}
+
+\textbf{Response:}
+The decision to adopt log-normal evaluation metrics was made in Round 1 at the explicit recommendation of Reviewer~1, who wrote:
+
+\reviewercomment{``the use of log-normal metrics is highly recommended and consistent with recent literature on thermospheric data model comparisons.''}
+
+To strengthen the supporting reference at the cited sentence we add Fitzpatrick et al.\ (2025), which states directly:
+
+\reviewercomment{``The use of logarithms also ties into the nature of TMD, which displays an approximately log-normal distribution at a fixed altitude. Applying the logarithm to the ratio of two log-normally distributed positive-definite variables transforms the result into a normal distribution, streamlining both statistical analysis and interpretation.''}
+
+\noindent The Emmert (2015) reference is retained for the broader physical motivation (log-density variance is more uniform than density variance; Emmert and Picone, 2010, \S2.2). We have removed the Picone (2005) citation at this specific sentence, since that paper does not contain an explicit log-normality statement.
+
+\medskip
+\noindent Manuscript change in \S2.4:
+
+\oldtext{Thermospheric densities are approximately log-normally distributed (Emmert, 2015; Picone et al., 2005), so the natural variable for assessing retrieval accuracy is $\ln \rho$ rather than $\rho$.}
+
+\newtext{Thermospheric densities are approximately log-normally distributed at a given altitude (Emmert, 2015; Fitzpatrick et al., 2025); the variance of $\ln \rho$ is also far more uniform than that of $\rho$ across solar cycle and storm states (Emmert and Picone, 2010, \S2.2). The natural variable for assessing retrieval accuracy is therefore $\ln \rho$ rather than $\rho$.}
+
+\end{document}
