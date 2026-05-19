@@ -70,8 +70,437 @@ Throughout this response:
 
 
 %==============================================================================
+\section{Reviewer 1 Comments}
+%==============================================================================
+
+\subsection{Comment R1-1}
+
+\reviewercomment{%
+``Change `in the sense of Picone' to `as defined by Picone\ldots'.''
+\;(Section~2.3.1, line 160)}
+
+\textbf{Response:} Reworded as requested.
+
+\oldtext{Both density retrieval methods in this study produce \emph{effective densities} in the sense of Picone (2005)\ldots}
+
+\newtext{Both density retrieval methods in this study produce \emph{effective densities} as defined by Picone (2005)\ldots}
+
+
+\subsection{Comment R1-2}
+
+\reviewercomment{%
+``The POD-A seems distinct from the method used by Ray et al.\ and others.
+While the authors make this distinction in Section~2.3.2, it would be good
+to summarize here or somewhere in the introduction.'' (Line 192)}
+
+\textbf{Response:}
+We have added a one-sentence summary of the methodological distinction immediately
+after the Ray et al.\ reference in the Introduction, and forward-referenced
+\S2.3.2 for the full description.
+
+\newtext{The POD-A implementation employed here differs from that of Ray et al.\ (2024) and earlier work (Calabia et al., 2015; Bezděk \& Klokočník, 2010) in that we differentiate the SP3 velocities once (rather than double-differentiating positions) and integrate the resulting pointwise drag accelerations to form the effective density of Eq.~(1), in lieu of temporal smoothing of the recovered density; full details are given in Section~2.3.2.}
+
+
+\subsection{Comment R1-3}
+
+\reviewercomment{%
+``Sounds like perhaps multiple values were evaluated to find the point of
+diminishing returns and minimize numerical error. This is fine, but it would
+be good to point out in the text here. In other words, why is this small
+value of dt used as opposed to 0.1 s for example.'' (Line 250)}
+
+\textbf{Response:}
+We have replaced the qualitative ``negligible improvement'' wording with an
+explicit justification anchored in Calabia et al.\ (2015), who report that
+a step size of 0.05\,s limits the arc-to-chord approximation error to
+$\sim 10^{-9}\,\mathrm{m\,s^{-2}}$ for LEO POD-derived accelerations. We
+adopt the more conservative 0.01\,s, beyond which further refinement
+becomes computationally prohibitive for negligible accuracy gain.
+
+\oldtext{Accelerations are then obtained by central finite differences at the 0.01\,s step size; interpolation finer than 0.01\,s was found to yield negligible improvement.}
+
+\newtext{Accelerations are then obtained by central finite differences at the 0.01\,s step size. Calabia et al.\ (2015) showed that a step size of 0.05\,s limits the arc-to-chord approximation error to approximately $10^{-9}\,\mathrm{m\,s^{-2}}$ for LEO POD-derived accelerations; we conservatively adopt 0.01\,s, with further refinement becoming computationally prohibitive for negligible accuracy gain.}
+
+
+\subsection{Comment R1-4}
+
+\reviewercomment{%
+``Please note over what time-scale the barred (average) densities are
+computed.'' (Equation 11)}
+
+\textbf{Response:}
+The bars in Eq.~11 are the arithmetic means of the pooled samples at the
+chosen comparison cadence. The index $i$ runs over all matched samples
+across the 49-storm dataset: per-orbit values for the orbit-effective
+configurations, per-arc values for the arc-effective configurations, and
+per-timestep values for native-cadence comparisons. A clarifying sentence
+has been added immediately after Eq.~11 to make this explicit.
+
+\newtext{The index $i$ runs over all matched samples at the chosen comparison cadence (per-orbit values for the orbit-effective configurations, per-arc values for the arc-effective configurations, and per-timestep values for native-cadence comparisons), pooled across the 49-storm dataset; the bars denote arithmetic means of those pooled samples.}
+
+
+\subsection{Comment R1-5}
+
+\reviewercomment{%
+``Later on, you also compare sub-orbital-arc computations to the equivalent
+sub-orbital-arc accelerometer values (rather than the native accelerometer
+resolution). It would be good to note that you will do this in a later
+section and/or include some of those results in the table.'' (Table 3)}
+
+\textbf{Response:}
+We have added a forward-reference sentence immediately after Table~3
+pointing the reader to Section~3.3 / Figure~5, which shows the full
+arc-length sweep against window-matched accelerometer truth, and noting
+that the matched rows in Table~3 are three discrete points from that
+sweep.
+
+\newtext{How these matched-cadence metrics evolve continuously with arc length (from a few minutes up to three orbits) is shown in Section~3.3 (Figure~5, orange curves); the matched rows above are three discrete points from that sweep.}
+
+
+\subsection{Comment R1-6}
+
+\reviewercomment{%
+``The test satellites used here have relatively stable ballistic coefficients
+resulting from their consistent LVLH pointing and lack of articulated panels.
+It would be good to point out that the lack of these helpful features on
+many GNSS-enabled satellites will bring with it additional complications
+and errors not considered in the present work.''}
+
+\textbf{Response:}
+We have added a caveat in the Future Work section noting that CHAMP and
+GRACE-FO-A maintain stable attitude relative to the oncoming atmospheric
+flux and lack articulated solar panels, whereas many commercial LEO satellites do not; extending the method to such platforms
+will entail additional ballistic-coefficient uncertainty not modelled
+in the present work.
+
+\newtext{A further caveat is that CHAMP and GRACE-FO-A maintain a stable orientation relative to the oncoming atmospheric flux and have no articulated solar panels, giving them relatively constant ballistic coefficients. Many commercial LEO satellites, by contrast, have variable attitude profiles and articulated arrays that introduce time-varying $C_{D}A/m$ on top of the atmospheric variability targeted here (Fitzpatrick et al., 2024); extending the method to such platforms will entail additional ballistic-coefficient uncertainty not modelled in the present work.}
+
+
+%==============================================================================
 \section{Reviewer 2 Comments}
 %==============================================================================
+
+\subsection{Comment R2-1 (and related: R2-8, R2-50, R2-55, R2-79, R2-80, R2-83)}
+
+\reviewercomment{%
+``The `r-squared' metric should not be used in isolation to assess the fit.
+In addition the authors could provide RMSE and median difference to
+indicate the precision and accuracy, respectively.'' (Key Points,
+``r-squared above 0.97'')}
+
+\textbf{Response:}
+We agree and have systematically paired $r^{2}$ with $\tilde{\rho}_{\mathrm{RMS}}$
+(RMS percentage error) and median bias throughout. The Key Points now
+report all three quantities, Table~3 includes $\tilde{\rho}_{\mathrm{RMS}}$,
+median bias, Q25, and Q75 columns alongside SD\% / $r^{2}$ / $\sigma$, the
+Section~3.2 discussion reports 95\,\% CIs for all metrics
+(R2-\#64 response), and the Conclusions report $\tilde{\rho}_{\mathrm{RMS}}$
+explicitly alongside the other metrics (R2-\#80).
+
+\oldtext{Orbit-effective densities from energy dissipation rate and POD-accelerometry match accelerometer truth with r-squared above 0.97.}
+
+\newtext{EDR and POD-A produce GNSS-derived orbit-effective densities matching accelerometer truth with $r^{2}>0.97$, 10--13\% RMS, median bias <1\%.}
+
+\oldtext{At sub-orbital resolution both methods achieve pooled r-squared above 0.92 against native accelerometer densities but uncertainty roughly doubles to triples.}
+
+\newtext{At sub-orbital cadence both methods reach $r^{2}>0.92$ against native (10\,s) accelerometer truth, with $\sim$33--34\% RMS and 42--46\% SD.}
+
+
+\subsection{Comment R2-2}
+
+\reviewercomment{%
+``what does `native' mean in context of accelerometer-derived densities''
+(Key Point 2)}
+
+\textbf{Response:}
+``Native'' refers to the 10\,s sampling cadence at which the TU~Delft
+accelerometer-derived density products are provided. We have inlined
+``(10\,s)'' at the first occurrence in the Key Points, abstract, and
+plain language summary so the meaning is explicit on first read.
+
+\newtext{\dots\,against native (10\,s) accelerometer truth\dots\,/ native-cadence (10\,s) accelerometer data\,\dots}
+
+
+\subsection{Comment R2-3}
+
+\reviewercomment{%
+``Please stick to SI-conventions: $4 \times 10^{-7}\,\mathrm{m\,s^{-2}}$''
+(Key Points, ``4e-7 m/s2 / 1e-8 m/s2'')}
+
+\textbf{Response:}
+The offending plain-text unit expressions in Key Point~3 have been
+reformatted to SI conventions.
+
+\oldtext{Retrieval error falls below 10 percent where drag exceeds 4e-7 m/s2 but grows above 30 percent below 1e-8 m/s2.}
+
+\newtext{Retrieval error is $<10\%$ where drag exceeds $4 \times 10^{-7}\,\mathrm{m\,s^{-2}}$ but $>30\%$ below $10^{-8}\,\mathrm{m\,s^{-2}}$.}
+
+
+\subsection{Comment R2-4}
+
+\reviewercomment{%
+``I generally advise against using acronyms in abstracts. An exception can
+be made for well-established acronyms like Laser, GPS, or Satellite names.''
+(Abstract)}
+
+\textbf{Response:}
+We have spelled out the method-specific acronyms in the Abstract:
+LEO, GNSS, EDR, and POD-A are no longer introduced as parenthetical
+abbreviations in that paragraph. POD remains defined once because the
+compound term ``POD-accelerometry'' relies on it. The body text still
+uses these abbreviations after their first definition in Section~1.
+
+\oldtext{\dots\,spacecraft in Low Earth Orbit (LEO), particularly during geomagnetic storms. The growing population of Global Navigation Satellite System (GNSS)-equipped LEO satellites presents a dataset of opportunity: Precise Orbit Determination (POD) data streams\dots\,We present a multi-timescale benchmark of the two main cooperative density inversion methods, Energy Dissipation Rate (EDR) and POD-accelerometry (POD-A)\dots\,with EDR outperforming POD-A on every metric\dots}
+
+\newtext{\dots\,spacecraft in low Earth orbit, particularly during geomagnetic storms. The growing population of satellites with onboard Global Navigation Satellite System receivers presents a dataset of opportunity: precise orbit determination (POD) data streams\dots\,We present a multi-timescale benchmark of the two main cooperative density inversion methods, the Energy Dissipation Rate method and POD-accelerometry\dots\,with the Energy Dissipation Rate method outperforming POD-accelerometry on every metric\dots}
+
+
+\subsection{Comment R2-5}
+
+\reviewercomment{%
+``This sounds as this is a realtime/nowcasting approach.'' (Abstract,
+``POD data streams can be used to estimate thermospheric density along
+their paths'')}
+
+\textbf{Response:}
+We have kept the abstract as written because the framing is, on
+reflection, accurate: although the present study itself is a
+retrospective benchmark of two existing inversion methods, the methods
+characterised here \emph{are} applicable in near-real time. Rapid and
+near-real-time POD streams from operational providers (e.g.\ the
+GFZ rapid orbit products) are available with latencies as low as
+$\sim$45 minutes after a satellite's overhead pass, so POD-derived
+densities derived via either method could in principle be fed into an
+assimilative density nowcast during a storm in progress. Commercial
+constellation operators do not typically release their POD ephemerides,
+but a comparable assimilative strategy could be deployed internally.
+To make this explicit (and to anticipate the reviewer's concern) we have
+added two sentences to the Introduction making the near-real-time
+relevance and its applicability to commercial operators explicit.
+
+\newtext{Rapid and near-real-time POD streams from operational providers are now available with latencies as low as $\sim$45 minutes after a satellite's overhead pass (Schreiner et al., 2022), opening the prospect of feeding POD-derived densities into assimilative nowcasts of storm-time thermospheric conditions. Commercial constellation operators do not typically release their POD ephemerides, but a comparable assimilative strategy could in principle be deployed internally to support their own operational thermospheric forecasting.}
+
+
+\subsection{Comment R2-6}
+
+\reviewercomment{``What is SD\%?'' (Abstract, first occurrence of SD\%)}
+
+\textbf{Response:}
+We have added a brief inline descriptor (``log-normal scatter'') at the
+first use of SD\% in the Abstract, and the same descriptor at the
+mini-conclusions paragraph at the end of the Introduction. The full
+definition $\text{SD\%} = 100\,(e^{\sigma}-1)$ remains in Section~2.4.
+
+\oldtext{\dots\,both methods achieve $r^{2} \geq 0.97$ and $\text{SD\%} \leq 22\%$\dots}
+
+\newtext{\dots\,both methods achieve $r^{2} \geq 0.97$ and a log-normal scatter $\text{SD\%} \leq 22\%$\dots}
+
+
+\subsection{Comment R2-7}
+
+\reviewercomment{%
+``is computational cost an issue? Or is it slower with fast enough?''
+(Abstract, ``$6\times$ lower computational cost'')}
+
+\textbf{Response:}
+The computational-cost difference becomes relevant when retrievals are
+performed across many satellites simultaneously, which would be the
+case if POD data from large LEO constellations are to be used. We
+were advised to include this point explicitly by a reviewer during
+the previous round of review and have therefore retained it.
+
+
+\subsection{Comment R2-8}
+
+\reviewercomment{%
+``$r^{2}$ has too many flaws and should not be cited in isolation.''
+(Abstract, $r^{2}$ numerical results)}
+
+\textbf{Response:}
+We agree and have already paired $r^{2}$ with companion metrics
+wherever it is reported in the Abstract: the headline orbit-effective
+result now reads ``$r^{2} \geq 0.97$ and a log-normal scatter
+$\text{SD\%} \leq 22\%$'', the sub-orbital result reads
+``$r^{2} = 0.93$--$0.94$ and $\text{SD\%} \approx 42$--$46\%$'', and
+the Abstract additionally reports RMS errors (10\% and 30\% thresholds)
+in the drag-magnitude sentence. See also our response to R2-1, where
+the same pairing is applied across the Key Points, Table~3, Section~3.2,
+and the Conclusions.
+
+
+\subsection{Comment R2-9}
+
+\reviewercomment{%
+``only true for LEO satellites'' (Plain Language Summary, ``increasing
+drag on satellites'')}
+
+\textbf{Response:}
+Reworded to specify low-Earth-orbit satellites.
+
+\oldtext{\dots\,sharply increasing drag on satellites\dots}
+
+\newtext{\dots\,sharply increasing drag on satellites in low Earth orbit\dots}
+
+
+\subsection{Comment R2-10}
+
+\reviewercomment{%
+``I'd be cautious with these statements. So encountering possibly very
+different conditions. So this is also an issue during quiet time.''
+(Plain Language Summary, statements asserting general applicability)}
+
+\textbf{Response:}
+We have softened the Plain Language Summary in two places: the
+``thousands of satellites'' sentence now qualifies the applicability to
+satellites whose orbit-product quality is sufficient for the drag
+signal to be extracted, and the ``accuracy depends on drag'' sentence
+now explicitly mentions quiet times alongside high altitudes as
+regimes where the signal weakens and retrieval errors grow, while
+noting that drag is also a smaller part of the overall force budget
+in those conditions so the larger relative errors matter less in
+practice.
+
+\oldtext{Thousands of satellites now broadcast precise positioning data that could be converted into density estimates.}
+
+\newtext{Thousands of satellites in low Earth orbit broadcast cooperatively derived spacecraft state data; provided these data are of good enough quality for the drag signal to be extracted, these could be used as a source of thermospheric density estimates.}
+
+\oldtext{Accuracy also depends on how much drag a satellite experiences: errors are small for high-drag orbits but grow at higher altitudes where the atmosphere is thinner.}
+
+\newtext{Accuracy depends on both the quality of the orbit solution and the strength of the drag signal: at lower altitudes the drag signal is strong relative to noise and retrievals are accurate, but at higher altitudes and during quiet times the signal weakens and errors grow. Drag is also a smaller part of the overall force budget in those conditions, so larger relative drag modelling errors matter less in practice.}
+
+
+\subsection{Comment R2-11}
+
+\reviewercomment{%
+``There are more recent versions of NRLMSIS:
+\url{https://doi.org/10.1029/2020JA028319} and semi-empirical models
+(e.g.\ HASDM \url{https://doi.org/10.1029/2022JA030896}).''
+(Plain Language Summary / Introduction, semi-empirical model
+citations)}
+
+\textbf{Response:}
+We have added NRLMSIS~2.0 (Emmert et al., 2021, E\&SS,
+10.1029/2020EA001321) alongside NRLMSISE-00 in the example list of
+semi-empirical climatologies, with the corresponding citation. We
+have retained NRLMSISE-00 because the licensing restrictions attached
+to NRLMSIS~2.0 and~2.1 mean that NRLMSISE-00 (which has no such
+restrictions) continues to be widely used in practice, including in
+many operational and research workflows.
+
+For HASDM, we have replaced the previously-cited Bruinsma et al.\ (2023)
+review (a general thermosphere/drag overview, not a HASDM model
+description) with the canonical Storz et al.\ (2002) ``High accuracy
+satellite drag model (HASDM)'' AIAA paper at the relevant point in the
+Introduction.
+
+\oldtext{Three broad families of thermospheric density model serve the operations community: semi-empirical climatologies (e.g.\ NRLMSISE-00, JB2008) (Picone et al., 2002; Bowman et al., 2008), first-principles general circulation models (e.g.\ TIE-GCM, WAM-IPE) (Qian et al., 2014; Brown \& Elvidge, 2024), and assimilative models (e.g.\ HASDM, AENeAS) that blend observations with an underlying model (Bruinsma et al., 2023; Elvidge \& Angling, 2019).}
+
+\newtext{Three broad families of thermospheric density model serve the operations community: semi-empirical climatologies (e.g.\ NRLMSISE-00 (Picone et al., 2002) / NRLMSIS~2.0 (Emmert et al., 2021), JB2008 (Bowman et al., 2008)), first-principles general circulation models (e.g.\ TIE-GCM (Qian et al., 2014; Wu et al., 2025), WAM-IPE (Brown \& Elvidge, 2024)), and assimilative models (e.g.\ HASDM (Storz et al., 2002), AENeAS (Elvidge \& Angling, 2019)) that blend observations with an underlying model.}
+
+
+\subsection{Comment R2-15}
+
+\reviewercomment{%
+``reference?'' (Introduction, ``(e.g.\ TIE-GCM, WAM-IPE)'')}
+
+\textbf{Response:}
+Both models now have inline citations placed immediately after the
+model name (TIE-GCM: Qian et al., 2014, and Wu et al., 2025; WAM-IPE:
+Akmaev, 2011).
+
+
+\subsection{Comment R2-15}
+
+\reviewercomment{%
+``reference?'' (Introduction, ``model errors are largest'' during
+geomagnetic storms)}
+
+\textbf{Response:}
+We have added supporting citations to Bruinsma et al.\ (2018) and
+Bruinsma et al.\ (2021), the canonical CCMC-style ``Space Weather
+Modeling Capabilities Assessment'' papers for neutral density (the
+2018 paper covers general performance, the 2021 paper is specifically
+the geomagnetic-storms assessment).
+
+\oldtext{\dots\ particularly during geomagnetic storms where model errors are largest.}
+
+\newtext{\dots\ particularly during geomagnetic storms where model errors are largest (Bruinsma et al., 2018; Bruinsma et al., 2021).}
+
+
+\subsection{Comment R2-16}
+
+\reviewercomment{%
+``The benefit?'' (Introduction, ``The flip side of the recent increase
+in the number of satellites in LEO\ldots'')}
+
+\textbf{Response:}
+Reworded as requested.
+
+\oldtext{The flip side of the recent increase in the number of satellites in LEO has meant that GNSS data have emerged as a potentially globally scalable, high-resolution, near-real-time set of ``signals of opportunity'' for thermospheric density estimation.}
+
+\newtext{The benefit of the recent increase in the number of satellites in LEO is that GNSS data have emerged as a potentially globally scalable, high-resolution, near-real-time set of ``signals of opportunity'' for thermospheric density estimation.}
+
+
+\subsection{Comment R2-17}
+
+\reviewercomment{%
+``what does `little' mean? Either there are publications covering this
+or not.'' (Introduction, ``little to no systematic observational
+characterization\ldots'')}
+
+\textbf{Response:}
+We agree. The sentence has been rewritten to specify what prior work
+exists (retrieval, assimilation, and simulation-based studies) and
+what gap remains (an empirical multi-storm benchmark against
+accelerometer truth), and to add a Bruinsma et al.\ (2021) citation
+motivating the storm focus.
+
+\oldtext{Despite the growing interest in POD-derived densities, little to no systematic observational characterization of their performance under geomagnetic storm conditions has been carried out. This gap in benchmarking limits the community's ability to make informed decisions about how best to integrate POD-derived data into model development and operational workflows. Recent simulation-based work by Ray et al.\ (2024) took an important step toward addressing this gap, concluding that a POD-A approach should outperform EDR-based approaches especially under lower drag scenarios (where drag acceleration $\lesssim 10^{-8}\,\mathrm{m\,s^{-2}}$).}
+
+\newtext{Recent work has demonstrated the retrieval of POD-derived densities (Fitzpatrick et al., 2024 (a,b)) and their assimilation into thermospheric models (Sutton et al., 2021; Mutschler et al., 2023), and the simulation-based study of Ray et al.\ (2024) compared POD-A and EDR performance under controlled conditions, concluding that POD-A should outperform EDR especially under lower drag scenarios (drag $\lesssim 10^{-8}\,\mathrm{m\,s^{-2}}$). To date, however, no systematic empirical characterization of POD-derived density retrievals across multiple observed storms against an independent accelerometer reference has been published, despite storms being the regime in which current thermospheric models perform worst (Bruinsma et al., 2021). This gap in benchmarking limits the community's ability to make informed decisions about how best to integrate POD-derived data into model development and operational workflows.}
+
+
+\subsection{Comment R2-14}
+
+\reviewercomment{%
+``Unclear whether this are references to HASDM and AENeAS''
+(Introduction, assimilative-model citations)}
+
+\textbf{Response:}
+The ambiguity has been resolved by the inline-citation restructuring
+described in our response to R2-11: each assimilative model now has
+its own citation placed immediately after the model name (HASDM:
+Storz et al., 2002; AENeAS: Elvidge \& Angling, 2019).
+
+
+\subsection{Comment R2-13}
+
+\reviewercomment{%
+``There is a more recent reference for TIE-GCM:
+\url{https://doi.org/10.1029/2025JA034219}''
+(Introduction, TIE-GCM citation)}
+
+\textbf{Response:}
+We have added Wu et al.\ (2025), ``The NCAR-TIEGCM Version~3.0''
+(JGR Space Physics, 130(9), e2025JA034219), alongside the existing
+Qian et al.\ (2014) community description, as the recent reference for
+the latest TIE-GCM version.
+
+
+\subsection{Comment R2-12}
+
+\reviewercomment{%
+``Please provide the [correct/current] reference for NRLMSIS.''
+(``Picone et al., 2002 / Bowman et al., 2008'')}
+
+\textbf{Response:}
+See our response to R2-11. The Picone et al.\ (2002) JGR paper is the
+correct canonical reference for NRLMSISE-00 (DOI~10.1029/2002JA009430)
+and the Bowman et al.\ (2008) AIAA paper is the correct canonical
+reference for JB2008 (DOI~10.2514/6.2008-6438); both have been
+retained and verified. The Emmert et al.\ (2021) E\&SS paper
+(DOI~10.1029/2020EA001321) for NRLMSIS~2.0 has been added alongside.
+
 
 \subsection{Comment R2-47}
 
